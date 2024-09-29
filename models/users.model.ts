@@ -1,8 +1,8 @@
 
 import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 import { IUser } from '@/interface/users.interface';
-
 
 const userSchema = new Schema<IUser>({
     name: { type: String, required: true, trim: true },
@@ -15,6 +15,11 @@ const userSchema = new Schema<IUser>({
 }, {
     timestamps: true,
 });
+
+userSchema.pre('save', async function (next) {
+    this.password = await bcrypt.hash(this.password, 20)
+    next()
+})
 
 const User = mongoose.model<IUser>('User', userSchema);
 

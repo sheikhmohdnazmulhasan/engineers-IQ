@@ -25,6 +25,7 @@
 		"@nextui-org/theme": "2.2.11",
 		"@react-aria/ssr": "3.9.4",
 		"@react-aria/visually-hidden": "3.8.12",
+		"bcryptjs": "^2.4.3",
 		"clsx": "2.1.1",
 		"framer-motion": "~11.1.1",
 		"heroicons": "^2.1.5",
@@ -38,6 +39,7 @@
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
+		"@types/bcryptjs": "^2.4.6",
 		"@types/node": "20.5.7",
 		"@types/react": "18.3.3",
 		"@types/react-dom": "18.3.0",
