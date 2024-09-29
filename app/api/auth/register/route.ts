@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         if (result) {
             const sendEmailVerificationLink = await sendAccountVerificationEmail({ email: data.email, name: data?.name });
 
+            console.log('email res', sendEmailVerificationLink);
 
             return NextResponse.json({ message: 'User Created Successfully' }, { status: 200 })
         }

@@ -18,14 +18,14 @@ async function sendAccountVerificationEmail(payload: { email: string; name: stri
     try {
         const res = await emailjs.send(
             process.env.EMAILJS_SERVICE_ID as string,
-            process.env.TEMPLATE_ID as string,
+            process.env.EMAILJS_TEMPLATE_ID as string,
             TEMPLATE_PARAMS,
             process.env.EMAILJS_PUBLIC_KEY as string
         );
 
         return res;
     } catch (error) {
-        console.log(error);
+        console.log('from email utils,', error);
 
         return null;
     }
