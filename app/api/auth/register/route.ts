@@ -17,11 +17,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: 'Username Already Taken' }, { status: 500 });
         };
 
-        return NextResponse.json({ message: 'hello' }, { status: 200 })
+        // const encryptedPassword = await bcrypt.hash(data.password, Number(process.env.BCRYPT_SALT_ROUNDS))
+        const result = await User.create(data);
+
+        if (result) {
+            return NextResponse.json({ message: 'User Created Successfully' }, { status: 200 })
+        }
 
     } catch (error) {
-        console.log(error);
-
         return NextResponse.json({ message: 'failed to create user' }, { status: 500 })
     }
 }

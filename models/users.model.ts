@@ -17,10 +17,10 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.pre('save', async function (next) {
-    this.password = await bcrypt.hash(this.password, 20)
+    this.password = await bcrypt.hash(this.password, Number(process.env.BCRYPT_SALT_ROUNDS))
     next()
 })
 
-const User = mongoose.model<IUser>('User', userSchema);
+const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
 export default User;
