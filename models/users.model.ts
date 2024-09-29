@@ -1,17 +1,21 @@
-import mongoose from "mongoose";
 
-import { IUser } from "@/interface/users.interface";
+import mongoose, { Schema } from 'mongoose';
 
-const userSchema = new mongoose.Schema<IUser>({
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    username: { type: String, required: true },
+import { IUser } from '@/interface/users.interface';
+
+
+const userSchema = new Schema<IUser>({
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    username: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },
-    role: { type: String, enum: ['admin', 'user'], required: true },
-})
+    role: { type: String, enum: ['admin', 'user'], required: true, default: 'user' },
+}, {
+    timestamps: true,
+});
 
-const User = mongoose.model<IUser>('Users', userSchema);
+const User = mongoose.model<IUser>('User', userSchema);
 
 export default User;
