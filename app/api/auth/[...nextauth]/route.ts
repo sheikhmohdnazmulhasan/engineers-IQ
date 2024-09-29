@@ -14,7 +14,7 @@ export const authOptions: AuthOptions = {
                 if (!credentials) return null;
 
                 try {
-                    const res = await fetch(`/auth/login`, {
+                    const res = await fetch(`http://localhost:3000/api/auth/login`, {
                         method: 'POST',
                         body: JSON.stringify({
                             email: credentials?.email,
