@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
+
 import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
 import { IUser } from "@/interface/users.interface";
+import createJwtTokenForAccVerification from "@/utils/create_jwt_token_for_account_verification";
 
 export async function POST(request: Request) {
     try {
@@ -21,10 +23,15 @@ export async function POST(request: Request) {
         const result = await User.create(data);
 
         if (result) {
+            const tokenForVerification = await createJwtTokenForAccVerification({ email: data.email, name: data?.name });
+
+
             return NextResponse.json({ message: 'User Created Successfully' }, { status: 200 })
         }
 
     } catch (error) {
+        console.log(error);
+
         return NextResponse.json({ message: 'failed to create user' }, { status: 500 })
     }
 }
