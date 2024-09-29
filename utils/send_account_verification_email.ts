@@ -8,6 +8,13 @@ async function sendAccountVerificationEmail(payload: { email: string; name: stri
         { expiresIn: '1h' }
     );
 
+    const TEMPLATE_PARAMS = {
+        name: payload.name,
+        to_address: payload.email,
+        // TODO: replace the origin after deployment
+        verification_link: `http://localhost:3000` + `/verify/${jwtToken}`
+    }
+
     try {
         const res = await emailjs.send(
             process.env.EMAILJS_SERVICE_ID as string,
