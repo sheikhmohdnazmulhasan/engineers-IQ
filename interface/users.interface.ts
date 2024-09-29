@@ -7,7 +7,9 @@ export interface IUser extends Document {
     password: string;
     isEmailVerified: boolean;
     role: 'user' | 'admin';
-    isPremiumMember: boolean
+    isPremiumMember: boolean;
+    followers: string[];
+    following: string[];
     createdAt?: Date;
     updatedAt?: Date;
 }
