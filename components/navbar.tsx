@@ -15,7 +15,7 @@ import { Input } from "@nextui-org/input";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button } from "@nextui-org/react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -129,7 +129,13 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">
           {searchInput}
         </NavbarItem>
-        {profileDropdownDesktop}
+        {/* {profileDropdownDesktop} */}
+
+        <Link className="text-default-foreground" href="/auth/login">
+          <Button color="default" variant="bordered">
+            Sign In
+          </Button>
+        </Link>
       </NavbarContent>
 
       {/* mobile */}
