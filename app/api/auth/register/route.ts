@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 
-
 import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
 import { IUser } from "@/interface/users.interface";
-import sendAccountVerificationEmail from "@/utils/send_account_verification_email";
 
 export async function POST(request: Request) {
     try {
@@ -23,11 +21,7 @@ export async function POST(request: Request) {
         const result = await User.create(data);
 
         if (result) {
-            const sendEmailVerificationLink = await sendAccountVerificationEmail({ email: data.email, name: data?.name });
-
-            console.log('email res', sendEmailVerificationLink);
-
-            return NextResponse.json({ message: 'User Created Successfully' }, { status: 200 })
+            return NextResponse.json({ message: 'User Created Successfully', data: result }, { status: 200 })
         }
 
     } catch (error) {
