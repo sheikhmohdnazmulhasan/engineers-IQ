@@ -2,7 +2,7 @@
 
 import { Button, Card, CardBody, CardHeader, Input, Link } from "@nextui-org/react"
 
-export default function Login() {
+export default function Register() {
 
     return (
         <Card className="w-full max-w-2xl mx-auto mt-10 md:mt-16 lg:mt-20">
