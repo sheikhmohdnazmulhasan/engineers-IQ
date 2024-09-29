@@ -20,9 +20,11 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Bu
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
+import useUser from "@/hooks/useUser";
 
 
 export const Navbar = () => {
+  const { data, error, isLoading } = useUser()
   const searchInput = (
     <Input
       aria-label="Search"
@@ -129,7 +131,7 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">
           {searchInput}
         </NavbarItem>
-        {/* {profileDropdownDesktop} */}
+        {profileDropdownDesktop}
 
         <Link className="text-default-foreground" href="/auth/login">
           <Button color="default" variant="bordered">
