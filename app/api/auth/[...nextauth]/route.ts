@@ -26,15 +26,11 @@ export const authOptions: AuthOptions = {
                     const user = await res.json();
 
                     if (res.ok && user) {
-                        console.log(user);
-
                         return user;
                     }
 
                     return null;
                 } catch (error) {
-                    console.error("Error during authorization:", error);
-
                     return null;
                 }
             },
