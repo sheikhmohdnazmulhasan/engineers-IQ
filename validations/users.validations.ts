@@ -1,14 +1,22 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const userValidationSchema = z.object({
-    name: z.string().min(1, { message: "Name is required" }).trim(),
-    email: z.string().email({ message: "Invalid email address" }).trim().toLowerCase(),
+export const userRegistrationValidationSchema = z.object({
+    name: z.string().nonempty("Name is required"),
     username: z.string()
-        .min(1, { message: "Username is required" })
-        .max(15, { message: "Username cannot exceed 15 characters" })
-        .trim(),
-    password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
-    isEmailVerified: z.boolean().default(false),
-    isPremiumMember: z.boolean().default(false),
-    role: z.enum(['admin', 'user'], { message: "Role must be 'admin' or 'user'" }).default('user'),
+        .nonempty("Username is required")
+        .min(5, "Username must be at least 5 characters long") // Minimum of 5 characters
+        .max(15, "Username must be at most 15 characters")
+        .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores") // No special characters except underscore
+        .transform((val) => val.trim()), // Trim whitespace
+    email: z.string()
+        .nonempty("Email is required")
+        .email("Invalid email format"),
+    password: z.string()
+        .nonempty("Password is required")
+        .min(6, "Password must be at least 6 characters long"),
+    password2: z.string()
+        .nonempty("Please confirm your password"),
+}).refine(data => data.password === data.password2, {
+    path: ["password2"],
+    message: "Passwords do not match",
 });
