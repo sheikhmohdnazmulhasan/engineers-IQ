@@ -6,27 +6,33 @@ import { IUser } from "@/interface/users.interface";
 
 export async function POST(request: Request) {
     try {
+        // Connect to the database
         await connectMongodb();
+
+        // Parse request body
         const data: IUser = await request.json();
-        const emailExist = await User.findOne({ email: data.email });
-        const usernameExist = await User.findOne({ username: data.username });
 
-        if (emailExist) {
-            return NextResponse.json({ message: 'Email Already Exist' }, { status: 500 })
-        } else if (usernameExist) {
-            return NextResponse.json({ message: 'Username Already Taken' }, { status: 500 });
-        };
+        // Check if email or username already exists in one query
+        const userExist = await User.findOne({
+            $or: [{ email: data.email }, { username: data.username }]
+        });
 
-        // const encryptedPassword = await bcrypt.hash(data.password, Number(process.env.BCRYPT_SALT_ROUNDS))
-        const result = await User.create(data);
-
-        if (result) {
-            return NextResponse.json({ message: 'User Created Successfully', data: result }, { status: 200 })
+        if (userExist) {
+            if (userExist.email === data.email) {
+                return NextResponse.json({ message: 'Email Already Exists' }, { status: 400 });
+            }
+            if (userExist.username === data.username) {
+                return NextResponse.json({ message: 'Username Already Taken' }, { status: 400 });
+            }
         }
 
-    } catch (error) {
-        console.log(error);
+        // Create the new user
+        const result = await User.create(data);
 
-        return NextResponse.json({ message: 'failed to create user' }, { status: 500 })
+        return NextResponse.json({ message: 'User Created Successfully', data: result }, { status: 201 });
+
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
 }

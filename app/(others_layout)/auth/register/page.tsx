@@ -10,9 +10,7 @@ import { useUserRegistration } from "@/hooks/operations/hook.operation.create_us
 import Loading from "@/components/loading";
 
 export default function Register() {
-    const { mutate: handleCreateNewUser, isError, isPending } = useUserRegistration();
-
-    console.log({ isError, isPending });
+    const { mutate: handleCreateNewUser, isPending } = useUserRegistration();
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(userRegistrationValidationSchema)
