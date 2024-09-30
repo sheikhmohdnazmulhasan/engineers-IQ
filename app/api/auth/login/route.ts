@@ -10,7 +10,9 @@ export async function POST(request: Request) {
 
     try {
         await connectMongodb();
-        const isEmailExist = await User.findOne({ email });
+        const isEmailExist = await User.findOne({ email }).select('+password');
+
+        console.log(isEmailExist);
 
         if (!isEmailExist) {
             return NextResponse.json({

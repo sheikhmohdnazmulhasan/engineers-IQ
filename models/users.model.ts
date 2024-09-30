@@ -7,7 +7,7 @@ const userSchema = new Schema<IUser>({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },  // Exclude password by default
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },
     isBlocked: { type: Boolean, required: true, default: false },
@@ -30,6 +30,13 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.populateFollowersAndFollowing = async function () {
     return await this.populate('followers following').execPopulate();
 };
+
+// Custom query to exclude password
+userSchema.methods.toJSON = function () {
+    const user = this.toObject();
+    delete user.password
+    return user;
+}
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
