@@ -47,7 +47,7 @@ const NextStep = () => {
 
                     <div className="space-y-4 mt-5">
                         <Button className="w-full" onClick={handleResendEmail}>Resend Email</Button>
-                        <Button className="w-full" color="secondary" variant="flat" onClick={() => router.push('/profile')} >{isSucceed ? 'Go Profile' : 'Skip for Now'}</Button>
+                        <Button className="w-full" color="secondary" variant="flat" onClick={() => router.push('/auth/login')} >{isSucceed ? 'Go Profile' : 'Skip for Now'}</Button>
                     </div>
                 </Card>
             </div>

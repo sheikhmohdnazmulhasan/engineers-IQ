@@ -23,7 +23,6 @@ async function sendAccountVerificationEmail(payload: { email: string; }) {
 
         return res;
     } catch (error) {
-        console.error('Error sending verification email:', error);
         return null;
     }
 }
