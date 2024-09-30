@@ -7,6 +7,7 @@ export interface IUserResponse {
     isEmailVerified: boolean;
     isPremiumMember: boolean;
     isBlocked: boolean;
+    profileImg: string;
     role: string;
     followers: string[];
     following: string[];

@@ -23,7 +23,7 @@ import { SearchIcon, Logo } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 
 export const Navbar = () => {
-  const { currentUser, error, isLoading } = useUser();
+  const { currentUser, isLoading } = useUser();
 
   const searchInput = (
     <Input
@@ -48,11 +48,11 @@ export const Navbar = () => {
           as="button"
           avatarProps={{
             isBordered: true,
-            src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+            src: currentUser?.profileImg,
           }}
           className="transition-transform"
-          description="@tonyreichert"
-          name="Tony Reichert"
+          description={`@${currentUser?.username}`}
+          name={currentUser?.name}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
