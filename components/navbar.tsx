@@ -54,7 +54,7 @@ export const Navbar = () => {
           }}
           className="transition-transform"
           description={`@${currentUser?.username}`}
-          name={<UserName isPremium={!currentUser?.isPremiumMember} name={currentUser?.name} />}
+          name={<UserName isPremium={currentUser?.isPremiumMember} name={currentUser?.name} />}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
@@ -80,8 +80,8 @@ export const Navbar = () => {
       </DropdownTrigger>
       <DropdownMenu aria-label="Profile Actions" variant="flat">
         <DropdownItem key="profile" className="h-14 gap-2">
-          <p className="font-semibold">Signed in as</p>
-          <p className="font-semibold">{currentUser?.email}</p>
+          <p className="font-semibold"><UserName isPremium={currentUser?.isPremiumMember} name={currentUser?.name} /></p>
+          <p className="font-semibold">{`@${currentUser?.username}`}</p>
         </DropdownItem>
         <DropdownItem key='settings' color="secondary" >
           <Link href="/profile">Profile Settings</Link>

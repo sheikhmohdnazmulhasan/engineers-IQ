@@ -4,7 +4,7 @@ import { VerifiedBadge } from './icons';
 const UserName = ({ name, isPremium }: { name: string | undefined; isPremium: boolean | undefined }) => {
 
     return (
-        <div className="flex items-center">
+        <div className="flex items-center justify-center gap-[2px]">
             <h1>{name}</h1>
             {isPremium && <VerifiedBadge />}
         </div>
