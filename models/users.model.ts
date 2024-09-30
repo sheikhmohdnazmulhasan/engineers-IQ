@@ -13,8 +13,8 @@ const userSchema = new Schema<IUser>({
     isPremiumMember: { type: Boolean, required: true, default: false },
     isBlocked: { type: Boolean, required: true, default: false },
     role: { type: String, enum: ['admin', 'user'], required: true, default: 'user' },
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],  // Array of User IDs for followers
-    following: [{ type: Schema.Types.ObjectId, ref: 'User' }],  // Array of User IDs for following
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],  // Array of User IDs for followers
+    following: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],  // Array of User IDs for following
 }, {
     timestamps: true,
 });
