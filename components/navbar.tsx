@@ -21,6 +21,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
 import useUser from "@/hooks/useUser";
+import signOut from "@/utils/sign_out_user";
 
 export const Navbar = () => {
   const { currentUser, isLoading } = useUser();
@@ -59,7 +60,7 @@ export const Navbar = () => {
         <DropdownItem key='settings' color="secondary" >
           <Link href="/profile">Profile Settings</Link>
         </DropdownItem>
-        <DropdownItem key="logout" color="danger">
+        <DropdownItem key="logout" color="danger" onClick={() => signOut()}>
           Log Out
         </DropdownItem>
       </DropdownMenu>
@@ -73,18 +74,18 @@ export const Navbar = () => {
           isBordered
           as="button"
           className="transition-transform"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          src={currentUser?.profileImg}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="Profile Actions" variant="flat">
         <DropdownItem key="profile" className="h-14 gap-2">
           <p className="font-semibold">Signed in as</p>
-          <p className="font-semibold">zoey@example.com</p>
+          <p className="font-semibold">{currentUser?.email}</p>
         </DropdownItem>
         <DropdownItem key='settings' color="secondary" >
           <Link href="/profile">Profile Settings</Link>
         </DropdownItem>
-        <DropdownItem key="logout" color="danger">
+        <DropdownItem key="logout" color="danger" onClick={() => signOut()}>
           Log Out
         </DropdownItem>
       </DropdownMenu>
