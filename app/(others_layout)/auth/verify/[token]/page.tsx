@@ -5,8 +5,8 @@ import { Card, CardBody, CardFooter, Button, Spinner } from '@nextui-org/react'
 import { CheckCircle, XCircle } from 'lucide-react'
 
 export default function Verify({ params }: { params: { token: string } }) {
-
-
+    const { token } = params;
+    console.log(token);
 
     const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading');
 

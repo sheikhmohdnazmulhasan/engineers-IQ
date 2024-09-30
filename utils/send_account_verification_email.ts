@@ -3,11 +3,14 @@ import emailjs from "emailjs-com";
 import { encrypt } from "./text_encryptor";
 
 async function sendAccountVerificationEmail(payload: { email: string; }) {
-    const encryptedEmail = encrypt(payload.email);
+    const validity = new Date(new Date().getTime() + 15 * 60000);
+
+    const encryptedEmail = encrypt(`${payload.email}+++${validity}`);
+    const origin = window.location.origin;
 
     const TEMPLATE_PARAMS = {
         to_address: payload.email,
-        verification_link: `http://localhost:3000/auth/verify/${encryptedEmail}`  // Use baseUrl for flexibility
+        verification_link: `${origin}/auth/verify/${encryptedEmail}`
     }
 
     try {

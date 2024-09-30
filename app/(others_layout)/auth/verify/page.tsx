@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, Card } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -10,19 +10,24 @@ import Loading from "@/components/loading";
 const NextStep = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get('email');
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isSucceed, setIsSucceed] = useState<boolean>(false);
+    const router = useRouter();
+
 
     const handleResendEmail = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
+        setIsSucceed(false)
 
         if (email) {
             const emailRes = await sendAccountVerificationEmail({ email });
             if (emailRes?.status === 200) {
                 toast.success('Email Send. Plz Check Your Inbox and Spam Folder');
-                setIsLoading(false)
+                setIsLoading(false);
+                setIsSucceed(true);
             } else {
                 toast.error('Failed To Resend Email. Try Again!')
-                setIsLoading(false)
+                setIsLoading(false);
             };
 
         } else {
@@ -42,7 +47,7 @@ const NextStep = () => {
 
                     <div className="space-y-4 mt-5">
                         <Button className="w-full" onClick={handleResendEmail}>Resend Email</Button>
-                        <Button className="w-full" color="secondary" variant="flat" >Skip for Now</Button>
+                        <Button className="w-full" color="secondary" variant="flat" onClick={() => router.push('/profile')} >{isSucceed ? 'Go Profile' : 'Skip for Now'}</Button>
                     </div>
                 </Card>
             </div>

@@ -3,20 +3,34 @@ import CryptoJS from 'crypto-js';
 // Secret key
 const secretKey = process.env.NEXT_PUBLIC_CRYPTO_SECRET_FOR_ACCOUNT_VERIFICATION as string;
 
+// Base64 URL encode
+function base64UrlEncode(str: string) {
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Base64 URL decode
+function base64UrlDecode(str: string) {
+    let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    switch (output.length % 4) {
+        case 2:
+            output += '==';
+            break;
+        case 3:
+            output += '=';
+            break;
+    }
+    return output;
+}
+
 // Encrypt function
 export function encrypt(text: string) {
-    return CryptoJS.AES.encrypt(text, secretKey).toString();
+    const encrypted = CryptoJS.AES.encrypt(text, secretKey).toString();
+    return base64UrlEncode(encrypted);
 }
 
 // Decrypt function
 export function decrypt(cipherText: string) {
-    const bytes = CryptoJS.AES.decrypt(cipherText, secretKey);
+    const decodedCipherText = base64UrlDecode(cipherText);
+    const bytes = CryptoJS.AES.decrypt(decodedCipherText, secretKey);
     return bytes.toString(CryptoJS.enc.Utf8);
 }
-
-// Usage
-// const encryptedEmail = encrypt('user@example.com');
-// console.log('Encrypted Email:', encryptedEmail);
-
-// const decryptedEmail = decrypt(encryptedEmail);
-// console.log('Decrypted Email:', decryptedEmail);
