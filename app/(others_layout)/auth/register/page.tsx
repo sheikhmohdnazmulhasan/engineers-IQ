@@ -18,7 +18,6 @@ export default function Register() {
         console.log(data);
 
     }
-    console.log(errors);
 
     return (
         <div className=" min-h-screen flex justify-center items-center fixed inset-0 px-5">
@@ -30,12 +29,27 @@ export default function Register() {
                 <CardBody className="px-6 py-5">
                     <form className="space-y-5" onSubmit={handleSubmit((data) => handleRegister(data as formData))}>
                         <div className="md:flex md:gap-3 space-y-5 md:space-y-0">
-                            <Input required className="flex-1" label="Name" size='sm' type="text" {...register('name')} />
-                            <Input required className="flex-1" label="Username" max={15} size='sm' type="text" {...register('username')} />
+                            <Input required className="flex-1" label="Name" size='sm' type="text" {...register('name')}
+                                errorMessage={errors.name?.message as string}
+                                isInvalid={!!errors.name}
+                            />
+                            <Input required className="flex-1" label="Username" max={15} size='sm' type="text" {...register('username')}
+                                errorMessage={errors.username?.message as string}
+                                isInvalid={!!errors.username}
+                            />
                         </div>
-                        <Input required label="Email" size='sm' type="email" {...register('email')} />
-                        <Input required label="Password" size='sm' type="password" {...register('password')} />
-                        <Input required label="Confirm Password" size='sm' type="password" {...register('password2')} />
+                        <Input required label="Email" size='sm' type="text" {...register('email')}
+                            errorMessage={errors.email?.message as string}
+                            isInvalid={!!errors.email}
+                        />
+                        <Input required label="Password" size='sm' type="password" {...register('password')}
+                            errorMessage={errors.password?.message as string}
+                            isInvalid={!!errors.password}
+                        />
+                        <Input required label="Confirm Password" size='sm' type="password" {...register('password2')}
+                            errorMessage={errors.password2?.message as string}
+                            isInvalid={!!errors.password2}
+                        />
                         <Button className='w-full rounded-lg py-6' type="submit">Register</Button>
                     </form>
                     <div className="flex justify-center mt-6">
