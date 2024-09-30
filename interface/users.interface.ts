@@ -7,6 +7,7 @@ export interface IUser extends Document {
     password: string;
     isEmailVerified: boolean;
     role: 'user' | 'admin';
+    profileImg: string;
     isPremiumMember: boolean;
     isBlocked: boolean;
     followers: string[];

@@ -1,9 +1,5 @@
-export interface IUserResponse {
-    success: boolean;
-    data: UserData;
-}
 
-interface UserData {
+export interface IUserResponse {
     _id: string;
     name: string;
     email: string;

@@ -20,7 +20,7 @@ export default function Login() {
     });
 
     const handleLogin: SubmitHandler<FieldValues> = async (data) => {
-        localStorage.removeItem('signed_email')
+        localStorage.removeItem('signed_email');
         setCustomError(null);
         setLoading(true);
 

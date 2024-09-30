@@ -11,21 +11,19 @@ import {
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
-import { link as linkStyles } from "@nextui-org/theme";
+import { link as linkStyles, user } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 
-
 export const Navbar = () => {
-  const { data, error, isLoading } = useUser();
-
-  console.log(data);
+  const { currentUser, error, isLoading } = useUser();
 
   const searchInput = (
     <Input
@@ -128,18 +126,22 @@ export const Navbar = () => {
         <NavbarItem className="hidden lg:flex">
           {searchInput}
         </NavbarItem>
-        {profileDropdownDesktop}
 
-        <Link className="text-default-foreground" href="/auth/login">
-          <Button color="default" variant="bordered">
-            Sign In
-          </Button>
-        </Link>
+        {isLoading ? <Spinner /> : currentUser ? (
+          profileDropdownDesktop
+        ) : (
+          <Link className="text-default-foreground" href="/auth/login">
+            <Button color="default" variant="bordered">
+              Sign In
+            </Button>
+          </Link>
+        )}
+
       </NavbarContent>
 
       {/* mobile */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        {profileDropdownMobile}
+        {isLoading ? <Spinner /> : currentUser ? profileDropdownMobile : null}
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>

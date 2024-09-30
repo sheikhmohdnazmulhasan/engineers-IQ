@@ -5,28 +5,27 @@ import useSWR from "swr";
 import { IUserResponse } from "@/interface/user.response.interface";
 
 interface UseUserResponse {
-    data: IUserResponse[]; // Assuming you're expecting an array of users
+    currentUser: IUserResponse | null;
     error: AxiosError | null;
-    isLoading: boolean; // Renamed loading to isLoading
+    isLoading: boolean;
 }
 
 const useUser = (): UseUserResponse => {
-    const email = 'nazmulofficial@outlook.com'
-    const fetcher = async (url: string): Promise<IUserResponse[]> => {
+    const signed_email = localStorage.getItem('signed_email');
+
+    const fetcher = async (url: string): Promise<IUserResponse> => {
         const response = await axios.get(url);
-        return response.data;
+        return response.data.data;
     };
 
-    // Use SWR to fetch data
-    const { data = [], error, isValidating } = useSWR<IUserResponse[]>(
-        email ? `/api/users?email=${email}` : null,
+    const { data, error, isValidating } = useSWR<IUserResponse>(
+        signed_email ? `/api/users?email=${signed_email}` : null,
         fetcher
     );
 
-    // Determine loading state using SWR's isValidating
-    const isLoading = !data && !error && isValidating;
+    const isLoading = isValidating;
 
-    return { data, error: error as AxiosError, isLoading };
+    return { currentUser: data || null, error: error as AxiosError, isLoading };
 };
 
 export default useUser;
