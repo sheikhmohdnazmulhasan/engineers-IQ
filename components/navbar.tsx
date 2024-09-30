@@ -19,9 +19,10 @@ import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon, Logo } from "@/components/icons";
+import { SearchIcon, Logo, VerifiedBadge } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 import signOut from "@/utils/sign_out_user";
+import UserName from "./premium_acc_badge";
 
 export const Navbar = () => {
   const { currentUser, isLoading } = useUser();
@@ -53,7 +54,7 @@ export const Navbar = () => {
           }}
           className="transition-transform"
           description={`@${currentUser?.username}`}
-          name={currentUser?.name}
+          name={<UserName isPremium={!currentUser?.isPremiumMember} name={currentUser?.name} />}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
