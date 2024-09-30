@@ -1,19 +1,13 @@
 import emailjs from "emailjs-com";
-import jwt from 'jsonwebtoken';
+
+import { encrypt } from "./text_encryptor";
 
 async function sendAccountVerificationEmail(payload: { email: string; }) {
-    const jwtToken = jwt.sign(
-        { email: payload.email },
-        process.env.NEXT_PUBLIC_JWT_SECRET_FOR_ACCOUNT_VERIFICATION as string,
-        { expiresIn: '1h' }
-    );
-
-    // Use environment variable for the base URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const encryptedEmail = encrypt(payload.email);
 
     const TEMPLATE_PARAMS = {
         to_address: payload.email,
-        verification_link: `${baseUrl}/verify/${jwtToken}`  // Use baseUrl for flexibility
+        verification_link: `http://localhost:3000/auth/verify/${encryptedEmail}`  // Use baseUrl for flexibility
     }
 
     try {

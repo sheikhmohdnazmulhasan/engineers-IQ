@@ -13,8 +13,6 @@ const NextStep = () => {
         if (email) {
             const emailRes = await sendAccountVerificationEmail({ email });
 
-            console.log(emailRes);
-
         } else {
             toast.error('Something Went Wrong!')
         }
