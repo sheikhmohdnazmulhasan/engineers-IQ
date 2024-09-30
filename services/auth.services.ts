@@ -12,6 +12,11 @@ export const registerUser = async (userData: FieldValues) => {
         return data;
 
     } catch (error: any) {
-        throw new Error(error);
+        // Check if it's an Axios error with a response
+        if (error.response) {
+            // Extract the error message from the response
+            const errorMessage = error.response.data.message;
+            throw new Error(errorMessage);
+        }
     }
 } 
