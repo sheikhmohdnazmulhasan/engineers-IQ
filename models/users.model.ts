@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>({
 // Hash the password before saving the user
 userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, Number(process.env.BCRYPT_SALT_ROUNDS));
+        this.password = await bcrypt.hash(this.password, Number(process.env.NEXT_PUBLIC_BCRYPT_SALT_ROUNDS));
     }
     next();
 });

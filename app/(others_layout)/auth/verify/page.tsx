@@ -1,21 +1,27 @@
 'use client'
-import { Button, Card, Text } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
 
-const NextStep = ({ params }) => {
+import { Button, Card } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+
+import sendAccountVerificationEmail from "@/utils/send_account_verification_email";
+const NextStep = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get('email');
 
-    console.log(email);
+    const handleResendEmail = async () => {
+        if (email) {
+            const emailRes = await sendAccountVerificationEmail({ email });
 
-    const handleResendEmail = () => {
-        // Simulate email resend (Replace with your API logic)
-        console.log(`Resending verification email to: sss`);
+            console.log(emailRes);
+
+        } else {
+            toast.error('Something Went Wrong!')
+        }
     };
 
     const handleSkip = () => {
-        // Redirect user to the home page or dashboard after skipping
-        // navigate("/dashboard");
+        console.log(process.env.NEXT_PUBLIC_MONGODB_CONNECTION_STRING);
     };
 
     return (
@@ -27,7 +33,7 @@ const NextStep = ({ params }) => {
 
                 <div className="space-y-4 mt-5">
                     <Button className="w-full" onClick={handleResendEmail}>Resend Email</Button>
-                    <Button className="w-full" variant="flat" color="secondary" onClick={handleSkip}>Skip for Now</Button>
+                    <Button className="w-full" color="secondary" variant="flat" onClick={handleSkip}>Skip for Now</Button>
                 </div>
             </Card>
         </div>
