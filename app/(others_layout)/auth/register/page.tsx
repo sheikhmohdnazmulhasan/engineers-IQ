@@ -10,17 +10,19 @@ import { useUserRegistration } from "@/hooks/operations/hook.operation.create_us
 import Loading from "@/components/loading";
 
 export default function Register() {
-    const { mutate: handleCreateNewUser, isPending } = useUserRegistration();
-
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm({
         resolver: zodResolver(userRegistrationValidationSchema)
     });
+
+    const watchedEmail = watch('email');
+
+    const { mutate: handleCreateNewUser, isPending } = useUserRegistration(watchedEmail);
 
     type formData = z.infer<typeof userRegistrationValidationSchema>
     const handleRegister = (data: formData) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password2, ...rest } = data;
-        handleCreateNewUser(rest)
+        handleCreateNewUser(rest);
     }
 
     return (

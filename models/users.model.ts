@@ -7,7 +7,7 @@ const userSchema = new Schema<IUser>({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
-    profileImg: { type: String, required: true, unique: true, trim: true },
+    profileImg: { type: String, required: false },
     password: { type: String, required: true, select: false },  // Exclude password by default
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },

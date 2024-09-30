@@ -49,7 +49,7 @@ export default function Verify({ params }: { params: { token: string } }) {
     return (
         <>
             {sendEmailLoading && <Loading />}
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center fixed inset-0 px-5">
                 <Card className="w-full max-w-2xl py-10">
 
                     <CardBody className="flex flex-col items-center">
