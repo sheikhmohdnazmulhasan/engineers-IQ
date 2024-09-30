@@ -1,6 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextApiHandler } from "next";
+import { cookies } from "next/headers";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -26,6 +27,8 @@ export const authOptions: AuthOptions = {
                     const user = await res.json();
 
                     if (res.ok && user) {
+                        cookies().set('accessToken', user.accessToken)
+                        cookies().set('refreshToken', user.refreshToken)
                         return user;
                     }
 

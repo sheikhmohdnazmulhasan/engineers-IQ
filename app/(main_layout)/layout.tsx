@@ -1,15 +1,13 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
-import { SessionProvider } from "next-auth/react";
 
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 import { Navbar } from "@/components/navbar";
-
+import AuthProvider from "@/providers/auth_provider";
 
 import { Providers } from "../providers";
-
 
 export const metadata: Metadata = {
   title: {
@@ -40,8 +38,8 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <SessionProvider>
 
+        <AuthProvider>
           <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
             <div className="relative flex flex-col h-screen">
               <Navbar />
@@ -50,7 +48,7 @@ export default function RootLayout({
               </main>
             </div>
           </Providers>
-        </SessionProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -34,6 +34,7 @@
 		"heroicons": "^2.1.5",
 		"intl-messageformat": "^10.5.0",
 		"jsonwebtoken": "^9.0.2",
+		"jwt-decode": "^4.0.0",
 		"lucide-react": "^0.446.0",
 		"mongoose": "^8.7.0",
 		"next": "14.2.4",

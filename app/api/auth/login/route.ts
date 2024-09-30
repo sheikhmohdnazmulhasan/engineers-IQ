@@ -55,12 +55,10 @@ export async function POST(request: Request) {
             success: true,
             message: 'Account Logged in Success',
             accessToken,
-            refreshToken
+            refreshToken,
         }, { status: 200 });
 
     } catch (error) {
-        console.log(error);
-
         return NextResponse.json({
             success: false,
             message: 'Something went wrong'

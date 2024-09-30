@@ -2,11 +2,11 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
-import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
+import AuthProvider from "@/providers/auth_provider";
 
 import { Providers } from "./providers";
 
@@ -40,7 +40,7 @@ export default function RootLayout({
                     fontSans.variable,
                 )}
             >
-                <SessionProvider>
+                <AuthProvider>
                     <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
                         <Toaster />
                         <div className="relative flex flex-col h-screen">
@@ -49,7 +49,7 @@ export default function RootLayout({
                             </main>
                         </div>
                     </Providers>
-                </SessionProvider>
+                </AuthProvider>
             </body>
         </html>
     );
