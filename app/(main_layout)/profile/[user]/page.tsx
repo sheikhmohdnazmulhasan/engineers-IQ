@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Link } from "@nextui-org/react";
+import React, { use, useEffect, useState } from 'react';
+import { Avatar, Button, Link, user } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 
 import { ArticlePreview } from '@/components/article_preview';
@@ -16,15 +16,13 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { profile, error, isLoading, revalidate } = useProfile(params.user);
     const { currentUser, isLoading: userLoading } = useUser();
     const [flowFlngDisplay, setFlowFlngDisplay] = useState<number>(5);
+    const isAlreadyFollowed = profile?.followers.find(xx => xx._id === currentUser?._id);
 
     useEffect(() => {
         if (currentUser?.username === params.user) {
             setIsWonProfile(true);
         };
-
     }, [userLoading]);
-
-    console.log(profile);
 
     return (
         <>
@@ -45,9 +43,13 @@ export default function Profile({ params }: { params: { user: string } }) {
                         {isWonProfile ? <Button className="mt-4" color="primary" size="sm" variant="flat">
                             Edit profile
                         </Button> :
-                            <Button className="mt-4" color="primary" size="sm" variant="flat">
-                                Follow
-                            </Button>}
+                            isAlreadyFollowed ?
+                                <Button className="mt-4" color="primary" size="sm" variant="flat">
+                                    Unfollow
+                                </Button>
+                                : <Button className="mt-4" color="primary" size="sm" variant="flat">
+                                    Follow
+                                </Button>}
 
                         {/* Following List */}
                         {isWonProfile ? (
