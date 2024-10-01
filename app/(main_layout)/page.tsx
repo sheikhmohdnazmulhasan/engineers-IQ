@@ -1,13 +1,14 @@
 'use client'
 
-import React, { use } from 'react'
-import { Button, Card, CardBody, Avatar, Chip, user, Spinner } from "@nextui-org/react"
+import React from 'react'
+import { Button, Card, CardBody, Avatar, Chip } from "@nextui-org/react"
 
 import { ArticlePreview } from '@/components/article_preview'
 import { SidebarSection } from '@/components/home/sidebar_section'
 import useUser from '@/hooks/useUser'
 import useWhoToFollow from '@/hooks/use_who_to_follow'
 import { IWhoToFollowResponse } from '@/interface/who_to_follow.response.interface'
+import UserName from '@/components/premium_acc_badge'
 
 export default function Home() {
   const { currentUser } = useUser();
@@ -69,14 +70,14 @@ export default function Home() {
                 </div>
               </SidebarSection>
               {currentUser && (
-                <SidebarSection title="Who to follow">
+                <SidebarSection title="New to the world">
                   <div className="space-y-4">
                     {whoToFollow?.map((user: IWhoToFollowResponse, indx) => (
                       <div key={indx} className="flex items-center justify-between">
                         <div className="flex items-center">
                           <Avatar className="mr-2" size="sm" src={user?.profileImg} />
                           <div>
-                            <p className="font-medium">{user.name}</p>
+                            <UserName isPremium={user.isPremiumMember} name={user.name} />
                             <p className="text-small text-default-500">@{user.username}</p>
                           </div>
                         </div>
