@@ -1,17 +1,27 @@
+import { Document } from 'mongoose';
 
-export interface IUserResponse {
+interface IfollowersAndFollowing {
     _id: string;
     name: string;
     email: string;
     username: string;
+    profileImg: string;
+    isPremiumMember: boolean;
+}
+
+export interface IUserResponse extends Document {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    password: string;
     isEmailVerified: boolean;
+    role: 'user' | 'admin';
+    profileImg: string;
     isPremiumMember: boolean;
     isBlocked: boolean;
-    profileImg: string;
-    role: string;
-    followers: string[];
-    following: string[];
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
+    followers: IfollowersAndFollowing[];
+    following: IfollowersAndFollowing[];
+    createdAt?: Date;
+    updatedAt?: Date;
 }

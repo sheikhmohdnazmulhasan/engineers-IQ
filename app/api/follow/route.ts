@@ -10,6 +10,7 @@ interface IUser {
     following: mongoose.Types.ObjectId[];
 }
 
+// who to follow
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('user');
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
             message: 'Internal Server Error'
         }, { status: httpStatus.INTERNAL_SERVER_ERROR })
     }
-}
+};
 
 export async function PATCH(request: Request) {
     const { follower, following } = await request.json();
