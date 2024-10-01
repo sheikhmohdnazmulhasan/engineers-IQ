@@ -1,18 +1,18 @@
 'use client'
 
 import React from 'react'
-import { Button, Card, CardBody, Avatar, Chip, user } from "@nextui-org/react"
+import { Button, Card, CardBody, Avatar, Chip, user, Spinner } from "@nextui-org/react"
 
 import { ArticlePreview } from '@/components/article_preview'
 import { SidebarSection } from '@/components/home/sidebar_section'
 import useUser from '@/hooks/useUser'
+import useWhoToFollow from '@/hooks/use_who_to_follow'
 
 export default function Home() {
-  const { currentUser, error, isLoading } = useUser();
+  const { currentUser } = useUser();
+  const { whoToFollow } = useWhoToFollow(currentUser?._id as string);
+
   const topics = ['Economics', 'DevOps', 'World', 'Product Management', 'Ethereum', 'Feminism', 'Data Visualization']
-
-  console.log(currentUser);
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,16 +70,17 @@ export default function Home() {
               {currentUser && (
                 <SidebarSection title="Who to follow">
                   <div className="space-y-4">
-                    {['Jane Doe', 'John Smith', 'Alice Johnson'].map((name, index) => (
-                      <div key={index} className="flex items-center justify-between">
+                    {whoToFollow?.map((user, indx) => (
+                      <div key={indx} className="flex items-center justify-between">
                         <div className="flex items-center">
                           <Avatar className="mr-2" size="sm" src={`/placeholder.svg?height=40&width=40`} />
                           <div>
-                            <p className="font-medium">{name}</p>
+                            <p className="font-medium">hello</p>
                             <p className="text-small text-default-500">Short bio here</p>
                           </div>
                         </div>
-                        <Button size="sm" variant="flat">Follow</Button>
+                        <button onClick={() => alert('clinect')} className='hover:text-red-600'>Follow</button>
+                        {/* <Button className='border z-20' size="sm" variant="flat">Follow</Button> */}
                       </div>
                     ))}
                   </div>
