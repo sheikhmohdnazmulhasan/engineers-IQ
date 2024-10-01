@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 import { Button, Card, CardBody, Avatar, Chip, user, Spinner } from "@nextui-org/react"
 
 import { ArticlePreview } from '@/components/article_preview'
 import { SidebarSection } from '@/components/home/sidebar_section'
 import useUser from '@/hooks/useUser'
 import useWhoToFollow from '@/hooks/use_who_to_follow'
+import { IWhoToFollowResponse } from '@/interface/who_to_follow.response.interface'
 
 export default function Home() {
   const { currentUser } = useUser();
@@ -70,17 +71,17 @@ export default function Home() {
               {currentUser && (
                 <SidebarSection title="Who to follow">
                   <div className="space-y-4">
-                    {whoToFollow?.map((user, indx) => (
+                    {whoToFollow?.map((user: IWhoToFollowResponse, indx) => (
                       <div key={indx} className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <Avatar className="mr-2" size="sm" src={`/placeholder.svg?height=40&width=40`} />
+                          <Avatar className="mr-2" size="sm" src={user?.profileImg} />
                           <div>
-                            <p className="font-medium">hello</p>
-                            <p className="text-small text-default-500">Short bio here</p>
+                            <p className="font-medium">{user.name}</p>
+                            <p className="text-small text-default-500">@{user.username}</p>
                           </div>
                         </div>
-                        <button onClick={() => alert('clinect')} className='hover:text-red-600'>Follow</button>
-                        {/* <Button className='border z-20' size="sm" variant="flat">Follow</Button> */}
+
+                        <Button size="sm" variant="flat">Follow</Button>
                       </div>
                     ))}
                   </div>

@@ -27,7 +27,7 @@ export async function GET(request: Request) {
         if (!currentUser || !currentUser.following.length) {
             const whoToFollow = await User.find({
                 _id: { $ne: id }
-            }).select('_id name email isPremiumMember username profileImg')
+            }).select('_id name email isPremiumMember username profileImg').sort({ createdAt: -1 }).limit(3)
 
             return NextResponse.json(whoToFollow, { status: 200 });
         };
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
             _id: {
                 $nin: [...currentUser.following, id]
             }
-        }).select('_id name email isPremiumMember username profileImg')
+        }).select('_id name email isPremiumMember username profileImg').sort({ createdAt: -1 }).limit(3)
 
         return NextResponse.json(userToFollow, { status: 200 });
 

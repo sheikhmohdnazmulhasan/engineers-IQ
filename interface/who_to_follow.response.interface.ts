@@ -3,5 +3,6 @@ export interface IWhoToFollowResponse {
     name: string;
     email: string;
     username: string;
+    profileImg: string;
     isPremiumMember: boolean;
 }
