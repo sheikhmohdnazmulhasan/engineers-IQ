@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { Button, Card, CardBody, Avatar, Chip } from "@nextui-org/react"
+import { toast } from 'sonner'
 
 import { ArticlePreview } from '@/components/article_preview'
 import { SidebarSection } from '@/components/home/sidebar_section'
@@ -9,12 +10,26 @@ import useUser from '@/hooks/useUser'
 import useWhoToFollow from '@/hooks/use_who_to_follow'
 import { IWhoToFollowResponse } from '@/interface/who_to_follow.response.interface'
 import UserName from '@/components/premium_acc_badge'
+import axiosInstance from '@/libs/axiosInstance'
 
 export default function Home() {
   const { currentUser } = useUser();
-  const { whoToFollow } = useWhoToFollow(currentUser?._id as string);
-
+  const { whoToFollow, revalidate } = useWhoToFollow(currentUser?._id as string);
   const topics = ['Economics', 'DevOps', 'World', 'Product Management', 'Ethereum', 'Feminism', 'Data Visualization']
+
+  async function handleFollowNewPerson(id: string) {
+    const payload = {
+      follower: currentUser?._id,
+      following: id
+    }
+
+    const serverRes = await axiosInstance.patch('/follow', payload);
+
+    if (serverRes.status === 200) {
+      revalidate()
+      toast.success('Following');
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,7 +97,7 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <Button size="sm" variant="flat">Follow</Button>
+                        <Button size="sm" variant="flat" onClick={() => handleFollowNewPerson(user?._id)}>Follow</Button>
                       </div>
                     ))}
                   </div>
