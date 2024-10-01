@@ -5,14 +5,39 @@ import httpStatus from "http-status";
 import User from "@/models/users.model";
 import connectMongodb from "@/libs/connect_mongodb";
 
+interface IUser {
+    _id: mongoose.Types.ObjectId;
+    following: mongoose.Types.ObjectId[];
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get('user');
+    const id = searchParams.get('user');
 
-    if (!email) {
+    if (!id) {
         return NextResponse.json({
             message: 'required parameter missing'
         }, { status: httpStatus.BAD_REQUEST })
+    }
+
+    try {
+        await connectMongodb();
+        const currentUser = await User.findById(id).select('following').lean() as IUser;
+
+        if (!currentUser || !currentUser.following.length) {
+            const whoToFollow = await User.find({
+                _id: { $ne: id }
+            }).select('_id name email isPremiumMember username profileImg')
+
+            return NextResponse.json(whoToFollow, { status: 200 });
+        }
+
+        return NextResponse.json({ currentUser })
+
+    } catch (error) {
+        return NextResponse.json({
+            message: 'Internal Server Error'
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR })
     }
 
     return NextResponse.json({
