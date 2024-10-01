@@ -3,6 +3,7 @@ export interface IWhoToFollowResponse {
     name: string;
     email: string;
     username: string;
+    isEmailVerified: boolean;
     profileImg: string;
     isPremiumMember: boolean;
 }

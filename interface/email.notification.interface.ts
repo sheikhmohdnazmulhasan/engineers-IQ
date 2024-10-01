@@ -3,4 +3,5 @@ export interface INotificationEmail {
     receiver_name: string;
     description: string;
     receiver_email: string;
+    [key: string]: unknown;
 }
