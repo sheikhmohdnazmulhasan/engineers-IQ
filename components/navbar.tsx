@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
-import { link as linkStyles, user } from "@nextui-org/theme";
+import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button } from "@nextui-org/react";
@@ -19,9 +19,10 @@ import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon, Logo, VerifiedBadge } from "@/components/icons";
+import { SearchIcon, Logo, WriteIcon } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 import signOut from "@/utils/sign_out_user";
+
 import UserName from "./premium_acc_badge";
 
 export const Navbar = () => {
@@ -74,6 +75,7 @@ export const Navbar = () => {
         <Avatar
           isBordered
           as="button"
+          size="sm"
           className="transition-transform"
           src={currentUser?.profileImg}
         />
@@ -129,6 +131,10 @@ export const Navbar = () => {
           {searchInput}
         </NavbarItem>
 
+        {currentUser && <Link href="/new-story" >
+          <WriteIcon />
+        </Link>}
+
         {isLoading ? <Spinner /> : currentUser ? (
           profileDropdownDesktop
         ) : (
@@ -143,8 +149,11 @@ export const Navbar = () => {
 
       {/* mobile */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        {isLoading ? <Spinner /> : currentUser ? profileDropdownMobile : null}
+        {currentUser && <Link href="/new-story" >
+          <WriteIcon />
+        </Link>}
         <ThemeSwitch />
+        {isLoading ? <Spinner /> : currentUser ? profileDropdownMobile : null}
         <NavbarMenuToggle />
       </NavbarContent>
 
