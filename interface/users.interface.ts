@@ -1,6 +1,16 @@
 import { Document } from 'mongoose';
 
+interface IfollowersAndFollowing {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    isPremiumMember: boolean;
+}
+
+
 export interface IUser extends Document {
+    _id: string;
     name: string;
     email: string;
     username: string;
@@ -10,8 +20,8 @@ export interface IUser extends Document {
     profileImg: string;
     isPremiumMember: boolean;
     isBlocked: boolean;
-    followers: string[];
-    following: string[];
+    followers: IfollowersAndFollowing[];
+    following: IfollowersAndFollowing[];
     createdAt?: Date;
     updatedAt?: Date;
 }
