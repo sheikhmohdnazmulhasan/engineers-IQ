@@ -45,10 +45,6 @@ export async function GET(request: Request) {
             message: 'Internal Server Error'
         }, { status: httpStatus.INTERNAL_SERVER_ERROR })
     }
-
-    return NextResponse.json({
-        message: 'hello'
-    }, { status: 200 })
 }
 
 export async function PATCH(request: Request) {
