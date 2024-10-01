@@ -1,15 +1,20 @@
 'use client'
 
-import React, { use, useEffect, useState } from 'react';
-import { Avatar, Button, Link, user } from "@nextui-org/react";
+import React, { useEffect, useState } from 'react';
+import { Avatar, Button, Link } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
+import { toast } from 'sonner';
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
 import useProfile from '@/hooks/use_profile';
 import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
-import { IfollowersAndFollowing } from '@/interface/user.response.interface';
+import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response.interface';
+import axiosInstance from '@/libs/axiosInstance';
+import { INotificationEmail } from '@/interface/email.notification.interface';
+import sendNotificationEmail from '@/utils/send_notification_email';
+import { useRouter } from 'next/navigation';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -17,14 +22,83 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { currentUser, isLoading: userLoading } = useUser();
     const [flowFlngDisplay, setFlowFlngDisplay] = useState<number>(5);
     const isAlreadyFollowed = profile?.followers.find(xx => xx._id === currentUser?._id);
+    const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
+    const router = useRouter();
+
+    async function handleFollowNewPerson(target: IUserResponse) {
+        setIsActionLoading(true);
+
+        if (!currentUser) {
+            setIsActionLoading(false);
+            router.push(`/auth/login?redirect=/profile/${params.user}`);
+            return
+        }
+
+        const payload = {
+            follower: currentUser?._id,
+            following: target._id
+        }
+
+        try {
+            const serverRes = await axiosInstance.patch('/follow', payload);
+
+            if (serverRes.status === 200) {
+
+                if (currentUser?.isEmailVerified) {
+                    const notificationEmailTempForUser: INotificationEmail = {
+                        subject: "You've Followed Someone!",
+                        receiver_name: currentUser?.name as string,
+                        description: `
+        You are now following ${target.name}! 🎉
+
+        Stay tuned for their latest updates and posts. Don't miss out on their insights and content. 
+        If you want to manage your follow list or check out other users, visit your profile.
+
+        Happy reading!
+    `,
+                        receiver_email: currentUser?.email as string,
+                    };
+
+                    await sendNotificationEmail(notificationEmailTempForUser);
+                }
+
+                if (target?.isEmailVerified) {
+                    const notificationEmailTempForTarget: INotificationEmail = {
+                        subject: "You Have a New Follower!",
+                        receiver_name: target.name as string,
+                        description: `
+        Great news! ${currentUser?.name} has just followed you. 🎉
+
+        They’re excited to see what you’ll be posting next. Keep sharing your amazing content and engage with your followers.
+
+        You can check out their profile or manage your followers by visiting your profile page.
+
+        Keep up the great work!
+    `,
+                        receiver_email: target.email as string,
+                    };
+
+                    await sendNotificationEmail(notificationEmailTempForTarget);
+
+                };
+
+                revalidate();
+                toast.success('Following');
+                setIsActionLoading(false)
+            }
+
+        } catch (error) {
+            toast.error('Something Went Wrong!');
+            revalidate();
+            setIsActionLoading(false)
+        }
+    }
 
     useEffect(() => {
         if (currentUser?.username === params.user) {
             setIsWonProfile(true);
         };
     }, [userLoading]);
-
-    console.log(!!error);
 
     return (
         <>
@@ -56,7 +130,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     <Button className="mt-4" color="primary" size="sm" variant="flat">
                                         Unfollow
                                     </Button>
-                                    : <Button className="mt-4" color="primary" size="sm" variant="flat">
+                                    : <Button className="mt-4" color="primary" isLoading={isActionLoading} size="sm" variant="flat" onClick={() => handleFollowNewPerson(profile as IUserResponse)}>
                                         Follow
                                     </Button>}
 

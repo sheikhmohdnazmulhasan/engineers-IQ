@@ -1,9 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-import { IUser } from '@/interface/users.interface';
+import { TUser } from '@/types/user.type';
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<TUser>({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
@@ -34,6 +34,6 @@ userSchema.methods.toJSON = function () {
     return user;
 }
 
-const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
+const User = mongoose.models.User || mongoose.model<TUser>('User', userSchema);
 
 export default User;

@@ -33,6 +33,7 @@ export default function Login() {
         if (result?.error) {
             setCustomError('Invalid Email or Password!')
             setLoading(false);
+
         } else if (result?.ok) {
             localStorage.setItem('signed_email', data.email)
             setCustomError(null);

@@ -14,10 +14,10 @@ export async function GET(request: Request) {
         if (username) {
             const result = await User.findOne({ username }).populate({
                 path: 'following',
-                select: '_id username name email isPremiumMember profileImg'
+                select: '_id username isEmailVerified name email isPremiumMember profileImg'
             }).populate({
                 path: 'followers',
-                select: '_id username name email isPremiumMember profileImg'
+                select: '_id username isEmailVerified name email isPremiumMember profileImg'
             })
 
             if (!result) {
@@ -36,10 +36,10 @@ export async function GET(request: Request) {
         if (email) {
             const result = await User.findOne({ email }).populate({
                 path: 'following',
-                select: '_id username name email isPremiumMember profileImg'
+                select: '_id username name isEmailVerified email isPremiumMember profileImg'
             }).populate({
                 path: 'followers',
-                select: '_id username name email isPremiumMember profileImg'
+                select: '_id username name isEmailVerified email isPremiumMember profileImg'
             })
 
             return NextResponse.json({
@@ -50,10 +50,10 @@ export async function GET(request: Request) {
 
         const result = await User.find().populate({
             path: 'following',
-            select: '_id username name email isPremiumMember profileImg'
+            select: '_id username name email isEmailVerified isPremiumMember profileImg'
         }).populate({
             path: 'followers',
-            select: '_id username name email isPremiumMember profileImg'
+            select: '_id username name email isEmailVerified isPremiumMember profileImg'
         })
 
         return NextResponse.json({
