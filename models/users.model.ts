@@ -8,13 +8,13 @@ const userSchema = new Schema<IUser>({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
     profileImg: { type: String, required: false },
-    password: { type: String, required: true, select: false },  // Exclude password by default
+    password: { type: String, required: true, select: false },
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },
     isBlocked: { type: Boolean, required: true, default: false },
     role: { type: String, enum: ['admin', 'user'], required: true, default: 'user' },
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],  // Array of User IDs for followers
-    following: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],  // Array of User IDs for following
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],
+    following: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],
 }, {
     timestamps: true,
 });
@@ -26,11 +26,6 @@ userSchema.pre('save', async function (next) {
     }
     next();
 });
-
-// Method to populate followers and following fields when getting user data
-userSchema.methods.populateFollowersAndFollowing = async function () {
-    return await this.populate('followers following').execPopulate();
-};
 
 // Custom query to exclude password
 userSchema.methods.toJSON = function () {

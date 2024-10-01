@@ -44,7 +44,7 @@ export async function PATCH(request: Request) {
         session.endSession();
 
         return NextResponse.json({
-            message: 'Successfully updated follower and following relationships'
+            message: 'Successfully created follower and following relationships'
         }, { status: 200 });
 
     } catch (error) {
@@ -104,8 +104,6 @@ export async function DELETE(request: Request) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error("Error in unfollow transaction:", error);
-
         // If an error occurs, rollback by aborting the transaction
         if (session) {
             await session.abortTransaction();

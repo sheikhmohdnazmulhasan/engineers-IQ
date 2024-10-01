@@ -12,7 +12,13 @@ export async function GET(request: Request) {
         await connectMongodb();
 
         if (username) {
-            const result = await User.findOne({ username });
+            const result = await User.findOne({ username }).populate({
+                path: 'following',
+                select: '_id username name email isPremiumMember profileImg'
+            }).populate({
+                path: 'followers',
+                select: '_id username name email isPremiumMember profileImg'
+            })
 
             return NextResponse.json({
                 success: true,
@@ -21,13 +27,32 @@ export async function GET(request: Request) {
         };
 
         if (email) {
-            const result = await User.findOne({ email });
+            const result = await User.findOne({ email }).populate({
+                path: 'following',
+                select: '_id username name email isPremiumMember profileImg'
+            }).populate({
+                path: 'followers',
+                select: '_id username name email isPremiumMember profileImg'
+            })
 
             return NextResponse.json({
                 success: true,
                 data: result
             }, { status: 200 })
         };
+
+        const result = await User.find().populate({
+            path: 'following',
+            select: '_id username name email isPremiumMember profileImg'
+        }).populate({
+            path: 'followers',
+            select: '_id username name email isPremiumMember profileImg'
+        })
+
+        return NextResponse.json({
+            success: true,
+            data: result
+        }, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({
