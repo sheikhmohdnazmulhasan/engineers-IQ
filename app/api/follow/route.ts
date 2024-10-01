@@ -1,8 +1,24 @@
 import { NextResponse } from "next/server";
 import mongoose from 'mongoose';
+import httpStatus from "http-status";
 
 import User from "@/models/users.model";
 import connectMongodb from "@/libs/connect_mongodb";
+
+export async function GET(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('user');
+
+    if (!email) {
+        return NextResponse.json({
+            message: 'required parameter missing'
+        }, { status: httpStatus.BAD_REQUEST })
+    }
+
+    return NextResponse.json({
+        message: 'hello'
+    }, { status: 200 })
+}
 
 export async function PATCH(request: Request) {
     const { follower, following } = await request.json();

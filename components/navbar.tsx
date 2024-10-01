@@ -75,8 +75,8 @@ export const Navbar = () => {
         <Avatar
           isBordered
           as="button"
-          size="sm"
           className="transition-transform"
+          size="sm"
           src={currentUser?.profileImg}
         />
       </DropdownTrigger>

@@ -35,6 +35,7 @@
 		"emailjs-com": "^3.2.0",
 		"framer-motion": "~11.1.1",
 		"heroicons": "^2.1.5",
+		"http-status": "^1.7.4",
 		"intl-messageformat": "^10.5.0",
 		"jsonwebtoken": "^9.0.2",
 		"jwt-decode": "^4.0.0",
