@@ -30,9 +30,15 @@ export async function GET(request: Request) {
             }).select('_id name email isPremiumMember username profileImg')
 
             return NextResponse.json(whoToFollow, { status: 200 });
-        }
+        };
 
-        return NextResponse.json({ currentUser })
+        const userToFollow = await User.find({
+            _id: {
+                $nin: [...currentUser.following, id]
+            }
+        }).select('_id name email isPremiumMember username profileImg')
+
+        return NextResponse.json(userToFollow, { status: 200 });
 
     } catch (error) {
         return NextResponse.json({
