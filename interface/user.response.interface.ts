@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-interface IfollowersAndFollowing {
+export interface IfollowersAndFollowing {
     _id: string;
     name: string;
     email: string;

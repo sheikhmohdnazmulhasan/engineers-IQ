@@ -20,6 +20,13 @@ export async function GET(request: Request) {
                 select: '_id username name email isPremiumMember profileImg'
             })
 
+            if (!result) {
+                return NextResponse.json({
+                    success: false,
+                    message: 'invalid username'
+                }, { status: 500 })
+            }
+
             return NextResponse.json({
                 success: true,
                 data: result

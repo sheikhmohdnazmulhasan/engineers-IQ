@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { IUserResponse } from "@/interface/user.response.interface";
 
 interface UseUserResponse {
-    whoToFollow: IUserResponse | null;
+    profile: IUserResponse | null;
     error: AxiosError | null;
     isLoading: boolean;
     revalidate: () => void;
@@ -25,7 +25,7 @@ const useProfile = (user: string): UseUserResponse => {
     const isLoading = isValidating;
 
     return {
-        whoToFollow: data || null,
+        profile: data || null,
         error: error as AxiosError,
         isLoading,
         revalidate: () => mutate(),
