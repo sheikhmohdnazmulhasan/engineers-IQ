@@ -212,8 +212,7 @@ export default function Profile({ params }: { params: { user: string } }) {
 
         if (event.target.files && event.target.files[0]) {
             console.log(event.target.files[0]);
-        }
-
+        };
 
     }
 
