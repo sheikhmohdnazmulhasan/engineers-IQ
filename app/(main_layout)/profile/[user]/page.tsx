@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -37,7 +39,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
 
-    const { register, handleSubmit, formState: { errors }, } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
     });
 
@@ -182,20 +184,24 @@ export default function Profile({ params }: { params: { user: string } }) {
             if (data.success) {
                 setIsPassChangeLoading(false);
                 onClose();
+                reset();
                 toast.success(data.message);
 
             } else if (data.message === 'Current password is incorrect') {
                 setIsPassChangeLoading(false);
+                reset();
                 setCurrentPasswordError(data.message)
 
             } else {
                 setIsPassChangeLoading(false);
-                onClose()
+                reset();
+                onClose();
                 toast.error(data.message);
             }
 
         } catch (error) {
             setIsPassChangeLoading(false);
+            reset();
             onClose();
             toast.error('Something Bad Happened!');
         };
@@ -319,9 +325,19 @@ export default function Profile({ params }: { params: { user: string } }) {
                                                     </div>
                                                 </div>
 
-                                                <Button isIconOnly aria-label="More options" variant="light">
-                                                    <MoreHorizontal size={16} />
-                                                </Button>
+                                                <Tooltip
+                                                    content={
+                                                        <div className="px-3 py-1">
+                                                            <div className="text-small cursor-pointer hover:scale-105 transition-all" onClick={() => handleUnfollow(following._id)}>Unfollow</div>
+                                                            <div className="text-sm hover:scale-105 transition-all"><Link href={`/profile/${following.username}`}>Visit Profile</Link></div>
+
+                                                        </div>
+                                                    }
+                                                >
+                                                    <Button isIconOnly aria-label="More options" variant="light">
+                                                        <MoreHorizontal size={16} />
+                                                    </Button>
+                                                </Tooltip>
                                             </div>
                                         ))}
                                     </div>
@@ -348,7 +364,19 @@ export default function Profile({ params }: { params: { user: string } }) {
                                                         <p className=" text-gray-600 text-sm">@{follower?.username}</p>
                                                     </div>
                                                 </div>
+                                                <Tooltip
+                                                    content={
+                                                        <div className="px-3 py-1">
+                                                            <div className="text-sm hover:scale-105 transition-all"><Link href={`/profile/${follower.username}`}>Visit Profile</Link></div>
+                                                        </div>
+                                                    }
+                                                >
+                                                    <Button isIconOnly aria-label="More options" variant="light">
+                                                        <MoreHorizontal size={16} />
+                                                    </Button>
+                                                </Tooltip>
                                             </div>
+
                                         ))}
                                     </div>
                                     {profile?.followers && profile?.followers?.length > 5 && (
