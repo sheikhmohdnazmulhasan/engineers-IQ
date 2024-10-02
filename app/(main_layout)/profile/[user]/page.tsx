@@ -34,7 +34,10 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [nameChangedAction, setNameChangedAction] = useState<boolean>(false);
     const [updatedName, setUpdatedName] = useState<string>('');
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
+    const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
+
+    const { register, handleSubmit, formState: { errors }, } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
     });
 
@@ -167,11 +170,35 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     type TFormData = z.infer<typeof userPasswordChangeValidationSchema>
     async function handleChangePassword(data: TFormData) {
-
+        setIsPassChangeLoading(true);
         const auth = encrypt(currentUser?.email as string);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { newPassword2, ...rest } = data;
+        const payload = { ...rest, auth };
 
-        console.log(auth);
+        try {
+            const { data } = await axiosInstance.patch(`/auth/change-password?user=${currentUser?._id}`, payload);
 
+            if (data.success) {
+                setIsPassChangeLoading(false);
+                onClose();
+                toast.success(data.message);
+
+            } else if (data.message === 'Current password is incorrect') {
+                setIsPassChangeLoading(false);
+                setCurrentPasswordError(data.message)
+
+            } else {
+                setIsPassChangeLoading(false);
+                onClose()
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            setIsPassChangeLoading(false);
+            onClose();
+            toast.error('Something Bad Happened!');
+        };
     }
 
     useEffect(() => {
@@ -202,13 +229,19 @@ export default function Profile({ params }: { params: { user: string } }) {
                             <ModalHeader className="flex flex-col gap-1">Change Password</ModalHeader>
                             <ModalBody>
                                 <Input
-                                    label="Old Password"
+                                    label="Current Password"
                                     size='sm'
                                     type="password"
                                     variant="bordered"
                                     {...register('oldPassword')}
-                                    errorMessage={errors.oldPassword?.message as string}
-                                    isInvalid={!!errors.oldPassword}
+                                    errorMessage={currentPasswordError as string}
+                                    isInvalid={!!currentPasswordError}
+                                    onChange={(e) => {
+                                        register('oldPassword').onChange(e);
+                                        if (currentPasswordError) {
+                                            setCurrentPasswordError(null);
+                                        }
+                                    }}
                                 />
                                 <Input
                                     label="New Password"
@@ -230,7 +263,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" type='submit' variant='flat'>
+                                <Button color="primary" isLoading={isPassChangeLoading} type='submit' variant='flat'>
                                     Update Now
                                 </Button>
                             </ModalFooter>
