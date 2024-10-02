@@ -14,7 +14,6 @@ import Loading from '@/components/loading';
 import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response.interface';
 import axiosInstance from '@/libs/axiosInstance';
 import { INotificationEmail } from '@/interface/email.notification.interface';
-import sendNotificationEmail from '@/utils/send_notification_email';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -59,7 +58,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                         receiver_email: currentUser?.email as string,
                     };
 
-                    await sendNotificationEmail(notificationEmailTempForUser);
+                    // await sendNotificationEmail(notificationEmailTempForUser);
                 }
 
                 if (target?.isEmailVerified) {
@@ -78,7 +77,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                         receiver_email: target.email as string,
                     };
 
-                    await sendNotificationEmail(notificationEmailTempForTarget);
+                    // await sendNotificationEmail(notificationEmailTempForTarget);
 
                 };
 
@@ -92,6 +91,29 @@ export default function Profile({ params }: { params: { user: string } }) {
             revalidate();
             setIsActionLoading(false)
         }
+    };
+
+    async function handleUnfollow(target: string) {
+        setIsActionLoading(true);
+
+        const payload = {
+            follower: currentUser?._id as string,
+            following: target
+        };
+
+        try {
+            const res = await axiosInstance.put('/follow', payload);
+
+            if (res.status === 200) {
+                revalidate();
+                toast.success('Unfollowed');
+                setIsActionLoading(false)
+            }
+        } catch (error) {
+            revalidate();
+            toast.error('Something Bad Happened!');
+            setIsActionLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -102,14 +124,14 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     return (
         <>
-            {isLoading && <Loading />}
+            {isLoading && userLoading && <Loading />}
             {!isLoading && !!error && (
                 <div className="text-center mt-20">
                     <p>User Not Found</p>
                 </div>
             )}
 
-            {!isLoading && !error && (
+            {!error && (
                 <div className="container mx-auto max-w-7xl">
                     <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -127,7 +149,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 Edit profile
                             </Button> :
                                 isAlreadyFollowed ?
-                                    <Button className="mt-4" color="primary" size="sm" variant="flat">
+                                    <Button className="mt-4" color="primary" isLoading={isActionLoading} size="sm" variant="flat" onClick={() => handleUnfollow(profile?._id as string)}>
                                         Unfollow
                                     </Button>
                                     : <Button className="mt-4" color="primary" isLoading={isActionLoading} size="sm" variant="flat" onClick={() => handleFollowNewPerson(profile as IUserResponse)}>

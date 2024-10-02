@@ -106,7 +106,7 @@ export async function PATCH(request: Request) {
 };
 
 // unfollow
-export async function DELETE(request: Request) {
+export async function PUT(request: Request) {
     const { follower, following } = await request.json();
 
     let session: mongoose.ClientSession | null = null;
