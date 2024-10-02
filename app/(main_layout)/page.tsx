@@ -105,10 +105,37 @@ export default function Home() {
               tags={['Productivity', 'Self Improvement']}
               title="Nine things you gotta stop doing if you want more focus"
             />
+            <ArticlePreview
+              author={{ name: "Alex Mathers", avatar: "/placeholder.svg?height=40&width=40" }}
+              date="2d ago"
+              image="https://plus.unsplash.com/premium_photo-1685086785054-d047cdc0e525?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              readTime={5}
+              snippet="What even is 'focus'? It's a term we throw around a lot, but do we really understand what it means to be focused? In this article, we'll explore the concept of focus and how to achieve it in your daily life."
+              tags={['Productivity', 'Self Improvement']}
+              title="Nine things you gotta stop doing if you want more focus"
+            />
+            <ArticlePreview
+              author={{ name: "Alex Mathers", avatar: "/placeholder.svg?height=40&width=40" }}
+              date="2d ago"
+              image="https://plus.unsplash.com/premium_photo-1685086785054-d047cdc0e525?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              readTime={5}
+              snippet="What even is 'focus'? It's a term we throw around a lot, but do we really understand what it means to be focused? In this article, we'll explore the concept of focus and how to achieve it in your daily life."
+              tags={['Productivity', 'Self Improvement']}
+              title="Nine things you gotta stop doing if you want more focus"
+            />
+            <ArticlePreview
+              author={{ name: "Alex Mathers", avatar: "/placeholder.svg?height=40&width=40" }}
+              date="2d ago"
+              image="https://plus.unsplash.com/premium_photo-1685086785054-d047cdc0e525?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              readTime={5}
+              snippet="What even is 'focus'? It's a term we throw around a lot, but do we really understand what it means to be focused? In this article, we'll explore the concept of focus and how to achieve it in your daily life."
+              tags={['Productivity', 'Self Improvement']}
+              title="Nine things you gotta stop doing if you want more focus"
+            />
           </div>
           <div className="w-full lg:w-1/3">
             <div className="sticky top-20">
-              <SidebarSection title="Staff Picks">
+              <SidebarSection title="System Picks">
                 <Card className="mb-2">
                   <CardBody>
                     <h4 className="font-semibold">How I Burned My Resume and Built a New Career</h4>

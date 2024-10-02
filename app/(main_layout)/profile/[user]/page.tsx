@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ import { IoMdSave } from "react-icons/io";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { CiCamera } from "react-icons/ci";
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
@@ -205,6 +206,15 @@ export default function Profile({ params }: { params: { user: string } }) {
             onClose();
             toast.error('Something Bad Happened!');
         };
+    };
+
+    async function handleChangeProfilePicture(event: ChangeEvent<HTMLInputElement>) {
+
+        if (event.target.files && event.target.files[0]) {
+            console.log(event.target.files[0]);
+        }
+
+
     }
 
     useEffect(() => {
@@ -284,11 +294,31 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                         {/* Left Column: Profile Info for mobile, Right for large screens */}
                         <div className="lg:order-2 lg:col-span-1 order-1">
-                            <Avatar
-                                alt={profile?.name}
-                                className="w-24 h-24 mb-3 mt-4"
-                                src={profile?.profileImg}
-                            />
+                            <div className="relative group">
+                                <Avatar
+                                    alt={profile?.name}
+                                    className="w-24 h-24 mb-3 mt-4"
+                                    src={profile?.profileImg}
+                                />
+                                {isWonProfile && <>
+                                    <label
+                                        className="absolute w-24 inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-100 transition-opacity duration-300 cursor-pointer rounded-full"
+                                        htmlFor="profile-picture"
+                                    >
+                                        {/* <span className="text-white">Change</span> */}
+                                        <CiCamera className='mt-10' size={20} />
+                                    </label>
+                                    <input
+                                        accept="image/*"
+                                        className="hidden"
+                                        id="profile-picture"
+                                        type="file"
+                                        onChange={handleChangeProfilePicture}
+                                    />
+                                </>}
+                            </div>
+
+
                             <div className="flex gap-3 items-center">
                                 {nameChangedAction ?
                                     <input className='border rounded-md py-1 px-2' defaultValue={profile?.name} type="text" onChange={(e) => setUpdatedName(e.target.value)} />
