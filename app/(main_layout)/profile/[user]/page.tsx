@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, Button, Link } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
@@ -14,7 +15,6 @@ import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response
 import axiosInstance from '@/libs/axiosInstance';
 import { INotificationEmail } from '@/interface/email.notification.interface';
 import sendNotificationEmail from '@/utils/send_notification_email';
-import { useRouter } from 'next/navigation';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);

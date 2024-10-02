@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { signIn } from 'next-auth/react';
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { loginValidationSchema } from "@/validations/login.validation";
 import Loading from "@/components/loading";
@@ -13,7 +13,9 @@ import Loading from "@/components/loading";
 export default function Login() {
     const [customError, setCustomError] = useState<null | string>(null)
     const [loading, setLoading] = useState<boolean>(false);
-    const router = useRouter()
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
 
     const { handleSubmit, register, formState: { errors } } = useForm({
         resolver: zodResolver(loginValidationSchema) // Using Zod for form validation
@@ -39,8 +41,11 @@ export default function Login() {
             setCustomError(null);
             setLoading(false);
 
-            // Redirect to a protected page (or home)
-            router.push('/'); // Change this to your protected page
+            if (redirect) {
+                router.push(redirect);
+            } else {
+                router.push('/');
+            }
         }
     };
 
