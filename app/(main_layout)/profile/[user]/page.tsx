@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Checkbox, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
-import { LockIcon, MoreHorizontal } from "lucide-react";
+import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { FaPen } from "react-icons/fa6";
 import { IoMdSave } from "react-icons/io";
+import { useForm } from 'react-hook-form';
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
@@ -17,6 +18,8 @@ import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response
 import axiosInstance from '@/libs/axiosInstance';
 import { INotificationEmail } from '@/interface/email.notification.interface';
 import sendNotificationEmail from '@/utils/send_notification_email';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { userPasswordChangeValidationSchema } from '@/validations/user.password_change.validation';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -27,7 +30,10 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
     const [nameChangedAction, setNameChangedAction] = useState<boolean>(false);
     const [updatedName, setUpdatedName] = useState<string>('');
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(userPasswordChangeValidationSchema)
+    });
 
     const router = useRouter();
 
@@ -156,6 +162,12 @@ export default function Profile({ params }: { params: { user: string } }) {
         }
     }
 
+    async function handleChangePassword(data) {
+        console.log(data);
+    }
+
+    console.log(errors);
+
     useEffect(() => {
         if (currentUser?.username === params.user) {
             setIsWonProfile(true);
@@ -173,42 +185,45 @@ export default function Profile({ params }: { params: { user: string } }) {
 
             <Modal
                 isOpen={isOpen}
-                placement="top-center"
+                placement="auto"
                 size='lg'
                 onOpenChange={onOpenChange}
             >
-                <ModalContent >
-                    {(onClose) => (
+                <form onSubmit={handleSubmit(handleChangePassword)}>
+                    <ModalContent >
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Log in</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">Change Password</ModalHeader>
                             <ModalBody>
                                 <Input
                                     label="Old Password"
                                     size='sm'
                                     type="password"
                                     variant="bordered"
+                                    {...register('oldPassword')}
                                 />
                                 <Input
-                                    label="Old Password"
+                                    label="New Password"
                                     size='sm'
                                     type="password"
                                     variant="bordered"
+                                    {...register('newPassword')}
                                 />
                                 <Input
-                                    label="Old Password"
+                                    label="Confirm New Password"
                                     size='sm'
                                     type="password"
                                     variant="bordered"
+                                    {...register('newPassword2')}
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" onPress={onClose}>
+                                <Button color="primary" type='submit'>
                                     Update Now
                                 </Button>
                             </ModalFooter>
                         </>
-                    )}
-                </ModalContent>
+                    </ModalContent>
+                </form>
             </Modal>
 
             {!error && (
