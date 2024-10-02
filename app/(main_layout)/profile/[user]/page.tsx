@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 'use client'
@@ -26,6 +27,7 @@ import sendNotificationEmail from '@/utils/send_notification_email';
 import { userPasswordChangeValidationSchema } from '@/validations/user.password_change.validation';
 import { encrypt } from '@/utils/text_encryptor';
 import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
+import sendAccountVerificationEmail from '@/utils/send_account_verification_email';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -241,6 +243,21 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     }
 
+    async function handleResendEmail() {
+        const loading = toast.loading('Email Sending...');
+
+        try {
+            const emailRes = await sendAccountVerificationEmail({ email: currentUser?.email as string });
+            if (emailRes?.status === 200) {
+                toast.success('Email Send. Plz Check Your Inbox and Spam Folder', { id: loading });
+            } else {
+                toast.error('Failed To Resend Email. Try Again!', { id: loading })
+            };
+        } catch (error) {
+            toast.error('Something Went Wrong', { id: loading })
+        }
+    };
+
     useEffect(() => {
         if (currentUser?.username === params.user) {
             setIsWonProfile(true);
@@ -314,6 +331,12 @@ export default function Profile({ params }: { params: { user: string } }) {
 
             {!error && (
                 <div className="container mx-auto max-w-7xl">
+                    {isWonProfile && !currentUser?.isEmailVerified &&
+                        <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
+                            Action Required: Verify your email to start writing article! <span className='ml-2 underline hover:cursor-pointer' onClick={handleResendEmail}>Resent Verification Email</span>
+                        </div>
+                    }
+
                     <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                         {/* Left Column: Profile Info for mobile, Right for large screens */}
@@ -448,11 +471,17 @@ export default function Profile({ params }: { params: { user: string } }) {
                         {/* Right Column: Content for mobile, Left for large screens */}
                         <div className="lg:order-1 lg:col-span-2 order-2">
                             <div className="flex flex-col items-start mb-8">
-                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">Sheikh Mohammad Nazmul H.</h1>
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">{profile?.name}</h1>
                                 <div className="flex mt-4 space-x-4">
-                                    <Link className="font-medium cursor-pointer" color="foreground">Home</Link>
-                                    <p className='cursor-pointer' color="foreground">Lists</p>
-                                    <p className='cursor-pointer' color="foreground ">About</p>
+                                    <Link className="font-medium underline cursor-pointer" color="foreground">Home</Link>
+                                    {isWonProfile ? <>
+                                        <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Draft</p>
+                                        <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Analytics</p>
+                                    </> :
+                                        <>
+                                            <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Lists</p>
+                                            <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>About</p>
+                                        </>}
                                 </div>
                             </div>
                             <ArticlePreview

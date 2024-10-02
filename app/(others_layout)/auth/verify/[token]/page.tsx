@@ -70,7 +70,7 @@ export default function Verify({ params }: { params: { token: string } }) {
                     </CardBody>
                     <CardFooter className="flex justify-center">
                         {data && (
-                            <Link href={'/profile'}><Button color="default">Go to Profile</Button></Link>
+                            <Link href={'/'}><Button color="default">Go to Home</Button></Link>
                         )}
                         {!isLoading && error && (
                             <Button color="danger" variant="flat" onClick={handleResentEmail}>Resend Verification</Button>
