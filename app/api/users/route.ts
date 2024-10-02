@@ -72,27 +72,40 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const user = searchParams.get('user');
-    const data = await request.json();
+    const { name, profileImg } = await request.json();
 
-    try {
-        const result = await User.findByIdAndUpdate(user, data);
+    if (name || profileImg) {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const updatedData: any = {};
+            if (name) updatedData.name = name;
+            if (profileImg) updatedData.profileImg = profileImg;
 
-        if (!result) {
+            const result = await User.findByIdAndUpdate(user, updatedData, { new: true });
+
+            if (!result) {
+                return NextResponse.json({
+                    success: false,
+                    message: 'Failed to update user'
+                }, { status: 400 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                message: 'User Updated Successfully'
+            }, { status: 200 });
+
+        } catch (error) {
             return NextResponse.json({
                 success: false,
-                message: 'failed to update user'
-            }, { status: 400 })
+                message: 'Something went wrong'
+            }, { status: 500 });
         }
 
-        return NextResponse.json({
-            success: true,
-            message: 'User Updated Successfully'
-        }, { status: 200 })
-
-    } catch (error) {
+    } else {
         return NextResponse.json({
             success: false,
-            message: 'something went wrong'
-        }, { status: 500 })
+            message: 'Bad request: No valid fields to update'
+        }, { status: 400 });
     }
 }
