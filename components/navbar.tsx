@@ -60,7 +60,7 @@ export const Navbar = () => {
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
         <DropdownItem key='settings' color="secondary" >
-          <Link href="/profile">Profile Settings</Link>
+          <Link href={`/profile/${currentUser?.username}`}>Browse Profile</Link>
         </DropdownItem>
         <DropdownItem key="logout" color="danger" onClick={() => signOut()}>
           Log Out
@@ -86,7 +86,7 @@ export const Navbar = () => {
           <p className="font-semibold">{`@${currentUser?.username}`}</p>
         </DropdownItem>
         <DropdownItem key='settings' color="secondary" >
-          <Link href="/profile">Profile Settings</Link>
+          <Link href={`/profile/${currentUser?.username}`}>Browse Profile</Link>
         </DropdownItem>
         <DropdownItem key="logout" color="danger" onClick={() => signOut()}>
           Log Out

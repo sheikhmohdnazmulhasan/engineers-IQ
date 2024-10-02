@@ -12,7 +12,7 @@ import { Providers } from "../providers";
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    template: `%s - Articles for Engineers`,
   },
   description: siteConfig.description,
 };
@@ -39,7 +39,7 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="">
+          <div>
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6">
               {children}

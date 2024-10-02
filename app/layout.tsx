@@ -13,7 +13,7 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
     title: {
         default: siteConfig.name,
-        template: `%s - ${siteConfig.name}`,
+        template: `%s - Articles for Engineers`,
     },
     description: siteConfig.description,
 };
