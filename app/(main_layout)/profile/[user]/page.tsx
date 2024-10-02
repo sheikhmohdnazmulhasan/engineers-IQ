@@ -20,6 +20,7 @@ import { INotificationEmail } from '@/interface/email.notification.interface';
 import sendNotificationEmail from '@/utils/send_notification_email';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userPasswordChangeValidationSchema } from '@/validations/user.password_change.validation';
+import { z } from 'zod';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -162,11 +163,11 @@ export default function Profile({ params }: { params: { user: string } }) {
         }
     }
 
-    async function handleChangePassword(data) {
+    type TFormData = z.infer<typeof userPasswordChangeValidationSchema>
+    async function handleChangePassword(data: TFormData) {
         console.log(data);
-    }
 
-    console.log(errors);
+    }
 
     useEffect(() => {
         if (currentUser?.username === params.user) {
@@ -187,9 +188,10 @@ export default function Profile({ params }: { params: { user: string } }) {
                 isOpen={isOpen}
                 placement="auto"
                 size='lg'
+                backdrop='blur'
                 onOpenChange={onOpenChange}
             >
-                <form onSubmit={handleSubmit(handleChangePassword)}>
+                <form onSubmit={handleSubmit((data) => handleChangePassword(data as TFormData))}>
                     <ModalContent >
                         <>
                             <ModalHeader className="flex flex-col gap-1">Change Password</ModalHeader>
@@ -200,6 +202,8 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     type="password"
                                     variant="bordered"
                                     {...register('oldPassword')}
+                                    errorMessage={errors.oldPassword?.message as string}
+                                    isInvalid={!!errors.oldPassword}
                                 />
                                 <Input
                                     label="New Password"
@@ -207,6 +211,8 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     type="password"
                                     variant="bordered"
                                     {...register('newPassword')}
+                                    errorMessage={errors.newPassword?.message as string}
+                                    isInvalid={!!errors.newPassword}
                                 />
                                 <Input
                                     label="Confirm New Password"
@@ -214,10 +220,12 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     type="password"
                                     variant="bordered"
                                     {...register('newPassword2')}
+                                    errorMessage={errors.newPassword2?.message as string}
+                                    isInvalid={!!errors.newPassword2}
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" type='submit'>
+                                <Button color="primary" variant='flat' type='submit'>
                                     Update Now
                                 </Button>
                             </ModalFooter>
