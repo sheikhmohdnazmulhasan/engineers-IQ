@@ -125,8 +125,15 @@ export default function Profile({ params }: { params: { user: string } }) {
     async function handleNameChange() {
         if (!updatedName) {
             setNameChangedAction(false);
-            return
+            return;
         };
+
+        if (updatedName.length > 30) {
+            toast.error('Name cannot be more than 30 characters!');
+            setNameChangedAction(false);
+            setUpdatedName('');
+            return;
+        }
 
         const loading = toast.loading('Working...');
 
@@ -142,7 +149,7 @@ export default function Profile({ params }: { params: { user: string } }) {
             };
 
         } catch (error) {
-            toast.success('Something Bad Happened', { id: loading });
+            toast.error('Something Bad Happened', { id: loading });
             setNameChangedAction(false);
             setUpdatedName('');
         }
