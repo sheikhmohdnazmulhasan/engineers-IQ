@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { FaPen } from "react-icons/fa6";
 import { IoMdSave } from "react-icons/io";
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
@@ -18,9 +20,9 @@ import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response
 import axiosInstance from '@/libs/axiosInstance';
 import { INotificationEmail } from '@/interface/email.notification.interface';
 import sendNotificationEmail from '@/utils/send_notification_email';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { userPasswordChangeValidationSchema } from '@/validations/user.password_change.validation';
-import { z } from 'zod';
+import { encrypt } from '@/utils/text_encryptor';
+
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -165,7 +167,10 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     type TFormData = z.infer<typeof userPasswordChangeValidationSchema>
     async function handleChangePassword(data: TFormData) {
-        console.log(data);
+
+        const auth = encrypt(currentUser?.email as string);
+
+        console.log(auth);
 
     }
 
@@ -185,10 +190,10 @@ export default function Profile({ params }: { params: { user: string } }) {
             )}
 
             <Modal
+                backdrop='blur'
                 isOpen={isOpen}
                 placement="auto"
                 size='lg'
-                backdrop='blur'
                 onOpenChange={onOpenChange}
             >
                 <form onSubmit={handleSubmit((data) => handleChangePassword(data as TFormData))}>
@@ -225,7 +230,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" variant='flat' type='submit'>
+                                <Button color="primary" type='submit' variant='flat'>
                                     Update Now
                                 </Button>
                             </ModalFooter>

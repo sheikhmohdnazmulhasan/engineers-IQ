@@ -8,7 +8,7 @@ const userSchema = new Schema<TUser>({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
     profileImg: { type: String, required: false },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true, select: false },  // Password is excluded by default
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },
     isBlocked: { type: Boolean, required: true, default: false },
@@ -27,12 +27,17 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-// Custom query to exclude password
+// Custom method to exclude password from the response
 userSchema.methods.toJSON = function () {
     const user = this.toObject();
-    delete user.password
+    delete user.password;
     return user;
-}
+};
+
+// Static method for verifying password
+userSchema.methods.verifyPassword = async function (candidatePassword: string) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.models.User || mongoose.model<TUser>('User', userSchema);
 
