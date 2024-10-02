@@ -21,7 +21,7 @@ import sendNotificationEmail from '@/utils/send_notification_email';
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
     const { profile, error, isLoading, revalidate } = useProfile(params.user);
-    const { currentUser, isLoading: userLoading } = useUser();
+    const { currentUser, isLoading: userLoading, revalidate: userRevalidate } = useUser();
     const [flowFlngDisplay, setFlowFlngDisplay] = useState<number>(5);
     const isAlreadyFollowed = profile?.followers.find(xx => xx._id === currentUser?._id);
     const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
@@ -128,11 +128,25 @@ export default function Profile({ params }: { params: { user: string } }) {
             return
         };
 
-        const res = await axiosInstance.patch(`/users?user=${currentUser?._id}`, { name: updatedName });
+        const loading = toast.loading('Working...');
 
-        console.log(res.status);
+        try {
+            const res = await axiosInstance.patch(`/users?user=${currentUser?._id}`, { name: updatedName });
+
+            if (res.status == 200) {
+                revalidate();
+                userRevalidate();
+                toast.success('Profile Name Updated', { id: loading });
+                setNameChangedAction(false);
+                setUpdatedName('');
+            };
+
+        } catch (error) {
+            toast.success('Something Bad Happened', { id: loading });
+            setNameChangedAction(false);
+            setUpdatedName('');
+        }
     }
-
 
     useEffect(() => {
         if (currentUser?.username === params.user) {
@@ -163,7 +177,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                             <div className="flex gap-3 items-center">
                                 {nameChangedAction ?
                                     <input className='border rounded-md py-1 px-2' defaultValue={profile?.name} type="text" onChange={(e) => setUpdatedName(e.target.value)} />
-                                    : <UserName isPremium={!profile?.isPremiumMember} name={profile?.name} />}
+                                    : <UserName isPremium={profile?.isPremiumMember} name={profile?.name} />}
 
                                 {isWonProfile && !nameChangedAction && <FaPen className='cursor-pointer hover:transition-all hover:scale-105 hover:text-sky-600' size={13} onClick={() => setNameChangedAction(true)} />}
                                 {isWonProfile && nameChangedAction && <IoMdSave className='cursor-pointer hover:transition-all hover:scale-105 hover:text-sky-600' size={20} onClick={handleNameChange} />}

@@ -8,6 +8,7 @@ interface UseUserResponse {
     currentUser: IUserResponse | null;
     error: AxiosError | null;
     isLoading: boolean;
+    revalidate: () => void
 }
 
 const useUser = (): UseUserResponse => {
@@ -18,14 +19,14 @@ const useUser = (): UseUserResponse => {
         return response.data.data;
     };
 
-    const { data, error, isValidating } = useSWR<IUserResponse>(
+    const { data, error, isValidating, mutate } = useSWR<IUserResponse>(
         signed_email ? `/api/users?email=${signed_email}` : null,
         fetcher
     );
 
     const isLoading = isValidating;
 
-    return { currentUser: data || null, error: error as AxiosError, isLoading };
+    return { currentUser: data || null, error: error as AxiosError, isLoading, revalidate: () => mutate() };
 };
 
 export default useUser;
