@@ -25,6 +25,7 @@ import { INotificationEmail } from '@/interface/email.notification.interface';
 import sendNotificationEmail from '@/utils/send_notification_email';
 import { userPasswordChangeValidationSchema } from '@/validations/user.password_change.validation';
 import { encrypt } from '@/utils/text_encryptor';
+import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -209,9 +210,33 @@ export default function Profile({ params }: { params: { user: string } }) {
     };
 
     async function handleChangeProfilePicture(event: ChangeEvent<HTMLInputElement>) {
+        const loading = toast.success('Profile Picture Uploading...');
 
         if (event.target.files && event.target.files[0]) {
-            console.log(event.target.files[0]);
+            try {
+                const imgBbResponse = await uploadImageToImgBb(event.target.files[0]);
+
+                if (imgBbResponse.success) {
+                    const serverRes = await axiosInstance.patch(`users?user=${currentUser?._id}`, {
+                        profileImg: imgBbResponse.url
+                    });
+
+                    if (serverRes.data.success) {
+                        toast.success('Profile Picture Updated!', { id: loading });
+                        userRevalidate();
+                        revalidate();
+
+                    } else {
+                        toast.error('Failed to update profile picture (753)', { id: loading })
+                    };
+
+                } else {
+                    toast.error('Failed to update profile picture (754)', { id: loading });
+                }
+
+            } catch (error) {
+                toast.error('Something went wrong', { id: loading });
+            };
         };
 
     }
