@@ -126,9 +126,11 @@ export default function Profile({ params }: { params: { user: string } }) {
         if (!updatedName) {
             setNameChangedAction(false);
             return
-        }
+        };
 
-        console.log(updatedName);
+        const res = await axiosInstance.patch(`/users?user=${currentUser?._id}`, { name: updatedName });
+
+        console.log(res.status);
     }
 
 
