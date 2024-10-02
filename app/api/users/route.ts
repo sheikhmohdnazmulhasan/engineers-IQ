@@ -67,4 +67,32 @@ export async function GET(request: Request) {
             data: null
         }, { status: 500 })
     }
+};
+
+export async function PATCH(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const user = searchParams.get('user');
+    const data = await request.json();
+
+    try {
+        const result = await User.findByIdAndUpdate(user, data);
+
+        if (!result) {
+            return NextResponse.json({
+                success: false,
+                message: 'failed to update user'
+            }, { status: 400 })
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'User Updated Successfully'
+        }, { status: 200 })
+
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: 'something went wrong'
+        }, { status: 500 })
+    }
 }
