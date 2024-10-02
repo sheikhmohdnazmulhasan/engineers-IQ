@@ -5,6 +5,8 @@ import { Avatar, Button, Link } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { FaPen } from "react-icons/fa6";
+import { IoMdSave } from "react-icons/io";
 
 import { ArticlePreview } from '@/components/article_preview';
 import UserName from '@/components/premium_acc_badge';
@@ -14,6 +16,7 @@ import Loading from '@/components/loading';
 import { IfollowersAndFollowing, IUserResponse } from '@/interface/user.response.interface';
 import axiosInstance from '@/libs/axiosInstance';
 import { INotificationEmail } from '@/interface/email.notification.interface';
+import sendNotificationEmail from '@/utils/send_notification_email';
 
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
@@ -22,6 +25,9 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [flowFlngDisplay, setFlowFlngDisplay] = useState<number>(5);
     const isAlreadyFollowed = profile?.followers.find(xx => xx._id === currentUser?._id);
     const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
+    const [nameChangedAction, setNameChangedAction] = useState<boolean>(false);
+    const [updatedName, setUpdatedName] = useState<string>('');
+
     const router = useRouter();
 
     async function handleFollowNewPerson(target: IUserResponse) {
@@ -58,7 +64,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                         receiver_email: currentUser?.email as string,
                     };
 
-                    // await sendNotificationEmail(notificationEmailTempForUser);
+                    await sendNotificationEmail(notificationEmailTempForUser);
                 }
 
                 if (target?.isEmailVerified) {
@@ -77,7 +83,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                         receiver_email: target.email as string,
                     };
 
-                    // await sendNotificationEmail(notificationEmailTempForTarget);
+                    await sendNotificationEmail(notificationEmailTempForTarget);
 
                 };
 
@@ -114,7 +120,17 @@ export default function Profile({ params }: { params: { user: string } }) {
             toast.error('Something Bad Happened!');
             setIsActionLoading(false);
         }
+    };
+
+    async function handleNameChange() {
+        if (!updatedName) {
+            setNameChangedAction(false);
+            return
+        }
+
+        console.log(updatedName);
     }
+
 
     useEffect(() => {
         if (currentUser?.username === params.user) {
@@ -142,7 +158,14 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 className="w-24 h-24 mb-3 mt-4"
                                 src={profile?.profileImg}
                             />
-                            <UserName isPremium={profile?.isPremiumMember} name={profile?.name} />
+                            <div className="flex gap-3 items-center">
+                                {nameChangedAction ?
+                                    <input className='border rounded-md py-1 px-2' defaultValue={profile?.name} type="text" onChange={(e) => setUpdatedName(e.target.value)} />
+                                    : <UserName isPremium={!profile?.isPremiumMember} name={profile?.name} />}
+
+                                {isWonProfile && !nameChangedAction && <FaPen className='cursor-pointer hover:transition-all hover:scale-105 hover:text-sky-600' size={13} onClick={() => setNameChangedAction(true)} />}
+                                {isWonProfile && nameChangedAction && <IoMdSave className='cursor-pointer hover:transition-all hover:scale-105 hover:text-sky-600' size={20} onClick={handleNameChange} />}
+                            </div>
                             <p className=" text-gray-600">@{profile?.username}</p>
 
                             {isWonProfile ? <Button className="mt-4" color="primary" size="sm" variant="flat">
