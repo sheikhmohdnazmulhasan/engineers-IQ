@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Link } from "@nextui-org/react";
-import { MoreHorizontal } from "lucide-react";
+import { Avatar, Button, Checkbox, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { LockIcon, MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { FaPen } from "react-icons/fa6";
@@ -27,6 +27,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
     const [nameChangedAction, setNameChangedAction] = useState<boolean>(false);
     const [updatedName, setUpdatedName] = useState<string>('');
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const router = useRouter();
 
@@ -170,6 +171,51 @@ export default function Profile({ params }: { params: { user: string } }) {
                 </div>
             )}
 
+            <Modal
+                isOpen={isOpen}
+                placement="top-center"
+                onOpenChange={onOpenChange}
+            >
+                <ModalContent className='z-[10000]'>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Log in</ModalHeader>
+                            <ModalBody>
+                                <Input
+                                    endContent={
+                                        <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                                    }
+                                    label="Password"
+                                    placeholder="Enter your password"
+                                    type="password"
+                                    variant="bordered"
+                                />
+                                <div className="flex py-2 px-1 justify-between">
+                                    <Checkbox
+                                        classNames={{
+                                            label: "text-small",
+                                        }}
+                                    >
+                                        Remember me
+                                    </Checkbox>
+                                    <Link color="primary" href="#" size="sm">
+                                        Forgot password?
+                                    </Link>
+                                </div>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="flat" onPress={onClose}>
+                                    Close
+                                </Button>
+                                <Button color="primary" onPress={onClose}>
+                                    Sign in
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
             {!error && (
                 <div className="container mx-auto max-w-7xl">
                     <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -191,8 +237,8 @@ export default function Profile({ params }: { params: { user: string } }) {
                             </div>
                             <p className=" text-gray-600">@{profile?.username}</p>
 
-                            {isWonProfile ? <Button className="mt-4" color="primary" size="sm" variant="flat">
-                                Edit profile
+                            {isWonProfile ? <Button className="mt-4" color="primary" size="sm" variant="flat" onPress={onOpen}>
+                                Update Password
                             </Button> :
                                 isAlreadyFollowed ?
                                     <Button className="mt-4" color="primary" isLoading={isActionLoading} size="sm" variant="flat" onClick={() => handleUnfollow(profile?._id as string)}>
@@ -262,7 +308,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                         </div>
 
                         {/* Right Column: Content for mobile, Left for large screens */}
-                        <div className="lg:order-1 lg:col-span-2 order-2">
+                        {/* <div className="lg:order-1 lg:col-span-2 order-2">
                             <div className="flex flex-col items-start mb-8">
                                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">Sheikh Mohammad Nazmul H.</h1>
                                 <div className="flex mt-4 space-x-4">
@@ -280,7 +326,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 tags={['Productivity', 'Self Improvement']}
                                 title="Nine things you gotta stop doing if you want more focus"
                             />
-                        </div>
+                        </div> */}
                     </main>
                 </div>
             )}
