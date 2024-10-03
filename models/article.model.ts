@@ -1,6 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
-const articleSchema = new Schema({
+import { TArticle } from "@/types/article.type";
+
+const articleSchema = new Schema<TArticle>({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -62,6 +64,6 @@ const articleSchema = new Schema({
     timestamps: true
 });
 
-const Article = mongoose.models.Article || mongoose.model('Article', articleSchema);
+const Article = mongoose.models.Article || mongoose.model<TArticle>('Article', articleSchema);
 
 export default Article;
