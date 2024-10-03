@@ -50,9 +50,9 @@ export async function PATCH(request: Request) {
         await article.save();
 
         return NextResponse.json({
-            message: hasClapped ? 'Clap removed' : 'Clapped successfully',
-            claps: article.claps,
-        });
+            success: true,
+            message: hasClapped ? 'Clap removed' : 'Clapped!',
+        }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({
