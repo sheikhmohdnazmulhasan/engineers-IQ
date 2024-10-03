@@ -2,36 +2,39 @@ import axios from "axios";
 
 interface UploadResponse {
     success: boolean;
-    url: string | null;
+    urls: string[] | null;
     error: Error | null;
 }
 
-async function uploadImageToImgBb(file: File): Promise<UploadResponse> {
-    const img = new FormData();
-    img.append('image', file);
+async function uploadImageToImgBb(files: File[]): Promise<UploadResponse> {
+    const images: string[] = [];
 
     try {
-        const res = await axios.post(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_SECRECT}`, img);
+        for (let i = 0; i < files.length; i++) {
+            const img = new FormData();
+            img.append('image', files[i]);
 
-        if (res.data?.success) {
-            return {
-                success: true,
-                url: res.data?.data?.display_url || null,
-                error: null
-            };
-        } else {
-            return {
-                success: false,
-                url: null,
-                error: new Error('Image upload failed')
-            };
+            const { data } = await axios.post(
+                `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_SECRET}`,
+                img
+            );
+
+            if (data.success) {
+                images.push(data.data?.display_url);
+            }
         }
+
+        return {
+            success: true,
+            urls: images,
+            error: null
+        };
 
     } catch (error) {
         return {
             success: false,
-            url: null,
-            error: error instanceof Error ? error : new Error('An unknown error occurred')
+            urls: null,
+            error: error as Error
         };
     }
 }

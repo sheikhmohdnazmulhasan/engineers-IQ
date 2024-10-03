@@ -212,15 +212,15 @@ export default function Profile({ params }: { params: { user: string } }) {
     };
 
     async function handleChangeProfilePicture(event: ChangeEvent<HTMLInputElement>) {
-        const loading = toast.success('Profile Picture Uploading...');
+        const loading = toast.loading('Profile Picture Uploading...');
 
         if (event.target.files && event.target.files[0]) {
             try {
-                const imgBbResponse = await uploadImageToImgBb(event.target.files[0]);
+                const imgBbResponse = await uploadImageToImgBb(Array.from(event.target.files));
 
                 if (imgBbResponse.success) {
                     const serverRes = await axiosInstance.patch(`users?user=${currentUser?._id}`, {
-                        profileImg: imgBbResponse.url
+                        profileImg: imgBbResponse.urls![0]
                     });
 
                     if (serverRes.data.success) {
