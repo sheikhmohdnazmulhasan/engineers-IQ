@@ -8,7 +8,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Editor, IAllProps } from '@tinymce/tinymce-react'
 import { Input } from '@nextui-org/input';
-import { Button, Checkbox, Select, SelectItem } from '@nextui-org/react';
+import { Button, Checkbox, Select, SelectItem, user } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -17,6 +17,7 @@ import { topicsData } from '@/const/article/topics';
 import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
+import { useCreateArticle } from '@/hooks/operations/hook_oparetion_create_article';
 
 interface EditorInstance {
     getContent: () => string;
@@ -30,6 +31,7 @@ export default function New() {
     const { register, handleSubmit } = useForm();
     const [loading, setLoading] = useState(false);
     const { isLoading, currentUser } = useUser();
+    const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileChange = (event: { target: { files: any; }; }) => {
@@ -71,12 +73,17 @@ export default function New() {
                     if (imgRes.success) {
                         const payload = {
                             ...data,
+                            author: currentUser?._id,
                             description,
                             images: imgRes.urls,
                             topics,
                         };
 
-                        console.log(payload);
+                        handleCreateNewArticleMutation(payload);
+
+                        if (isSuccess) {
+                            setLoading(false)
+                        }
 
                     } else {
                         toast.error('Failed to upload images! Try again');
