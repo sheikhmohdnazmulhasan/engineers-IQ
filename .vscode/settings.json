@@ -1,4 +1,11 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["encryptor", "Flng", "Ifollowers", "unfollow", "unfollowed"]
+  "cSpell.words": [
+    "encryptor",
+    "Flng",
+    "Ifollowers",
+    "TINYMCA",
+    "unfollow",
+    "unfollowed"
+  ]
 }

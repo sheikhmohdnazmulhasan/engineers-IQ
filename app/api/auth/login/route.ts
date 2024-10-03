@@ -10,23 +10,23 @@ export async function POST(request: Request) {
 
     try {
         await connectMongodb();
-        const isEmailExist = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({ email }).select('+password');
 
-        if (!isEmailExist) {
+        if (!user) {
             return NextResponse.json({
                 success: false,
                 message: 'Account does not exist.'
             }, { status: 400 });
         };
 
-        if (isEmailExist.isBlocked) {
+        if (user.isBlocked) {
             return NextResponse.json({
                 success: false,
                 message: 'Account Blocked'
             }, { status: 400 });
         };
 
-        const checkValidPassword = await bcrypt.compare(password, isEmailExist.password);
+        const checkValidPassword = await bcrypt.compare(password, user.password);
 
         if (!checkValidPassword) {
             return NextResponse.json({
@@ -36,23 +36,23 @@ export async function POST(request: Request) {
         };
 
         const accessToken = jwt.sign({
-            email: isEmailExist.email,
-            username: isEmailExist.username,
-            role: isEmailExist.role
+            email: user.email,
+            username: user.username,
+            role: user.role
         }, process.env.NEXT_PUBLIC_JWT_ACCESS_TOKEN_SECRET as string, {
             expiresIn: '1d'
         });
 
         const refreshToken = jwt.sign({
-            email: isEmailExist.email,
-            username: isEmailExist.username,
-            role: isEmailExist.role
+            email: user.email,
+            username: user.username,
+            role: user.role
         }, process.env.NEXT_PUBLIC_JWT_REFRESH_TOKEN_SECRET as string, {
             expiresIn: '30d'
         });
 
-        isEmailExist.lastLogin = new Date();
-        isEmailExist.save();
+        user.lastLogin = new Date();
+        user.save();
 
         return NextResponse.json({
             success: true,
