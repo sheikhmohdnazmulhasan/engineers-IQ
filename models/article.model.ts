@@ -6,7 +6,6 @@ const articleSchema = new Schema<TArticle>({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        unique: true
     },
     title: {
         type: String,
@@ -28,12 +27,12 @@ const articleSchema = new Schema<TArticle>({
         {
             type: String,
             required: true,
-            unique: true
         }
     ],
     clap: {
         type: Number,
-        default: 0
+        default: 0,
+        min: [0, 'Clap count cannot be negative']
     },
     comments: [
         {
@@ -54,7 +53,8 @@ const articleSchema = new Schema<TArticle>({
     ],
     views: {
         type: Number,
-        default: 0
+        default: 0,
+        min: [0, 'views count cannot be negative']
     },
     isPremiumContent: {
         type: Boolean,
