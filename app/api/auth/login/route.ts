@@ -6,7 +6,7 @@ import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
 
 export async function POST(request: Request) {
-    const { email, password } = await request.json()
+    const { email, password } = await request.json();
 
     try {
         await connectMongodb();
@@ -50,6 +50,9 @@ export async function POST(request: Request) {
         }, process.env.NEXT_PUBLIC_JWT_REFRESH_TOKEN_SECRET as string, {
             expiresIn: '30d'
         });
+
+        isEmailExist.lastLogin = new Date();
+        isEmailExist.save();
 
         return NextResponse.json({
             success: true,
