@@ -18,5 +18,6 @@ export interface TArticle extends Document {
     clap: number;
     comments: IComment[];
     views: number;
+    shares: number;
     isPremiumContent: boolean;
 }

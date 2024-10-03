@@ -56,6 +56,11 @@ const articleSchema = new Schema<TArticle>({
         default: 0,
         min: [0, 'views count cannot be negative']
     },
+    shares: {
+        type: Number,
+        default: 0,
+        min: [0, 'views count cannot be negative']
+    },
     isPremiumContent: {
         type: Boolean,
         default: false
