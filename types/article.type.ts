@@ -9,13 +9,13 @@ interface IComment {
 
 // Define the interface for the Article document
 export interface TArticle extends Document {
-    user: Types.ObjectId;
+    author: Types.ObjectId;
     title: string;
     description: string;
     images: string[];
     category: string;
     topics: string[];
-    clap: number;
+    clap: Types.ObjectId;
     comments: IComment[];
     views: number;
     shares: number;

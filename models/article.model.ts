@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 import { TArticle } from "@/types/article.type";
 
 const articleSchema = new Schema<TArticle>({
-    user: {
+    author: {
         type: Schema.Types.ObjectId,
         ref: 'User',
     },
@@ -30,9 +30,8 @@ const articleSchema = new Schema<TArticle>({
         }
     ],
     clap: {
-        type: Number,
-        default: 0,
-        min: [0, 'Clap count cannot be negative']
+        type: Schema.Types.ObjectId,
+        ref: "User"
     },
     comments: [
         {
