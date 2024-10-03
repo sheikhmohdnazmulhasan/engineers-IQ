@@ -2,10 +2,12 @@
 
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 import Article from "@/models/article.model";
 import connectMongodb from "@/libs/connect_mongodb";
 
+// add comment
 export async function PUT(request: Request) {
     const { searchParams } = new URL(request.url);
     const articleId = searchParams.get('ref');
@@ -13,27 +15,113 @@ export async function PUT(request: Request) {
     try {
         await connectMongodb();
         const payload = await request.json();  // {user: ObjectId, content: string}
+
+        // Validate that the payload has the required fields
+        if (!payload.user || !payload.content) {
+            return NextResponse.json({
+                success: false,
+                message: 'Invalid payload: user and content are required.',
+            }, { status: 400 });
+        }
+
+        // Convert user to ObjectId if it is not already
+        const userObjectId = new mongoose.Types.ObjectId(payload.user);
+
         const article = await Article.findById(articleId).select('comments');
 
         if (!article) {
             return NextResponse.json({
                 message: 'Invalid article ID',
             }, { status: 400 });
-        };
+        }
 
-        article.comments.push(payload);
+        // Add the new comment to the article's comments array
+        article.comments.push({
+            user: userObjectId,
+            content: payload.content,
+            createdAt: new Date(),
+        });
+
+        // Save the updated article document
         await article.save();
 
         return NextResponse.json({
             success: true,
-            message: 'Comment Added Successfully',
+            message: 'Comment added successfully',
         }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({
             success: false,
-            message: 'An error occurred while updating claps on the article',
+            message: 'An error occurred while adding the comment to the article',
             error: error.message,
         }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
-}
+};
+
+// edit comment
+export async function PATCH(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const articleId = searchParams.get('ref');
+
+    try {
+        await connectMongodb();
+        const { commentId, updatedContent, user } = await request.json();
+
+        // Validate that commentId, updatedContent, and user are provided
+        if (!commentId || !updatedContent || !user) {
+            return NextResponse.json({
+                message: 'commentId, updatedContent, and user are required',
+            }, { status: 400 });
+        }
+
+        // Convert commentId to ObjectId
+        const commentObjectId = new mongoose.Types.ObjectId(commentId);
+
+        // Find the article by its ID
+        const article = await Article.findById(articleId).select('comments');
+
+        if (!article) {
+            return NextResponse.json({
+                message: 'Invalid article ID',
+            }, { status: 400 });
+        }
+
+        // Find the targeted comment by its _id
+        const comment = article.comments.id(commentObjectId);
+        console.log(comment);
+
+        if (!comment) {
+            return NextResponse.json({
+                message: 'Comment not found',
+            }, { status: 404 });
+        }
+
+        // Validate that the comment belongs to the user
+        if (String(comment.user) !== String(user)) {
+            return NextResponse.json({
+                message: 'You are not authorized to edit this comment',
+            }, { status: 403 });
+        }
+
+        // Update the content of the targeted comment
+        comment.content = updatedContent;
+        comment.updatedAt = new Date(); // track when the comment was updated
+
+        // Save the updated article
+        await article.save();
+
+        return NextResponse.json({
+            success: true,
+            message: 'Comment updated successfully',
+            updatedComment: comment,
+        }, { status: 200 });
+
+    } catch (error: any) {
+        return NextResponse.json({
+            success: false,
+            message: 'An error occurred while updating the comment',
+            error: error.message,
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+};

@@ -49,7 +49,15 @@ const articleSchema = new Schema<TArticle>({
             clap: {
                 type: Number,
                 default: 0
-            }
+            },
+            createdAt: {
+                type: Date,
+                required: true
+            },
+            updatedAt: {
+                type: Date,
+                required: false
+            },
         }
     ],
     views: {

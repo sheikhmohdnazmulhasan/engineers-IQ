@@ -5,6 +5,8 @@ interface IComment {
     user: Types.ObjectId;
     content: string;
     clap: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 // Define the interface for the Article document
