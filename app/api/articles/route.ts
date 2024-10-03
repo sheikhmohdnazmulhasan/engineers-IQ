@@ -3,12 +3,14 @@ import httpStatus from "http-status";
 import { NextResponse } from "next/server";
 
 import Article from "@/models/article.model";
+import connectMongodb from "@/libs/connect_mongodb";
 
 // Creating new article
 export async function POST(request: Request) {
     const data = await request.json();
 
     try {
+        await connectMongodb();
         const result = await Article.create(data);
 
         if (result) {

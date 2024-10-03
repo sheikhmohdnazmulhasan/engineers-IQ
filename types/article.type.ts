@@ -15,7 +15,7 @@ export interface TArticle extends Document {
     images: string[];
     category: string;
     topics: string[];
-    clap: Types.ObjectId;
+    claps: Types.ObjectId[];
     comments: IComment[];
     views: number;
     shares: number;

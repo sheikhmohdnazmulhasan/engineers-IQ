@@ -29,10 +29,12 @@ const articleSchema = new Schema<TArticle>({
             required: true,
         }
     ],
-    clap: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    },
+    claps: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
     comments: [
         {
             user: {
