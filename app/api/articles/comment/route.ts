@@ -89,7 +89,6 @@ export async function PATCH(request: Request) {
 
         // Find the targeted comment by its _id
         const comment = article.comments.id(commentObjectId);
-        console.log(comment);
 
         if (!comment) {
             return NextResponse.json({

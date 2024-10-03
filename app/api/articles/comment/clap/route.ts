@@ -54,7 +54,6 @@ export async function PATCH(request: Request) {
         } else {
             // Add user's clap
             comment.claps.push(new mongoose.Types.ObjectId(userId));
-            console.log(comment);
         }
 
         await article.save();

@@ -2,6 +2,11 @@
 
 import React, { useRef } from 'react'
 import { Editor, IAllProps } from '@tinymce/tinymce-react'
+import { Input } from '@nextui-org/input';
+import { Select, SelectItem } from '@nextui-org/react';
+
+import { categoriesData } from '@/const/article/categories';
+import { topicsData } from '@/const/article/topics';
 
 interface EditorInstance {
     getContent: () => string;
@@ -23,8 +28,32 @@ export default function PostEditor() {
 
     return (
         <div className="space-y-4">
+            <h1 className='text-3xl'>Publish New Article</h1>
+            <p>EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners. Our diverse user base contributes to a rich ecosystem of knowledge, where everyone has something to learn and something to teach.</p>
+            <form className='pt-5 space-y-4'>
+                <Input isRequired label='Title' size='sm' type='text' />
+                <div className=" md:flex gap-4 space-y-4 md:space-y-0">
+                    <Select
+                        isRequired
+                        selectionMode='multiple'
+                        items={categoriesData}
+                        label="Category"
+                        size='sm'
+                    >
+                        {(category) => <SelectItem key={category.key}>{category.label}</SelectItem>}
+                    </Select>
+                    <Select
+                        isRequired
+                        items={topicsData}
+                        label="Select Topics"
+                        size='sm'
+                    >
+                        {(topic) => <SelectItem key={topic.key}>{topic.label}</SelectItem>}
+                    </Select>
+                </div>
+            </form>
             <Editor
-                apiKey='3j1pmt7nz077ulhorf7nn2ry4gglzag9v36nedumtdoxezsq'
+                apiKey={process.env.NEXT_PUBLIC_TINYMCA_API_KEY}
                 init={{
                     height: 500,
                     menubar: false,
