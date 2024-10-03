@@ -10,6 +10,7 @@ export type TUser = {
     isPremiumMember: boolean;
     isBlocked: boolean;
     role: 'admin' | 'user';
+    lastLogin: Date;
     followers: Types.ObjectId[];
     following: Types.ObjectId[];
 }

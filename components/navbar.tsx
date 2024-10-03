@@ -131,7 +131,7 @@ export const Navbar = () => {
           {searchInput}
         </NavbarItem>
 
-        {currentUser && <Link href="/new-story" >
+        {currentUser && <Link href="/new" >
           <WriteIcon />
         </Link>}
 
@@ -149,7 +149,7 @@ export const Navbar = () => {
 
       {/* mobile */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        {currentUser && <Link href="/new-story" >
+        {currentUser && <Link href="/new" >
           <WriteIcon />
         </Link>}
         <ThemeSwitch />

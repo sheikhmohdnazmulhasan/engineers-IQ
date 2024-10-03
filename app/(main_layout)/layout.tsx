@@ -39,10 +39,12 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div>
+          <div className="">
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-16 px-6">
-              {children}
+              <div className="">
+                {children}
+              </div>
             </main>
             <Footer />
           </div>

@@ -6,15 +6,16 @@ import { TUser } from '@/types/user.type';
 const userSchema = new Schema<TUser>({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    role: { type: String, enum: ['admin', 'user'], required: true, default: 'user' },
     username: { type: String, required: true, unique: true, trim: true },
     profileImg: { type: String, required: false },
-    password: { type: String, required: true, select: false },  // Password is excluded by default
+    password: { type: String, required: true, select: false },
     isEmailVerified: { type: Boolean, required: true, default: false },
     isPremiumMember: { type: Boolean, required: true, default: false },
-    isBlocked: { type: Boolean, required: true, default: false },
-    role: { type: String, enum: ['admin', 'user'], required: true, default: 'user' },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User', unique: true }],
+    isBlocked: { type: Boolean, required: true, default: false },
+    lastLogin: { type: Date, required: false },
 }, {
     timestamps: true,
 });
