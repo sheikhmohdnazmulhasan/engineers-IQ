@@ -10,9 +10,11 @@ import { Editor, IAllProps } from '@tinymce/tinymce-react'
 import { Input } from '@nextui-org/input';
 import { Button, Checkbox, Select, SelectItem } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { categoriesData } from '@/const/article/categories';
 import { topicsData } from '@/const/article/topics';
+import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 
 interface EditorInstance {
     getContent: () => string;
@@ -24,6 +26,7 @@ export default function PostEditor() {
     const [showImagePreview, setShowImagePreview] = useState<string[]>([]);
     const [x, setX] = useState(false);
     const { register, handleSubmit } = useForm();
+    const [loading, setLoading] = useState(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileChange = (event: { target: { files: any; }; }) => {
@@ -52,11 +55,41 @@ export default function PostEditor() {
 
 
     const handleSave: SubmitHandler<FieldValues> = async (data) => {
+
         if (editorRef.current) {
-            const content = editorRef.current.getContent();
+            const description = editorRef.current.getContent();
+            const topics = String(data.topics).split(',');
 
-            console.log(data);
+            if (files && files.length) {
+                setLoading(true);
+                try {
+                    const imgRes = await uploadImageToImgBb(files);
 
+                    if (imgRes.success) {
+                        const payload = {
+                            ...data,
+                            description,
+                            images: imgRes.urls,
+                            topics,
+                        };
+
+                        console.log(payload);
+
+                    } else {
+                        toast.error('Failed to upload images! Try again');
+                        setLoading(false)
+                    }
+
+                } catch (error) {
+                    toast.error('Something Bad Happened!');
+                    setLoading(false)
+                    console.log(error);
+                }
+
+            } else {
+                toast.error('Select At last one Image');
+                setLoading(false);
+            }
         }
     }
 
@@ -144,7 +177,7 @@ export default function PostEditor() {
                 <Checkbox {...register('isPremiumContent')}>Publish as Premium</Checkbox>
                 <div className=" md:flex gap-4 space-y-4 md:space-y-0 mt-4 md:mt-0">
                     <Button className='block w-full' color="primary" variant="bordered">Save Draft</Button>
-                    <Button className='block w-full' color="primary" type='submit'>Publish Now</Button>
+                    <Button className='block w-full' color="primary" isLoading={loading} type='submit'>Publish Now</Button>
                 </div>
             </div>
         </form>
