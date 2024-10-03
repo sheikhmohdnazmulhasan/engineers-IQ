@@ -125,3 +125,63 @@ export async function PATCH(request: Request) {
         }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
 };
+
+export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const articleId = searchParams.get('ref');
+
+    try {
+        await connectMongodb();
+        const { commentId, user } = await request.json();
+
+        // Validate required fields
+        if (!commentId || !user) {
+            return NextResponse.json({
+                message: 'commentId and user are required',
+            }, { status: 400 });
+        }
+
+        const commentObjectId = new mongoose.Types.ObjectId(commentId);
+
+        // Find the article by its ID
+        const article = await Article.findById(articleId).select('comments');
+
+        if (!article) {
+            return NextResponse.json({
+                message: 'Invalid article ID',
+            }, { status: 400 });
+        }
+
+        // Find the targeted comment
+        const comment = article.comments.id(commentObjectId);
+
+        if (!comment) {
+            return NextResponse.json({
+                message: 'Comment not found',
+            }, { status: 404 });
+        }
+
+        // Validate comment ownership
+        if (String(comment.user) !== String(user)) {
+            return NextResponse.json({
+                message: 'You are not authorized to delete this comment',
+            }, { status: 403 });
+        }
+
+        // Remove the comment using `pull()`
+        article.comments.pull(commentObjectId);
+        await article.save();
+
+        return NextResponse.json({
+            success: true,
+            message: 'Comment deleted successfully',
+        }, { status: 200 });
+
+    } catch (error: any) {
+        return NextResponse.json({
+            success: false,
+            message: 'An error occurred while deleting the comment',
+            error: error.message,
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+};
