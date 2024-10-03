@@ -46,10 +46,13 @@ const articleSchema = new Schema<TArticle>({
                 type: String,
                 required: true
             },
-            clap: {
-                type: Number,
-                default: 0
-            },
+            claps: [
+                {
+                    type: Schema.Types.ObjectId,
+                    required: false,
+                    ref: 'User'
+                }
+            ],
             createdAt: {
                 type: Date,
                 required: true

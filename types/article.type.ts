@@ -4,7 +4,7 @@ import { Document, Types } from "mongoose";
 interface IComment {
     user: Types.ObjectId;
     content: string;
-    clap: number;
+    claps: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
