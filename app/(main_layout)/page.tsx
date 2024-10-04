@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button, Card, CardBody, Avatar, Chip } from "@nextui-org/react"
+import { Button, Card, CardBody, Avatar, Chip, Input } from "@nextui-org/react"
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { SearchIcon } from 'lucide-react'
 
 import { ArticlePreview } from '@/components/article_preview'
 import { SidebarSection } from '@/components/home/sidebar_section'
@@ -91,9 +92,23 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className='-mt-14'>
       {isLoading && <Loading />}
-      <div className="min-h-screen bg-background">
+      <Input
+        aria-label="Search"
+        classNames={{
+          inputWrapper: "bg-default-100",
+          input: "text-sm",
+        }}
+        labelPlacement="outside"
+        placeholder="Search..."
+        startContent={
+          <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+        }
+        type="search"
+      />
+
+      <div className="min-h-screen bg-background mt-10">
         <div className="container mx-auto">
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-2/3">
@@ -158,6 +173,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
