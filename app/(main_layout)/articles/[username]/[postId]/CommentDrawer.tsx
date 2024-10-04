@@ -3,17 +3,32 @@ import { Heart, X, } from 'lucide-react'
 import { Button, Textarea, Avatar, } from "@nextui-org/react"
 import { AnimatePresence, motion, } from 'framer-motion'
 
-import { Comment } from './page'
+import { IClap, IComment } from '@/interface/articles.response.interface'
+import UserName from '@/components/premium_acc_badge'
+import formatDateReadable from '@/utils/format_date_readable'
+import useUser from '@/hooks/useUser'
 
 interface CommentDrawerProps {
     isOpen: boolean
     onClose: () => void
-    comments: Comment[]
+    comments: IComment[]
     onLikeComment: (index: number) => void
 }
 
 export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, onLikeComment }) => {
-    const [newComment, setNewComment] = useState('')
+    const { currentUser } = useUser();
+    const [newComment, setNewComment] = useState('');
+    // const hasClapped = comments?.some((comment: IComment) => comment.user._id === currentUser?._id);
+
+
+    const hasClapped = comments?.some((comment: IComment) =>
+        comment.claps.some((clap: IClap) => clap._id === currentUser?._id)
+    );
+
+    console.log(hasClapped);
+
+
+
 
     useEffect(() => {
         if (isOpen) {
@@ -27,10 +42,9 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
     }, [isOpen])
 
     const handleSubmitComment = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Here you would typically send the comment to your backend
+        e.preventDefault();
         console.log('New comment:', newComment)
-        setNewComment('')
+        setNewComment('');
     }
 
     return (
@@ -76,12 +90,13 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                         initial={{ opacity: 0, y: 20 }}
                                         transition={{ delay: index * 0.1 }}
                                     >
-                                        <Avatar name={comment.author} src={comment.avatar} />
+                                        <Avatar name={comment.user.name} src={comment.user.profileImg} />
                                         <div className="flex-grow">
-                                            <p className="font-semibold">{comment.author}</p>
-                                            <p className="text-sm text-gray-500">{comment.date}</p>
+                                            <UserName isPremium={comment.user.isPremiumMember} name={comment.user.name} />
+                                            {/* <p className="font-semibold">{comment.user.name}</p> */}
+                                            <p className="text-sm text-gray-500">{formatDateReadable(comment.createdAt)}</p>
                                             <p className="mt-1">{comment.content}</p>
-                                            <Button
+                                            {/* <Button
                                                 className={`mt-2 p-0 ${comment.liked ? 'text-danger' : 'text-gray-500'}`}
                                                 size="sm"
                                                 startContent={<Heart className={`w-4 h-4 ${comment.liked ? 'fill-current text-danger' : ''}`} />}
@@ -89,7 +104,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                 onPress={() => onLikeComment(index)}
                                             >
                                                 {comment.likes}
-                                            </Button>
+                                            </Button> */}
                                         </div>
                                     </motion.div>
                                 ))}

@@ -10,7 +10,7 @@ import DOMPurify from 'dompurify';
 
 import useArticle from '@/hooks/use_articles'
 import Loading from '@/components/loading'
-import { IArticleResponse } from '@/interface/articles.response.interface'
+import { IArticleResponse, IComment } from '@/interface/articles.response.interface'
 import formatDateReadable from '@/utils/format_date_readable'
 import UserName from '@/components/premium_acc_badge'
 
@@ -144,7 +144,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                 </Card>
 
                 <CommentDrawer
-                    comments={comments}
+                    comments={article?.comments as IComment[]}
                     isOpen={isCommentDrawerOpen}
                     onClose={() => setIsCommentDrawerOpen(false)}
                     onLikeComment={handleLikeComment}

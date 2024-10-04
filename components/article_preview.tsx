@@ -14,7 +14,7 @@ export const ArticlePreview = ({ data, fromProfile = false }: { data: IArticleRe
     const { currentUser } = useUser();
 
     return (
-        < Card className="mb-6 relative overflow-hidden" >
+        < Card className="mb-6 px-2 relative overflow-hidden" >
             <CardBody className={data.isPremiumContent && !currentUser?.isPremiumMember ? "blur-sm" : ""}>
                 <Link className="flex items-center mb-2 hover:underline" href={`/profile/${data.author.username}`}>
                     <Avatar className="mr-2" size="sm" src={data?.author?.profileImg} />

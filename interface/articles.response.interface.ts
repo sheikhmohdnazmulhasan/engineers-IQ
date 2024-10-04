@@ -1,4 +1,4 @@
-interface Clap {
+export interface IClap {
     _id: string;
     name: string;
     email: string;
@@ -7,7 +7,7 @@ interface Clap {
     isPremiumMember: boolean;
 }
 
-interface Comment {
+export interface IComment {
     _id: string;
     user: {
         _id: string;
@@ -16,9 +16,10 @@ interface Comment {
         username: string;
         isEmailVerified: boolean;
         isPremiumMember: boolean;
+        profileImg: string;
     };
     content: string;
-    claps: Clap[];
+    claps: IClap[];
     createdAt: string;
 }
 
@@ -41,11 +42,11 @@ export interface IArticleResponse {
     images: string[];
     category: string;
     topics: string[];
-    claps: Clap[];
+    claps: IClap[];
     views: number;
     shares: number;
     isPremiumContent: boolean;
-    comments: Comment[];
+    comments: IComment[];
     createdAt: string;
     updatedAt: string;
 }
