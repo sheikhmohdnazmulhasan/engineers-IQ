@@ -5,10 +5,17 @@ import Image from 'next/image'
 import { Heart, MessageCircle, Share } from 'lucide-react'
 import { Button, Avatar, Card, CardBody } from "@nextui-org/react"
 import { motion, } from 'framer-motion'
+import Link from 'next/link'
+import DOMPurify from 'dompurify';
 
-import { CommentDrawer } from './CommentDrawer'
 import useArticle from '@/hooks/use_articles'
 import Loading from '@/components/loading'
+import { IArticleResponse } from '@/interface/articles.response.interface'
+import formatDateReadable from '@/utils/format_date_readable'
+import UserName from '@/components/premium_acc_badge'
+
+import { CommentDrawer } from './CommentDrawer'
+
 export interface Comment {
     author: string
     avatar: string
@@ -20,8 +27,8 @@ export interface Comment {
 
 const BlogDetails = ({ params }: { params: { postId: string } }) => {
     const { data, isLoading } = useArticle({ _id: params.postId });
+    const article = Array.isArray(data) ? data[0] : data as IArticleResponse | null
     const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
-
 
     const [comments, setComments] = useState<Comment[]>([
         {
@@ -52,24 +59,24 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
         )
     }
 
-    console.log(data);
-
     return (
         <>
             {isLoading && <Loading />}
-            <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className=" mx-auto ">
                 <motion.div
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <h1 className="text-4xl font-bold mb-4">Exploring GraphQL with Express: A Beginner's Guide</h1>
+                    <h1 className="text-2xl md:text-4xl font-bold mb-4">{article?.title}</h1>
                     <div className="flex items-center space-x-4 mb-4">
-                        <Avatar name="Tomas Svojanovsky" src="/placeholder.svg?height=40&width=40" />
+                        <Avatar name={article?.author.name} src={article?.author?.profileImg} />
                         <div>
-                            <p className="font-semibold">Tomas Svojanovsky</p>
-                            <p className="text-sm text-gray-500">Published in JavaScript in Plain English · 5 min read · 1 day ago</p>
+                            <Link className="hover:underline" href={`/profile/${article?.author.username}`}>
+                                <UserName isPremium={article?.author.isPremiumMember} name={article?.author?.name} />
+                            </Link>
+                            <p className="text-sm text-gray-500">Published in {formatDateReadable(article?.createdAt as string)}</p>
                         </div>
                     </div>
                     <div className="hidden md:flex items-center space-x-4 text-gray-500">
@@ -93,11 +100,11 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                     transition={{ duration: 0.5 }}
                 >
                     <Image
-                        alt="Featured Image"
+                        alt={article?.title as string}
                         className="w-full h-auto mb-8 rounded-lg"
-                        height={400}
-                        src="/placeholder.svg?height=400&width=800"
-                        width={800}
+                        height={300}
+                        src={article?.images[0] as string}
+                        width={700}
                     />
                 </motion.div>
 
@@ -107,14 +114,9 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                     initial={{ opacity: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                    <h2>Getting Started with GraphQL</h2>
-                    <p>
-                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    {/* Add more content as needed */}
+                    <div className='no-tailwind'>
+                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article?.description as string) }} />
+                    </div>
                 </motion.div>
 
                 <Card
