@@ -10,9 +10,10 @@ import DOMPurify from 'dompurify';
 
 import useArticle from '@/hooks/use_articles'
 import Loading from '@/components/loading'
-import { IArticleResponse, IComment } from '@/interface/articles.response.interface'
+import { IArticleResponse, IClap, IComment } from '@/interface/articles.response.interface'
 import formatDateReadable from '@/utils/format_date_readable'
 import UserName from '@/components/premium_acc_badge'
+import useUser from '@/hooks/useUser'
 
 import { CommentDrawer } from './CommentDrawer'
 
@@ -26,37 +27,19 @@ export interface Comment {
 }
 
 const BlogDetails = ({ params }: { params: { postId: string } }) => {
+    const { currentUser } = useUser();
     const { data, isLoading } = useArticle({ _id: params.postId });
-    const article = Array.isArray(data) ? data[0] : data as IArticleResponse | null
+    const article = Array.isArray(data) ? data[0] : data as IArticleResponse | null;
     const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
 
-    const [comments, setComments] = useState<Comment[]>([
-        {
-            author: "Jane Doe",
-            avatar: "/placeholder.svg?height=40&width=40",
-            date: "2 days ago",
-            content: "Great article! I learned a lot about GraphQL and Express.",
-            likes: 5,
-            liked: false
-        },
-        {
-            author: "John Smith",
-            avatar: "/placeholder.svg?height=40&width=40",
-            date: "1 day ago",
-            content: "Thanks for the beginner-friendly guide. Looking forward to more content like this!",
-            likes: 3,
-            liked: false
-        }
-    ])
+    const hasClapped = article?.claps.some((clap: IClap) => clap._id === currentUser?._id);
 
-    const handleLikeComment = (index: number) => {
-        setComments(prevComments =>
-            prevComments.map((comment, i) =>
-                i === index
-                    ? { ...comment, likes: comment.liked ? comment.likes - 1 : comment.likes + 1, liked: !comment.liked }
-                    : comment
-            )
-        )
+    async function handleClapped() {
+
+    }
+
+    const handleLikeComment = (commentId: string) => {
+
     }
 
     return (
@@ -80,16 +63,23 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                         </div>
                     </div>
                     <div className="hidden md:flex items-center space-x-4 text-gray-500">
-                        <Button size="sm" startContent={<Heart className="w-5 h-5" />} variant="light">
-                            13
+                        <Button
+                            className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
+                            size="sm"
+                            startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
+                            variant="light"
+                            onPress={handleClapped}
+                        >
+                            {article?.claps.length}
                         </Button>
+
                         <Button size="sm" startContent={<MessageCircle className="w-5 h-5" />} variant="light" onPress={() => setIsCommentDrawerOpen(true)}>
-                            {comments.length}
+                            {article?.comments.length}
                         </Button>
 
                         <Button size="sm" startContent={<Share className="w-5 h-5" />
                         } variant="light" onPress={() => console.log('hello')}>
-                            {comments.length}
+                            {article?.shares}
                         </Button>
                     </div>
                 </motion.div>
@@ -131,7 +121,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                                     13
                                 </Button>
                                 <Button size="sm" startContent={<MessageCircle className="w-6 h-6" />} variant="light" onPress={() => setIsCommentDrawerOpen(!isCommentDrawerOpen)}>
-                                    {comments.length}
+                                    {article?.shares}
                                 </Button>
                             </div>
                             <div className="flex items-center space-x-4">

@@ -12,23 +12,16 @@ interface CommentDrawerProps {
     isOpen: boolean
     onClose: () => void
     comments: IComment[]
-    onLikeComment: (index: number) => void
+    onLikeComment: (index: string) => void
 }
 
 export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, onLikeComment }) => {
     const { currentUser } = useUser();
     const [newComment, setNewComment] = useState('');
-    // const hasClapped = comments?.some((comment: IComment) => comment.user._id === currentUser?._id);
-
 
     const hasClapped = comments?.some((comment: IComment) =>
         comment.claps.some((clap: IClap) => clap._id === currentUser?._id)
     );
-
-    console.log(hasClapped);
-
-
-
 
     useEffect(() => {
         if (isOpen) {
@@ -96,15 +89,15 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                             {/* <p className="font-semibold">{comment.user.name}</p> */}
                                             <p className="text-sm text-gray-500">{formatDateReadable(comment.createdAt)}</p>
                                             <p className="mt-1">{comment.content}</p>
-                                            {/* <Button
-                                                className={`mt-2 p-0 ${comment.liked ? 'text-danger' : 'text-gray-500'}`}
+                                            <Button
+                                                className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
                                                 size="sm"
-                                                startContent={<Heart className={`w-4 h-4 ${comment.liked ? 'fill-current text-danger' : ''}`} />}
+                                                startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
                                                 variant="light"
-                                                onPress={() => onLikeComment(index)}
+                                                onPress={() => onLikeComment(comment._id)}
                                             >
-                                                {comment.likes}
-                                            </Button> */}
+                                                {comment.claps.length}
+                                            </Button>
                                         </div>
                                     </motion.div>
                                 ))}
