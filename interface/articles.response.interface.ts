@@ -32,7 +32,7 @@ interface Author {
     profileImg: string;
 }
 
-interface Article {
+export interface IArticleResponse {
     _id: string;
     author: Author;
     title: string;
@@ -47,10 +47,4 @@ interface Article {
     comments: Comment[];
     createdAt: string;
     updatedAt: string;
-}
-
-export interface IArticleResponse {
-    success: boolean;
-    message: string;
-    data: Article;
 }
