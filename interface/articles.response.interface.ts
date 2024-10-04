@@ -1,0 +1,56 @@
+interface Clap {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    isEmailVerified: boolean;
+    isPremiumMember: boolean;
+}
+
+interface Comment {
+    _id: string;
+    user: {
+        _id: string;
+        name: string;
+        email: string;
+        username: string;
+        isEmailVerified: boolean;
+        isPremiumMember: boolean;
+    };
+    content: string;
+    claps: Clap[];
+    createdAt: string;
+}
+
+interface Author {
+    _id: string;
+    name: string;
+    email: string;
+    username: string;
+    isEmailVerified: boolean;
+    isPremiumMember: boolean;
+    profileImg: string;
+}
+
+interface Article {
+    _id: string;
+    author: Author;
+    title: string;
+    description: string;
+    images: string[];
+    category: string;
+    topics: string[];
+    claps: Clap[];
+    views: number;
+    shares: number;
+    isPremiumContent: boolean;
+    comments: Comment[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IArticleResponse {
+    success: boolean;
+    message: string;
+    data: Article;
+}
