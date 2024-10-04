@@ -6,6 +6,7 @@ import { FilterQuery, Types } from "mongoose";
 import Article from "@/models/article.model";
 import connectMongodb from "@/libs/connect_mongodb";
 import { TArticle } from "@/types/article.type";
+import path from "path";
 
 // Creating new article
 export async function POST(request: Request) {
@@ -54,11 +55,33 @@ export async function GET(request: Request) {
     // If _id is provided, fetch the article by its _id directly
     if (_id && Types.ObjectId.isValid(_id)) {
         try {
-            const article = await Article.findById(new Types.ObjectId(_id));
+            const article = await Article.findById(new Types.ObjectId(_id))
+                .populate({
+                    path: 'author',
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                })
+                .populate({
+                    path: 'claps',
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                })
+                .populate({
+                    path: 'comments.user',
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
+                })
+                .populate({
+                    path: 'comments.claps',
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
+                }).sort({ createdAt: -1 })
+
             if (!article) {
                 return NextResponse.json({ error: 'Article not found' }, { status: 404 });
             }
-            return NextResponse.json({ data: article });
+            return NextResponse.json({
+                success: true,
+                message: 'Articles successfully retrieved',
+                data: article
+            }, { status: 200 });
+
         } catch (error: unknown) {
             return NextResponse.json({ error: 'Something went wrong', details: (error as Error).message }, { status: 500 });
         }
@@ -95,8 +118,29 @@ export async function GET(request: Request) {
     }
 
     try {
-        const data = await Article.find(query);
-        return NextResponse.json({ data });
+        const data = await Article.find(query)
+            .populate({
+                path: 'author',
+                select: '_id name email isPremiumMember isEmailVerified username profileImg'
+            })
+            .populate({
+                path: 'claps',
+                select: '_id name email isPremiumMember isEmailVerified username profileImg'
+            })
+            .populate({
+                path: 'comments.user',
+                select: '_id name email isPremiumMember isEmailVerified username profileImg',
+            })
+            .populate({
+                path: 'comments.claps',
+                select: '_id name email isPremiumMember isEmailVerified username profileImg',
+            }).sort({ createdAt: -1 });
+
+        return NextResponse.json({
+            success: true,
+            message: 'Articles successfully retrieved',
+            data: data
+        }, { status: 200 })
 
     } catch (error: unknown) {
         return NextResponse.json({ error: 'Something went wrong', details: (error as Error).message }, { status: 500 });
