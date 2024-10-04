@@ -25,9 +25,7 @@ export const ArticlePreview = ({ data, fromProfile = false }: { data: IArticleRe
                         <div className="flex-grow pr-0 md:pr-4">
                             <h2 className="text-xl font-bold mb-2">{data?.title}</h2>
                             <p className="text-default-500 mb-4">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste ab, minima, praesentium quibusdam voluptatum
-                                omnis autem repellat, error odit laborum maiores cum ullam vero tempore. Autem obcaecati illum quidem
-                                maiores!
+
                             </p>
                             <div className="flex flex-wrap items-center gap-2 mb-4">
                                 <span className="text-small text-default-400">{formatDateReadable(data.createdAt)}</span>
@@ -70,9 +68,9 @@ export const ArticlePreview = ({ data, fromProfile = false }: { data: IArticleRe
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                         <div className="text-center">
                             <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
-                            <Button color="primary" variant="bordered">
+                            <Link href={'/pricing'}> <Button color="primary" variant="bordered">
                                 Browse Premium Plans
-                            </Button>
+                            </Button></Link>
                         </div>
                     </div>
                 )

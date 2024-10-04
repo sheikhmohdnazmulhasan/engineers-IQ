@@ -7,7 +7,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Editor, IAllProps } from '@tinymce/tinymce-react'
-import { Input } from '@nextui-org/input';
+import { Input, Textarea } from '@nextui-org/input';
 import { Button, Checkbox, Select, SelectItem, } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -28,10 +28,12 @@ export default function New() {
     const [files, setFiles] = useState<File[]>([])
     const [showImagePreview, setShowImagePreview] = useState<string[]>([]);
     const [imagesLoaded, setImageLoaded] = useState(false);
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, watch } = useForm();
     const [loading, setLoading] = useState(false);
     const { isLoading, currentUser } = useUser();
     const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
+    const shortDes = watch('textArea');
+
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileChange = (event: { target: { files: any; }; }) => {
@@ -67,6 +69,12 @@ export default function New() {
 
             if (files && files.length) {
                 setLoading(true);
+
+                if (shortDes?.length < 200 || shortDes?.length > 300) {
+                    toast.error('Short description should be between 200 and 300 characters.');;
+                    return;
+                }
+
                 try {
                     const imgRes = await uploadImageToImgBb(files);
 
@@ -114,6 +122,12 @@ export default function New() {
                 <p>EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners. Our diverse user base contributes to a rich ecosystem of knowledge, where everyone has something to learn and something to teach.</p>
                 <div className='pt-5 space-y-4'>
                     <Input isRequired label='Title' size='sm' type='text' {...register('title')} />
+                    <Textarea
+                        isRequired
+                        label=" Short Description"
+                        {...register('textArea')}
+                        isInvalid={shortDes?.length < 200 || shortDes?.length > 300}
+                    />
                     <div className=" md:flex gap-4 space-y-4 md:space-y-0">
                         <Select
                             isRequired

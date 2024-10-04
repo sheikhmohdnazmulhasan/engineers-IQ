@@ -13,6 +13,7 @@ interface IComment {
 export interface TArticle extends Document {
     author: Types.ObjectId;
     title: string;
+    textArea: string;
     description: string;
     images: string[];
     category: string;

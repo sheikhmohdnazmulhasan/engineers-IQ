@@ -26,9 +26,8 @@ export default function Home() {
   const [loading, setLoading] = useState<number | null>(null);
 
   const query = {}
-  const { data, error, isLoading, revalidate: dataRevalidate } = useArticle(query);
+  const { data, isLoading, revalidate: dataRevalidate } = useArticle(query);
 
-  console.log(data);
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)

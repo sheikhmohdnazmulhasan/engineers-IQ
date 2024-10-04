@@ -11,6 +11,10 @@ const articleSchema = new Schema<TArticle>({
         type: String,
         required: true
     },
+    textArea: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         required: true
