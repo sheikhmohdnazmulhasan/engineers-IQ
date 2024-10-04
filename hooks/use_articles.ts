@@ -35,7 +35,7 @@ const useArticle = (query: {
     };
 
     const { data, error, isValidating, mutate } = useSWR<IArticleResponse | IArticleResponse[]>(
-        query ? buildUrlWithParams() : null,
+        query ? buildUrlWithParams() : '/api/articles',
         fetcher
     );
 

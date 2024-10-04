@@ -14,12 +14,12 @@ import UserName from '@/components/premium_acc_badge'
 import axiosInstance from '@/libs/axiosInstance'
 import { INotificationEmail } from '@/interface/email.notification.interface'
 import sendNotificationEmail from '@/utils/send_notification_email'
+import { topicsData } from '@/const/article/topics'
 
 export default function Home() {
   const { currentUser } = useUser();
   const { whoToFollow, revalidate } = useWhoToFollow(currentUser?._id as string);
   const [loading, setLoading] = useState<number | null>(null)
-  const topics = ['Economics', 'DevOps', 'World', 'Product Management', 'Ethereum', 'Feminism', 'Data Visualization']
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -157,8 +157,8 @@ export default function Home() {
               </SidebarSection>
               <SidebarSection title="Recommended topics">
                 <div className="flex flex-wrap gap-2">
-                  {topics.map((topic, index) => (
-                    <Chip key={index} variant="flat">{topic}</Chip>
+                  {topicsData.slice(0, topicsData.length / 2).reverse().map((topic, index) => (
+                    <Link key={index} href={`/articles/tag/${topic.key}`}> <Chip variant="flat">{topic.label}</Chip></Link>
                   ))}
                 </div>
               </SidebarSection>
