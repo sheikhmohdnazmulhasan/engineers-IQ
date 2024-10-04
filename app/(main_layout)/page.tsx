@@ -111,25 +111,21 @@ export default function Home() {
             </div>
             <div className="w-full lg:w-1/3">
               <div className="sticky top-20">
+
+                {/* system pics */}
+                {/* data.sort(() => 0.5 - Math.random()).slice(0, 3)? */}
+
                 <SidebarSection title="System Picks">
-                  <Card className="mb-2">
-                    <CardBody>
-                      <h4 className="font-semibold">How I Burned My Resume and Built a New Career</h4>
-                      <p className="text-small text-default-500">Neela in Psychology of Workplaces</p>
-                    </CardBody>
-                  </Card>
-                  <Card className="mb-2">
-                    <CardBody>
-                      <h4 className="font-semibold">Why I Stopped Boycotting Businesses and Cutting People Off Because of Their Political Views</h4>
-                      <p className="text-small text-default-500">Alisa Wolf in Human Parts</p>
-                    </CardBody>
-                  </Card>
-                  <Card className="mb-2">
-                    <CardBody>
-                      <h4 className="font-semibold">The Art of Productive Procrastination</h4>
-                      <p className="text-small text-default-500">Mark Johnson in Better Humans</p>
-                    </CardBody>
-                  </Card>
+                  {Array.isArray(data) && data.slice(0, 3).reverse().map((article, indx) => (
+                    <Link key={indx} href={`/articles/${article.author.username}/${article._id}`}>
+                      <Card className="mb-2">
+                        <CardBody>
+                          <h4 className="font-semibold">{article.title}</h4>
+                          <p className="text-small text-default-500">{article.textArea.slice(0, 40)}</p>
+                        </CardBody>
+                      </Card>
+                    </Link>
+                  ))}
                 </SidebarSection>
                 <SidebarSection title="Recommended topics">
                   <div className="flex flex-wrap gap-2">

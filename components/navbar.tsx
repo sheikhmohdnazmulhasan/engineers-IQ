@@ -28,21 +28,21 @@ import UserName from "./premium_acc_badge";
 export const Navbar = () => {
   const { currentUser, isLoading } = useUser();
 
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
+  // const searchInput = (
+  //   <Input
+  //     aria-label="Search"
+  //     classNames={{
+  //       inputWrapper: "bg-default-100",
+  //       input: "text-sm",
+  //     }}
+  //     labelPlacement="outside"
+  //     placeholder="Search..."
+  //     startContent={
+  //       <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+  //     }
+  //     type="search"
+  //   />
+  // );
 
   const profileDropdownDesktop = (
     <Dropdown placement="bottom-start">
@@ -128,7 +128,7 @@ export const Navbar = () => {
       >
         <ThemeSwitch />
         <NavbarItem className="hidden lg:flex">
-          {searchInput}
+          {/* {searchInput} */}
         </NavbarItem>
 
         {currentUser && <Link href="/new" >
@@ -158,7 +158,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        {searchInput}
+        {/* {searchInput} */}
         <div className="mx-4 mt-2 flex flex-col gap-2">
           {siteConfig.navItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>

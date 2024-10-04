@@ -71,7 +71,8 @@ export default function New() {
                 setLoading(true);
 
                 if (shortDes?.length < 200 || shortDes?.length > 300) {
-                    toast.error('Short description should be between 200 and 300 characters.');;
+                    toast.error('Short description should be between 200 and 300 characters.');
+                    setLoading(false);
                     return;
                 }
 
@@ -124,9 +125,9 @@ export default function New() {
                     <Input isRequired label='Title' size='sm' type='text' {...register('title')} />
                     <Textarea
                         isRequired
-                        label=" Short Description"
+                        label=" Short Description (>200 <300)"
                         {...register('textArea')}
-                        isInvalid={shortDes?.length < 200 || shortDes?.length > 300}
+                        isInvalid={shortDes && shortDes?.length < 200 || shortDes?.length > 300}
                     />
                     <div className=" md:flex gap-4 space-y-4 md:space-y-0">
                         <Select

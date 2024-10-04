@@ -36,6 +36,7 @@ export interface IArticleResponse {
     _id: string;
     author: Author;
     title: string;
+    textArea: string;
     description: string;
     images: string[];
     category: string;
