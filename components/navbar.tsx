@@ -135,7 +135,7 @@ export const Navbar = () => {
           <WriteIcon />
         </Link>}
 
-        {isLoading ? <Spinner /> : currentUser ? (
+        {isLoading ? <Spinner size="sm" /> : currentUser ? (
           profileDropdownDesktop
         ) : (
           <Link className="text-default-foreground" href="/auth/login">
@@ -153,7 +153,7 @@ export const Navbar = () => {
           <WriteIcon />
         </Link>}
         <ThemeSwitch />
-        {isLoading ? <Spinner /> : currentUser ? profileDropdownMobile : null}
+        {isLoading ? <Spinner size="sm" /> : currentUser ? profileDropdownMobile : null}
         <NavbarMenuToggle />
       </NavbarContent>
 
