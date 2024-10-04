@@ -2,6 +2,8 @@ import { Avatar, Card, CardBody, Chip } from "@nextui-org/react";
 import Image from "next/image";
 
 import { IArticleResponse } from "@/interface/articles.response.interface";
+import calculateReadTime from "@/utils/calculate_read_time";
+import { topicsData } from "@/const/article/topics";
 
 export const ArticlePreview = ({ data }: { data: IArticleResponse }) => (
     <Card className="mb-6 border-b border-gray-200 pb-6">
@@ -16,9 +18,9 @@ export const ArticlePreview = ({ data }: { data: IArticleResponse }) => (
                     {/* <p className="text-default-500 mb-4">{snippet}</p> */}
                     <div className="flex flex-wrap items-center gap-2 mb-4">
                         <span className="text-small text-default-400">10/323/3232</span>
-                        <span className="text-small text-default-400">20 min read</span>
+                        <span className="text-small text-default-400">{calculateReadTime(data.description)} min read</span>
                         {data.topics.map((tag, index) => (
-                            <Chip key={index} size="sm" variant="flat">{tag}</Chip>
+                            <Chip key={index} size="sm" variant="flat" > {tag}</Chip>
                         ))}
                     </div>
                 </div>
@@ -29,5 +31,5 @@ export const ArticlePreview = ({ data }: { data: IArticleResponse }) => (
                 )}
             </div>
         </CardBody>
-    </Card>
+    </Card >
 )
