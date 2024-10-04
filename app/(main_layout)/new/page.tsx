@@ -8,7 +8,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Editor, IAllProps } from '@tinymce/tinymce-react'
 import { Input } from '@nextui-org/input';
-import { Button, Checkbox, Select, SelectItem, user } from '@nextui-org/react';
+import { Button, Checkbox, Select, SelectItem, } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -27,7 +27,7 @@ export default function New() {
     const editorRef = useRef<EditorInstance | null>(null);
     const [files, setFiles] = useState<File[]>([])
     const [showImagePreview, setShowImagePreview] = useState<string[]>([]);
-    const [x, setX] = useState(false);
+    const [imagesLoaded, setImageLoaded] = useState(false);
     const { register, handleSubmit } = useForm();
     const [loading, setLoading] = useState(false);
     const { isLoading, currentUser } = useUser();
@@ -39,12 +39,12 @@ export default function New() {
 
         if (selectedFiles && selectedFiles.length > 0) {
             setFiles(Array.from(selectedFiles));
-            setX(true)
+            setImageLoaded(true)
         }
     }
 
     const handleClearFile = () => {
-        setX(false)
+        setImageLoaded(false)
         setShowImagePreview([]);
     };
 
@@ -92,8 +92,7 @@ export default function New() {
 
                 } catch (error) {
                     toast.error('Something Bad Happened!');
-                    setLoading(false)
-                    console.log(error);
+                    setLoading(false);
                 }
 
             } else {
@@ -157,7 +156,7 @@ export default function New() {
                     onInit={handleEditorInit}
                 />
                 <div className="  my-10 ">
-                    {x ? (
+                    {imagesLoaded ? (
                         <div className=" mx-auto flex flex-wrap items-center gap-x-6  rounded-lg border-2 border-dashed border-gray-400 p-5 bg-white space-y-4">
 
                             {showImagePreview?.map((img, indx) => <img key={indx} className="w-full max-w-[150px] rounded-lg object-cover" src={img} />)}
