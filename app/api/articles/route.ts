@@ -6,7 +6,6 @@ import { FilterQuery, Types } from "mongoose";
 import Article from "@/models/article.model";
 import connectMongodb from "@/libs/connect_mongodb";
 import { TArticle } from "@/types/article.type";
-import path from "path";
 
 // Creating new article
 export async function POST(request: Request) {
