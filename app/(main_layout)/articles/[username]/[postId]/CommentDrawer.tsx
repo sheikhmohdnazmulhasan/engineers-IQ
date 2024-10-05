@@ -16,9 +16,10 @@ interface CommentDrawerProps {
     comments: IComment[]
     articleId: string
     revalidate: () => void
+    author: string
 }
 
-export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, articleId, revalidate }) => {
+export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, articleId, author, revalidate }) => {
     const { currentUser } = useUser();
     const [newComment, setNewComment] = useState('');
     const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
@@ -26,6 +27,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
     const [commentUpdateAction, setCommentUpdateAction] = useState<number | null>(null);
     const [commentUpdatedContent, setCommentUpdatedContent] = useState<string | null>(null);
     const [commentUpdatedLoading, setCommentUpdatedLoading] = useState<boolean>(false);
+    const [commentDeleteLoading, setCommentDeleteLoading] = useState<string | null>(null);
 
 
     const handleSubmitComment = async (e: React.FormEvent) => {
@@ -92,7 +94,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                 updatedContent: commentUpdatedContent,
                 user: currentUser?._id
             });
-            revalidate()
+            revalidate();
             setCommentUpdatedLoading(false);
             setCommentUpdateAction(null);
 
@@ -104,6 +106,29 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             });
         }
     }
+
+    const handelDeleteComment = async (commentId: string, user: string) => {
+
+        try {
+            setCommentDeleteLoading(commentId);
+            await axiosInstance.delete(`/articles/comment?ref=${articleId}`, {
+                data: {
+                    commentId,
+                    user
+                }
+            });
+
+            setCommentDeleteLoading(null);
+            revalidate();
+
+        } catch (error) {
+            setCommentDeleteLoading(null)
+            toast.error('Something Bad Happened!', {
+                position: 'bottom-left'
+            });
+        }
+    }
+
 
     useEffect(() => {
         if (isOpen) {
@@ -178,15 +203,28 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                 }
 
 
-                                                {!hasWonComment ? <Button className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
-                                                    isLoading={clapLoading === comment._id}
-                                                    size="sm"
-                                                    startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
-                                                    variant="light"
-                                                    onPress={() => handleLikeComment(comment._id)}
-                                                >
-                                                    {comment.claps.length}
-                                                </Button>
+                                                {!hasWonComment ? <>
+                                                    <Button className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
+                                                        isLoading={clapLoading === comment._id}
+                                                        size="sm"
+                                                        startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
+                                                        variant="light"
+                                                        onPress={() => handleLikeComment(comment._id)}
+                                                    >
+                                                        {comment.claps.length}
+                                                    </Button>
+                                                    {currentUser?._id === author && (
+                                                        <Button
+                                                            isIconOnly
+                                                            className={`mt-2 p-0 text-danger`}
+                                                            isLoading={comment._id === commentDeleteLoading}
+                                                            size="sm"
+                                                            startContent={<Trash className={`w-4 h-4`} />}
+                                                            variant="light"
+                                                            onPress={() => handelDeleteComment(comment._id, comment.user._id)}
+                                                        />
+                                                    )}
+                                                </>
                                                     :
 
                                                     commentUpdateAction !== index ?
@@ -216,10 +254,11 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                             <Button
                                                                 isIconOnly
                                                                 className={`mt-2 p-0 text-danger`}
+                                                                isLoading={comment._id === commentDeleteLoading}
                                                                 size="sm"
                                                                 startContent={<Trash className={`w-4 h-4`} />}
                                                                 variant="light"
-                                                            // onPress={() => onLikeComment(comment._id)}
+                                                                onPress={() => handelDeleteComment(comment._id, comment.user._id)}
                                                             />
                                                         </> :
                                                         <>

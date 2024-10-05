@@ -149,6 +149,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             </Card>
 
             <CommentDrawer
+                author={article?.author._id as string}
                 articleId={params.postId}
                 comments={article?.comments as IComment[]}
                 isOpen={isCommentDrawerOpen}
