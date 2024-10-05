@@ -38,6 +38,8 @@
 		"emailjs-com": "^3.2.0",
 		"framer-motion": "~11.1.1",
 		"heroicons": "^2.1.5",
+		"html2pdf": "^0.0.11",
+		"html2pdf.js": "^0.10.2",
 		"http-status": "^1.7.4",
 		"intl-messageformat": "^10.5.0",
 		"jsonwebtoken": "^9.0.2",

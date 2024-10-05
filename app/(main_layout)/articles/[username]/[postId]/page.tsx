@@ -9,6 +9,9 @@ import Link from 'next/link'
 import DOMPurify from 'dompurify'
 import { toast } from 'sonner'
 
+import html2pdf from 'html2pdf.js';
+import { useRef } from 'react';
+
 import useArticle from '@/hooks/use_articles'
 import { IArticleResponse, IClap, IComment } from '@/interface/articles.response.interface'
 import formatDateReadable from '@/utils/format_date_readable'
@@ -34,19 +37,9 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
     const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
     const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const contentRef = useRef<HTMLDivElement | null>(null);
 
     const hasClapped = article?.claps.some((clap: IClap) => clap._id === currentUser?._id);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            setLastScrollY(Math.floor(currentScrollY));
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
 
     async function handleClapped() {
         if (!currentUser) {
@@ -67,10 +60,39 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             setNewCommentLoading(false);
             toast.error('Something Bad Happened!');
         }
-    }
+    };
+
+    const handleDownload = () => {
+        const element = contentRef.current;
+
+        const options = {
+            margin: 1,
+            filename: `${article?.title}-offline-engineersiq.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                backgroundColor: '#000',
+                useCORS: true
+            },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().from(element).set(options).save();
+    };
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setLastScrollY(Math.floor(currentScrollY));
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     return (
-        <div className="mx-auto">
+        <div ref={contentRef} className="mx-auto" id="content">
             <motion.div
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-8"
@@ -107,7 +129,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                         {article?.shares}
                     </Button>
 
-                    <Button size="sm" startContent={<Bookmark className="w-6 h-6" />} variant="light" onPress={() => console.log('hello pdf')} />
+                    <Button size="sm" startContent={<Bookmark className="w-6 h-6" />} variant="light" onPress={handleDownload} />
                 </div>
             </motion.div>
 
