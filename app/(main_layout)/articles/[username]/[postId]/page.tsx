@@ -32,23 +32,29 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
     const { data, revalidate } = useArticle({ _id: params.postId });
     const article = Array.isArray(data) ? data[0] : data as IArticleResponse | null;
     const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
+    const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
 
     const hasClapped = article?.claps.some((clap: IClap) => clap._id === currentUser?._id);
 
     async function handleClapped() {
+        if (!currentUser) {
+            toast.error('You are not logged in', {
+                position: 'bottom-left'
+            });
+            return;
+        };
         try {
+            setNewCommentLoading(true);
             await axiosInstance.patch('/articles/clap', {
                 articleId: article?._id,
                 user: currentUser?._id
             });
-            revalidate()
+            revalidate();
+            setNewCommentLoading(false);
         } catch (error) {
+            setNewCommentLoading(false);
             toast.error('Something Bad Happened!');
         }
-    }
-
-    const handleLikeComment = (commentId: string) => {
-
     }
 
     return (
@@ -73,6 +79,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
                 <div className="hidden md:flex items-center space-x-4 text-gray-500">
                     <Button
                         className={`mt-2 p-0 ${hasClapped ? 'text-danger' : null}`}
+                        isLoading={newCommentLoading}
                         size="sm"
                         startContent={<Heart className={`w-5 h-5 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
                         variant="light"
@@ -142,12 +149,11 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             </Card>
 
             <CommentDrawer
-                revalidate={revalidate}
                 articleId={params.postId}
                 comments={article?.comments as IComment[]}
                 isOpen={isCommentDrawerOpen}
+                revalidate={revalidate}
                 onClose={() => setIsCommentDrawerOpen(false)}
-                onLikeComment={handleLikeComment}
             />
         </div>
     )

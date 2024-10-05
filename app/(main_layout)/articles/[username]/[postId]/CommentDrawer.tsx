@@ -15,14 +15,14 @@ interface CommentDrawerProps {
     onClose: () => void
     comments: IComment[]
     articleId: string
-    onLikeComment: (index: string) => void
     revalidate: () => void
 }
 
-export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, onLikeComment, articleId, revalidate }) => {
+export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, articleId, revalidate }) => {
     const { currentUser } = useUser();
     const [newComment, setNewComment] = useState('');
-    const [loading, setLoading] = useState<boolean>(false);
+    const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
+    const [clapLoading, setClapLoading] = useState<boolean>(false);
 
     const handleSubmitComment = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,27 +30,50 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             toast.error('You are not logged in', {
                 position: 'bottom-left'
             });
+            return;
         };
 
         try {
-            setLoading(true);
+            setNewCommentLoading(true);
             await axiosInstance.put(`articles/comment?ref=${articleId}`, {
                 user: currentUser?._id,
                 content: newComment,
             });
 
             revalidate();
-            setLoading(false);
+            setNewCommentLoading(false);
             setNewComment('');
         } catch (error) {
             toast.error('Something Bad Happened', {
                 position: 'bottom-left'
             });
-            setLoading(false);
+            setNewCommentLoading(false);
         }
     }
 
-    // console.log(hasClapped);
+    const handleLikeComment = async (commentId: string) => {
+        if (!currentUser) {
+            toast.error('You are not logged in', {
+                position: 'bottom-left'
+            });
+            return
+        };
+
+        try {
+            setClapLoading(true);
+            await axiosInstance.patch(`/articles/comment/clap?ref=${articleId}`, {
+                commentId,
+                userId: currentUser._id
+            });
+            revalidate();
+            setClapLoading(false);
+
+        } catch (error) {
+            toast.error('Something Bad Happened!', {
+                position: 'bottom-left'
+            });
+        }
+    }
 
     useEffect(() => {
         if (isOpen) {
@@ -96,7 +119,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
-                                <Button color="primary" isLoading={loading} type="submit" variant='bordered'>Respond</Button>
+                                <Button color="primary" isLoading={newCommentLoading} type="submit" variant='bordered'>Respond</Button>
                             </form>
                             <div className="space-y-4">
                                 {comments.slice().reverse().map((comment, index) => {
@@ -118,12 +141,12 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                 <p className="text-sm text-gray-500">{formatDateReadable(comment.createdAt)}</p>
                                                 <p className="mt-1">{comment.content}</p>
 
-                                                {!hasWonComment ? <Button
+                                                {!hasWonComment ? <Button isLoading={clapLoading}
                                                     className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
                                                     size="sm"
                                                     startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
                                                     variant="light"
-                                                    onPress={() => onLikeComment(comment._id)}
+                                                    onPress={() => handleLikeComment(comment._id)}
                                                 >
                                                     {comment.claps.length}
                                                 </Button>
@@ -149,7 +172,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                             size="sm"
                                                             startContent={<Edit className={`w-4 h-4`} />}
                                                             variant="light"
-                                                            onPress={() => onLikeComment(comment._id)}
+                                                        // onPress={() => onLikeComment(comment._id)}
                                                         />
                                                         <Button
                                                             isIconOnly
@@ -157,7 +180,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                             size="sm"
                                                             startContent={<Trash className={`w-4 h-4`} />}
                                                             variant="light"
-                                                            onPress={() => onLikeComment(comment._id)}
+                                                        // onPress={() => onLikeComment(comment._id)}
                                                         />
                                                     </>}
 
