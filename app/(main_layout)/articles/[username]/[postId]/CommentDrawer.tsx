@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Heart, X, Edit, Trash } from 'lucide-react'
+import { Heart, X, Edit, Trash, Save } from 'lucide-react'
 import { Button, Textarea, Avatar, } from "@nextui-org/react"
 import { AnimatePresence, motion, } from 'framer-motion'
 import { toast } from 'sonner'
@@ -23,6 +23,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
     const [newComment, setNewComment] = useState('');
     const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
     const [clapLoading, setClapLoading] = useState<boolean>(false);
+    const [commentUpdateAction, setCommentUpdateAction] = useState<number | null>(null);
 
     const handleSubmitComment = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,7 +50,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             });
             setNewCommentLoading(false);
         }
-    }
+    };
 
     const handleLikeComment = async (commentId: string) => {
         if (!currentUser) {
@@ -73,6 +74,10 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                 position: 'bottom-left'
             });
         }
+    };
+
+    const handleEditComment = (commentId: string) => {
+        console.log(commentId);
     }
 
     useEffect(() => {
@@ -91,7 +96,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             {isOpen && (
                 <motion.div
                     animate={{ opacity: 1 }}
-                    className="fixed inset-0 bg-black bg-opacity-50 md:z-[90000000000000]"
+                    className="fixed inset-0 bg-black mb-12 md:mb-0 bg-opacity-50 md:z-[90000000000000]"
                     exit={{ opacity: 0 }}
                     initial={{ opacity: 0 }}
                     onClick={onClose}
@@ -135,14 +140,19 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                             transition={{ delay: index * 0.1 }}
                                         >
                                             <Avatar name={comment.user.name} src={comment.user.profileImg} />
-                                            <div className="flex-grow">
+                                            <div className="flex-grow text-sm">
                                                 <UserName isPremium={comment.user.isPremiumMember} name={comment.user.name} />
                                                 {/* <p className="font-semibold">{comment.user.name}</p> */}
-                                                <p className="text-sm text-gray-500">{formatDateReadable(comment.createdAt)}</p>
-                                                <p className="mt-1">{comment.content}</p>
+                                                <p className="text-sm text-gray-500">{comment.updatedAt ? 'Edited' + ' ' + formatDateReadable(comment.updatedAt) : formatDateReadable(comment.createdAt)}</p>
 
-                                                {!hasWonComment ? <Button isLoading={clapLoading}
-                                                    className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
+                                                {commentUpdateAction === index ?
+                                                    <input className='border mt-1 border-gray-500 block rounded-md py-1 px-2' defaultValue={comment.content} type="text" />
+                                                    : <p className="mt-1">{comment.content}</p>
+                                                }
+
+
+                                                {!hasWonComment ? <Button className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
+                                                    isLoading={clapLoading}
                                                     size="sm"
                                                     startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
                                                     variant="light"
@@ -151,38 +161,60 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                     {comment.claps.length}
                                                 </Button>
                                                     :
-                                                    <>
-                                                        <Button
-                                                            className={`mt-2 p-0 text-gray-500`}
-                                                            size="sm"
-                                                            startContent={<Heart className={`w-4 h-4`} />}
-                                                            variant="light"
-                                                            onPress={() => {
-                                                                toast.error('You cannot applaud your won comments!', {
-                                                                    position: 'bottom-left'
-                                                                });
-                                                            }}
-                                                        >
-                                                            {comment.claps.length}
-                                                        </Button>
 
-                                                        <Button
-                                                            isIconOnly
-                                                            className={`mt-2 p-0 text-gray-500`}
-                                                            size="sm"
-                                                            startContent={<Edit className={`w-4 h-4`} />}
-                                                            variant="light"
-                                                        // onPress={() => onLikeComment(comment._id)}
-                                                        />
-                                                        <Button
-                                                            isIconOnly
-                                                            className={`mt-2 p-0 text-danger`}
-                                                            size="sm"
-                                                            startContent={<Trash className={`w-4 h-4`} />}
-                                                            variant="light"
-                                                        // onPress={() => onLikeComment(comment._id)}
-                                                        />
-                                                    </>}
+                                                    commentUpdateAction !== index ?
+                                                        <>
+                                                            <Button
+                                                                className={`mt-2 p-0 text-gray-500`}
+                                                                size="sm"
+                                                                startContent={<Heart className={`w-4 h-4`} />}
+                                                                variant="light"
+                                                                onPress={() => {
+                                                                    toast.error('You cannot applaud your won comments!', {
+                                                                        position: 'bottom-left'
+                                                                    });
+                                                                }}
+                                                            >
+                                                                {comment.claps.length}
+                                                            </Button>
+
+                                                            <Button
+                                                                isIconOnly
+                                                                className={`mt-2 p-0 text-gray-500`}
+                                                                size="sm"
+                                                                startContent={<Edit className={`w-4 h-4`} />}
+                                                                variant="light"
+                                                                onPress={() => setCommentUpdateAction(index)}
+                                                            />
+                                                            <Button
+                                                                isIconOnly
+                                                                className={`mt-2 p-0 text-danger`}
+                                                                size="sm"
+                                                                startContent={<Trash className={`w-4 h-4`} />}
+                                                                variant="light"
+                                                            // onPress={() => onLikeComment(comment._id)}
+                                                            />
+                                                        </> :
+                                                        <>
+                                                            <Button
+                                                                isIconOnly
+                                                                className={`mt-2 p-0 text-gray-500`}
+                                                                size="sm"
+                                                                startContent={<Save className={`w-4 h-4`} />}
+                                                                variant="light"
+                                                                onPress={() => handleEditComment(comment._id)}
+                                                            />
+
+                                                            <Button
+                                                                isIconOnly
+                                                                className={`mt-2 p-0 text-gray-500`}
+                                                                size="sm"
+                                                                startContent={<X className={`w-4 h-4`} />}
+                                                                variant="light"
+                                                                onPress={() => setCommentUpdateAction(null)}
+                                                            />
+                                                        </>
+                                                }
 
                                             </div>
                                         </motion.div>

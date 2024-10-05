@@ -21,6 +21,7 @@ export interface IComment {
     content: string;
     claps: IClap[];
     createdAt: string;
+    updatedAt: string;
 }
 
 interface Author {
