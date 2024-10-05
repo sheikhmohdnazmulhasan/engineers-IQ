@@ -106,7 +106,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             >
                 <Image
                     alt={article?.title as string}
-                    className="w-full h-auto mb-8 rounded-lg"
+                    className="w-full h-[500px] object-cover mb-8 rounded-lg"
                     height={300}
                     src={article?.images[0] as string}
                     width={700}
@@ -149,8 +149,8 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             </Card>
 
             <CommentDrawer
-                author={article?.author._id as string}
                 articleId={params.postId}
+                author={article?.author._id as string}
                 comments={article?.comments as IComment[]}
                 isOpen={isCommentDrawerOpen}
                 revalidate={revalidate}
