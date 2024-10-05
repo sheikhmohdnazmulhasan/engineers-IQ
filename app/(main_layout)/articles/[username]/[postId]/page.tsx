@@ -7,17 +7,16 @@ import { Button, Avatar, Card, CardBody } from "@nextui-org/react"
 import { motion, } from 'framer-motion'
 import Link from 'next/link'
 import DOMPurify from 'dompurify';
+import { toast } from 'sonner'
 
 import useArticle from '@/hooks/use_articles'
-import Loading from '@/components/loading'
 import { IArticleResponse, IClap, IComment } from '@/interface/articles.response.interface'
 import formatDateReadable from '@/utils/format_date_readable'
 import UserName from '@/components/premium_acc_badge'
 import useUser from '@/hooks/useUser'
+import axiosInstance from '@/libs/axiosInstance'
 
 import { CommentDrawer } from './CommentDrawer'
-import axiosInstance from '@/libs/axiosInstance'
-import { toast } from 'sonner'
 
 export interface Comment {
     author: string
@@ -38,7 +37,7 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
 
     async function handleClapped() {
         try {
-            const res = await axiosInstance.patch('/articles/clap', {
+            await axiosInstance.patch('/articles/clap', {
                 articleId: article?._id,
                 user: currentUser?._id
             });
@@ -143,6 +142,8 @@ const BlogDetails = ({ params }: { params: { postId: string } }) => {
             </Card>
 
             <CommentDrawer
+                revalidate={revalidate}
+                articleId={params.postId}
                 comments={article?.comments as IComment[]}
                 isOpen={isCommentDrawerOpen}
                 onClose={() => setIsCommentDrawerOpen(false)}

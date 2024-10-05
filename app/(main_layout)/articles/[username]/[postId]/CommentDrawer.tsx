@@ -2,26 +2,57 @@ import { useState, useEffect } from 'react'
 import { Heart, X, } from 'lucide-react'
 import { Button, Textarea, Avatar, } from "@nextui-org/react"
 import { AnimatePresence, motion, } from 'framer-motion'
+import { toast } from 'sonner'
 
 import { IClap, IComment } from '@/interface/articles.response.interface'
 import UserName from '@/components/premium_acc_badge'
 import formatDateReadable from '@/utils/format_date_readable'
 import useUser from '@/hooks/useUser'
+import axiosInstance from '@/libs/axiosInstance'
 
 interface CommentDrawerProps {
     isOpen: boolean
     onClose: () => void
     comments: IComment[]
+    articleId: string
     onLikeComment: (index: string) => void
+    revalidate: () => void
 }
 
-export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, onLikeComment }) => {
+export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, comments, onLikeComment, articleId, revalidate }) => {
     const { currentUser } = useUser();
     const [newComment, setNewComment] = useState('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     const hasClapped = comments?.some((comment: IComment) =>
         comment.claps.some((clap: IClap) => clap._id === currentUser?._id)
     );
+
+    const handleSubmitComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!currentUser) {
+            toast.error('You are not logged in', {
+                position: 'bottom-left'
+            });
+        };
+
+        try {
+            setLoading(true);
+            await axiosInstance.put(`articles/comment?ref=${articleId}`, {
+                user: currentUser?._id,
+                content: newComment,
+            });
+
+            revalidate();
+            setLoading(false);
+            setNewComment('');
+        } catch (error) {
+            toast.error('Something Bad Happened', {
+                position: 'bottom-left'
+            });;
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
         if (isOpen) {
@@ -33,12 +64,6 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             document.body.style.overflow = 'unset'
         }
     }, [isOpen])
-
-    const handleSubmitComment = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('New comment:', newComment)
-        setNewComment('');
-    }
 
     return (
         <AnimatePresence>
@@ -67,15 +92,16 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                         <div className="p-4 overflow-y-auto h-[calc(100%-70px)]">
                             <form className="mb-6" onSubmit={handleSubmitComment}>
                                 <Textarea
+                                    required
                                     className="mb-2"
                                     placeholder="What are your thoughts?"
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
                                 />
-                                <Button color="primary" type="submit">Respond</Button>
+                                <Button color="primary" isLoading={loading} type="submit" variant='bordered'>Respond</Button>
                             </form>
                             <div className="space-y-4">
-                                {comments.map((comment, index) => (
+                                {comments.slice().reverse().map((comment, index) => (
                                     <motion.div
                                         key={index}
                                         animate={{ opacity: 1, y: 0 }}
