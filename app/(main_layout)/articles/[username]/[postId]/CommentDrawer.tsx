@@ -25,6 +25,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
     const [clapLoading, setClapLoading] = useState<string | null>(null);
     const [commentUpdateAction, setCommentUpdateAction] = useState<number | null>(null);
     const [commentUpdatedContent, setCommentUpdatedContent] = useState<string | null>(null);
+    const [commentUpdatedLoading, setCommentUpdatedLoading] = useState<boolean>(false);
 
 
     const handleSubmitComment = async (e: React.FormEvent) => {
@@ -78,9 +79,30 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         }
     };
 
-    const handleEditComment = (commentId: string) => {
-        console.log(commentId);
-        console.log(commentUpdatedContent);
+    const handleEditComment = async (commentId: string) => {
+        if (!commentUpdatedContent) {
+            setCommentUpdateAction(null);
+            return;
+        }
+
+        try {
+            setCommentUpdatedLoading(true);
+            await axiosInstance.patch(`/articles/comment?ref=${articleId}`, {
+                commentId,
+                updatedContent: commentUpdatedContent,
+                user: currentUser?._id
+            });
+            revalidate()
+            setCommentUpdatedLoading(false);
+            setCommentUpdateAction(null);
+
+        } catch (error) {
+            setCommentUpdateAction(null)
+            setCommentUpdatedLoading(false);
+            toast.error('Something Bad Happened!', {
+                position: 'bottom-left'
+            });
+        }
     }
 
     useEffect(() => {
@@ -204,6 +226,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                             <Button
                                                                 isIconOnly
                                                                 className={`mt-2 p-0 text-gray-500`}
+                                                                isLoading={commentUpdatedLoading}
                                                                 size="sm"
                                                                 startContent={<Save className={`w-4 h-4`} />}
                                                                 variant="light"
