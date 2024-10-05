@@ -45,7 +45,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         } catch (error) {
             toast.error('Something Bad Happened', {
                 position: 'bottom-left'
-            });;
+            });
             setLoading(false);
         }
     }
@@ -134,7 +134,11 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                             size="sm"
                                                             startContent={<Heart className={`w-4 h-4`} />}
                                                             variant="light"
-                                                            onPress={() => onLikeComment(comment._id)}
+                                                            onPress={() => {
+                                                                toast.error('You cannot applaud your won comments!', {
+                                                                    position: 'bottom-left'
+                                                                });
+                                                            }}
                                                         >
                                                             {comment.claps.length}
                                                         </Button>
