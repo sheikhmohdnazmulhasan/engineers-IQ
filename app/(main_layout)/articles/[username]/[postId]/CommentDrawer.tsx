@@ -22,8 +22,10 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
     const { currentUser } = useUser();
     const [newComment, setNewComment] = useState('');
     const [newCommentLoading, setNewCommentLoading] = useState<boolean>(false);
-    const [clapLoading, setClapLoading] = useState<boolean>(false);
+    const [clapLoading, setClapLoading] = useState<string | null>(null);
     const [commentUpdateAction, setCommentUpdateAction] = useState<number | null>(null);
+    const [commentUpdatedContent, setCommentUpdatedContent] = useState<string | null>(null);
+
 
     const handleSubmitComment = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,13 +63,13 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         };
 
         try {
-            setClapLoading(true);
+            setClapLoading(commentId);
             await axiosInstance.patch(`/articles/comment/clap?ref=${articleId}`, {
                 commentId,
                 userId: currentUser._id
             });
             revalidate();
-            setClapLoading(false);
+            setClapLoading(null);
 
         } catch (error) {
             toast.error('Something Bad Happened!', {
@@ -78,6 +80,7 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
 
     const handleEditComment = (commentId: string) => {
         console.log(commentId);
+        console.log(commentUpdatedContent);
     }
 
     useEffect(() => {
@@ -146,13 +149,15 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                                 <p className="text-sm text-gray-500">{comment.updatedAt ? 'Edited' + ' ' + formatDateReadable(comment.updatedAt) : formatDateReadable(comment.createdAt)}</p>
 
                                                 {commentUpdateAction === index ?
-                                                    <input className='border mt-1 border-gray-500 block rounded-md py-1 px-2' defaultValue={comment.content} type="text" />
+                                                    <input className='border mt-1 border-gray-500 block rounded-md py-1 px-2' defaultValue={comment.content} type="text"
+                                                        onChange={(e) => setCommentUpdatedContent(e.target.value)}
+                                                    />
                                                     : <p className="mt-1">{comment.content}</p>
                                                 }
 
 
                                                 {!hasWonComment ? <Button className={`mt-2 p-0 ${hasClapped ? 'text-danger' : 'text-gray-500'}`}
-                                                    isLoading={clapLoading}
+                                                    isLoading={clapLoading === comment._id}
                                                     size="sm"
                                                     startContent={<Heart className={`w-4 h-4 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
                                                     variant="light"
