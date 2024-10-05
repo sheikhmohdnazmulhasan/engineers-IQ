@@ -10,7 +10,7 @@ import {
   NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+// import { Input } from "@nextui-org/input";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
@@ -19,7 +19,7 @@ import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { SearchIcon, Logo, WriteIcon } from "@/components/icons";
+import { Logo, WriteIcon } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 import signOut from "@/utils/sign_out_user";
 

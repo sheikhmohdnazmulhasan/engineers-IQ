@@ -1,11 +1,26 @@
+/* eslint-disable no-console */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
 import { FilterQuery, Types } from "mongoose";
 
 import Article from "@/models/article.model";
+import User from "@/models/users.model"
 import connectMongodb from "@/libs/connect_mongodb";
 import { TArticle } from "@/types/article.type";
+
+interface Cache<T> {
+    data: T | null;
+    lastFetch: number | null;
+    expiration: number;
+}
+
+const userCache: Cache<any> = {
+    data: null,
+    lastFetch: null,
+    expiration: 1800000,
+};
 
 // Creating new article
 export async function POST(request: Request) {
@@ -47,21 +62,36 @@ export async function GET(request: Request) {
     const topic = searchParams.get('topic') as string | null;
     const _id = searchParams.get('_id') as string | null;
 
-
     // Define the query using the appropriate MongoDB FilterQuery type
     const query: FilterQuery<TArticle> = {};
 
-    // If _id is provided, fetch the article by its _id directly
-    if (_id && Types.ObjectId.isValid(_id)) {
-        try {
+    try {
+        await connectMongodb(); // Call once at the start
+
+        // Check if users are cached and not expired
+        if (!userCache.data || !userCache.lastFetch || (Date.now() - userCache.lastFetch) > userCache.expiration) {
+            try {
+                userCache.data = await User.find().exec();
+                userCache.lastFetch = Date.now();
+                console.log('Users fetched from database');
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        } else {
+            console.log('Using cached users');
+        }
+
+        // If _id is provided, fetch the article by its _id directly
+        if (_id) {
             const article = await Article.findById(new Types.ObjectId(_id))
                 .populate({
                     path: 'author',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
                 })
                 .populate({
                     path: 'claps',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
                 })
                 .populate({
                     path: 'comments.user',
@@ -70,61 +100,46 @@ export async function GET(request: Request) {
                 .populate({
                     path: 'comments.claps',
                     select: '_id name email isPremiumMember isEmailVerified username profileImg',
-                }).sort({ createdAt: -1 })
+                })
+                .sort({ createdAt: -1 });
 
             if (!article) {
                 return NextResponse.json({ error: 'Article not found' }, { status: 404 });
             }
+
             return NextResponse.json({
                 success: true,
-                message: 'Articles successfully retrieved',
-                data: article
+                message: 'Article successfully retrieved',
+                data: article,
             }, { status: 200 });
-
-        } catch (error: unknown) {
-            return NextResponse.json({ error: 'Something went wrong', details: (error as Error).message }, { status: 500 });
         }
-    }
 
-    // Partial search for title, description, category, and topics
-    if (searchTerm) {
-        query.$or = [
-            { title: { $regex: searchTerm, $options: 'i' } },
-            { description: { $regex: searchTerm, $options: 'i' } },
-            { category: { $regex: searchTerm, $options: 'i' } },
-            { topics: { $regex: searchTerm, $options: 'i' } }
-        ];
-    }
+        // Partial search for title, description, category, and topics
+        if (searchTerm) {
+            query.$or = [
+                { title: { $regex: searchTerm, $options: 'i' } },
+                { description: { $regex: searchTerm, $options: 'i' } },
+                { category: { $regex: searchTerm, $options: 'i' } },
+                { textArea: { $regex: searchTerm, $options: 'i' } },
+                { topics: { $regex: searchTerm, $options: 'i' } },
+            ];
+        }
 
-    // Filter by category if provided
-    if (category) {
-        query.category = category;
-    }
+        // Apply filters if provided
+        if (category) query.category = category;
+        if (author && Types.ObjectId.isValid(author)) query.author = new Types.ObjectId(author);
+        if (isPremiumContent) query.isPremiumContent = isPremiumContent === 'true';
+        if (topic) query.topics = { $in: [topic] };
 
-    // Filter by author if provided (author is assumed to be an ObjectId)
-    if (author && Types.ObjectId.isValid(author)) {
-        query.author = new Types.ObjectId(author);
-    }
-
-    // Filter by premium content if provided
-    if (isPremiumContent) {
-        query.isPremiumContent = isPremiumContent === 'true';
-    }
-
-    // Filter by topic if provided (assumes topics is an array)
-    if (topic) {
-        query.topics = { $in: [topic] };
-    }
-
-    try {
+        // Fetch matching articles
         const data = await Article.find(query)
             .populate({
                 path: 'author',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                select: '_id name email isPremiumMember isEmailVerified username profileImg',
             })
             .populate({
                 path: 'claps',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg'
+                select: '_id name email isPremiumMember isEmailVerified username profileImg',
             })
             .populate({
                 path: 'comments.user',
@@ -133,15 +148,19 @@ export async function GET(request: Request) {
             .populate({
                 path: 'comments.claps',
                 select: '_id name email isPremiumMember isEmailVerified username profileImg',
-            }).sort({ createdAt: -1 });
+            })
+            .sort({ createdAt: -1 });
 
         return NextResponse.json({
             success: true,
             message: 'Articles successfully retrieved',
-            data: data
-        }, { status: 200 })
+            data: data,
+        }, { status: 200 });
 
     } catch (error: unknown) {
-        return NextResponse.json({ error: 'Something went wrong', details: (error as Error).message }, { status: 500 });
+        return NextResponse.json({
+            error: 'Something went wrong',
+            details: (error as Error).message,
+        }, { status: 500 });
     }
 }

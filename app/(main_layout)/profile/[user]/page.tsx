@@ -270,7 +270,7 @@ export default function Profile({ params }: { params: { user: string } }) {
         <>
             {isLoading && userLoading && articleLoading && <Loading />}
             {!isLoading && !!error && (
-                <div className="text-center mt-20">
+                <div className="text-center flex justify-center items-center h-screen w-full -mt-20">
                     <p>User Not Found</p>
                 </div>
             )}

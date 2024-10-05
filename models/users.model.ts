@@ -1,5 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+// Adjust the path according to your project structure
+
 
 import { TUser } from '@/types/user.type';
 
