@@ -16,6 +16,8 @@ const useArticle = (query: {
     searchTerm?: string;
     isPremiumContent?: boolean;
     _id?: string;
+    page?: number;
+    limit?: number;
 }): UseArticleResponse => {
     const fetcher = async (url: string): Promise<IArticleResponse | IArticleResponse[]> => {
         const response = await axios.get(url);
@@ -26,6 +28,10 @@ const useArticle = (query: {
     const buildUrlWithParams = () => {
         const params = new URLSearchParams();
         if (query.category) params.append("category", query.category);
+
+        if (query.page) params.append("page", String(query.page));
+        if (query.limit) params.append("limit", String(query.limit));
+
         if (query.author) params.append("author", query.author);
         if (query.searchTerm) params.append("searchTerm", query.searchTerm);
         if (query.isPremiumContent !== undefined) params.append("isPremiumContent", String(query.isPremiumContent));

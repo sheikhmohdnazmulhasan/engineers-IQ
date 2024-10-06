@@ -20,15 +20,26 @@ import useArticle from '@/hooks/use_articles'
 import Loading from '@/components/loading'
 import { categoriesData } from '@/const/article/categories'
 import { IArticleResponse } from '@/interface/articles.response.interface'
+import Pagination from '@/components/pagination'
 
 export default function Home() {
   const { currentUser } = useUser();
   const { whoToFollow, revalidate } = useWhoToFollow(currentUser?._id as string);
   const [loading, setLoading] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const query = {}
-  const { data, isLoading, revalidate: dataRevalidate } = useArticle(query);
+  console.log(currentPage);
 
+  const { data: allArticles } = useArticle({});
+
+  const query = {
+    page: currentPage,
+    limit: 1
+  }
+
+  const { data, isLoading } = useArticle(query)
+
+  const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / 1 : 0);
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -122,6 +133,11 @@ export default function Home() {
 
               {/* data card mapping */}
               {Array.isArray(data) && data?.map((article: IArticleResponse, indx: number) => <ArticlePreview key={indx} data={article} />)}
+
+              <Pagination
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
 
             </div>
             <div className="w-full lg:w-1/3">

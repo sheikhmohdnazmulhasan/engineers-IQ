@@ -62,19 +62,23 @@ export async function GET(request: Request) {
     const topic = searchParams.get('topic') as string | null;
     const _id = searchParams.get('_id') as string | null;
 
-    // Define the query using the appropriate MongoDB FilterQuery type
+    // Pagination parameters
+    const page = parseInt(searchParams.get('page') || '1', 10);  // Default to page 1
+    const limit = parseInt(searchParams.get('limit') || '10', 10);  // Default to 10 articles per page
+    const skip = (page - 1) * limit;
+
+    // Define the query
     const query: FilterQuery<TArticle> = {};
 
     try {
-        await connectMongodb(); // Call once at the start
+        await connectMongodb();
 
-        // Check if users are cached and not expired
+        // Caching logic (unchanged)
         if (!userCache.data || !userCache.lastFetch || (Date.now() - userCache.lastFetch) > userCache.expiration) {
             try {
                 userCache.data = await User.find().exec();
                 userCache.lastFetch = Date.now();
                 console.log('Users fetched from database');
-
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -82,25 +86,10 @@ export async function GET(request: Request) {
             console.log('Using cached users');
         }
 
-        // If _id is provided, fetch the article by its _id directly
+        // Fetch article by _id
         if (_id) {
             const article = await Article.findById(new Types.ObjectId(_id))
-                .populate({
-                    path: 'author',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
-                })
-                .populate({
-                    path: 'claps',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
-                })
-                .populate({
-                    path: 'comments.user',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
-                })
-                .populate({
-                    path: 'comments.claps',
-                    select: '_id name email isPremiumMember isEmailVerified username profileImg',
-                })
+                .populate('author claps comments.user comments.claps')
                 .sort({ createdAt: -1 });
 
             if (!article) {
@@ -114,7 +103,7 @@ export async function GET(request: Request) {
             }, { status: 200 });
         }
 
-        // Partial search for title, description, category, and topics
+        // Apply searchTerm and other filters
         if (searchTerm) {
             query.$or = [
                 { title: { $regex: searchTerm, $options: 'i' } },
@@ -125,36 +114,31 @@ export async function GET(request: Request) {
             ];
         }
 
-        // Apply filters if provided
         if (category) query.category = category;
         if (author && Types.ObjectId.isValid(author)) query.author = new Types.ObjectId(author);
         if (isPremiumContent) query.isPremiumContent = isPremiumContent === 'true';
         if (topic) query.topics = { $in: [topic] };
 
-        // Fetch matching articles
+        // Fetch articles with pagination
         const data = await Article.find(query)
-            .populate({
-                path: 'author',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg',
-            })
-            .populate({
-                path: 'claps',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg',
-            })
-            .populate({
-                path: 'comments.user',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg',
-            })
-            .populate({
-                path: 'comments.claps',
-                select: '_id name email isPremiumMember isEmailVerified username profileImg',
-            })
-            .sort({ createdAt: -1 });
+            .populate('author claps comments.user comments.claps')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // Count total documents for pagination metadata
+        const totalArticles = await Article.countDocuments(query);
 
         return NextResponse.json({
             success: true,
             message: 'Articles successfully retrieved',
             data: data,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(totalArticles / limit),
+                totalItems: totalArticles,
+                itemsPerPage: limit,
+            },
         }, { status: 200 });
 
     } catch (error: unknown) {
@@ -164,3 +148,5 @@ export async function GET(request: Request) {
         }, { status: 500 });
     }
 }
+
+
