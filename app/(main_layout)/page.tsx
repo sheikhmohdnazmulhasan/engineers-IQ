@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Card, CardBody, Avatar, Chip, Input } from "@nextui-org/react"
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -21,25 +21,32 @@ import Loading from '@/components/loading'
 import { categoriesData } from '@/const/article/categories'
 import { IArticleResponse } from '@/interface/articles.response.interface'
 import Pagination from '@/components/pagination'
+import useDebounce from '@/hooks/debounce'
 
 export default function Home() {
   const { currentUser } = useUser();
   const { whoToFollow, revalidate } = useWhoToFollow(currentUser?._id as string);
   const [loading, setLoading] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-  console.log(currentPage);
-
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const limit = 3
   const { data: allArticles } = useArticle({});
+  const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / limit : 0);
 
   const query = {
     page: currentPage,
-    limit: 1
+    limit,
+    searchTerm: debouncedSearchTerm
   }
 
-  const { data, isLoading } = useArticle(query)
+  // data for mapping
+  const { data, isLoading } = useArticle(query);
 
-  const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / 1 : 0);
+  // function handleCategorySearch(e: HTMLFormElement) {
+  //   console.log();
+  // }
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -102,6 +109,12 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    setCurrentPage(1);
+    setSearchTerm(debouncedSearchTerm);
+
+  }, [debouncedSearchTerm]);
+
   return (
     <div className='-mt-14'>
       {isLoading && <Loading />}
@@ -117,6 +130,7 @@ export default function Home() {
           <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
         }
         type="search"
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
 
       <div className="min-h-screen bg-background mt-10">
@@ -124,7 +138,7 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-2/3">
               <div className="mb-6 flex space-x-2 overflow-x-auto">
-                <Chip color="primary" variant="flat">For you</Chip>
+                <Chip color="primary" variant="flat">Latest</Chip>
 
                 {categoriesData.slice(0, 5).map((category, indx) => (
                   <Chip key={indx} variant='flat'>{category.label}</Chip>
@@ -134,10 +148,10 @@ export default function Home() {
               {/* data card mapping */}
               {Array.isArray(data) && data?.map((article: IArticleResponse, indx: number) => <ArticlePreview key={indx} data={article} />)}
 
-              <Pagination
+              {Array.isArray(allArticles) && allArticles.length > 3 && < Pagination
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-              />
+              />}
 
             </div>
             <div className="w-full lg:w-1/3">

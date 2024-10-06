@@ -1,7 +1,7 @@
 import { usePagination, PaginationItemType, cn } from "@nextui-org/react";
+import { useEffect } from "react";
 
 import { ChevronIcon } from "./icons";
-import { useEffect } from "react";
 
 interface PaginationProps {
     totalPages: number;
@@ -10,7 +10,7 @@ interface PaginationProps {
 
 export default function Pagination({ totalPages, onPageChange }: PaginationProps) {
 
-    const { activePage, range, setPage, onNext, onPrevious } = usePagination({
+    const { activePage, range, onNext, onPrevious } = usePagination({
         total: totalPages,
         showControls: true,
         siblings: 10,
@@ -20,8 +20,6 @@ export default function Pagination({ totalPages, onPageChange }: PaginationProps
     useEffect(() => {
         onPageChange(activePage);
     }, [activePage])
-
-    console.log('form pp', activePage);
 
     return (
         <div className="flex flex-col gap-2 justify-center">
