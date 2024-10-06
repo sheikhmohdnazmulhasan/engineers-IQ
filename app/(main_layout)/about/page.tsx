@@ -23,8 +23,8 @@ const features = [
     { title: "Community-Driven", icon: UsersIcon, description: "Learn and collaborate with fellow engineers." },
     { title: "Latest Tech News", icon: BoltIcon, description: "Stay updated with cutting-edge technology." },
     { title: "Product Reviews", icon: StarIcon, description: "Make informed decisions on engineering tools." },
-    { title: "Tutorials & Guides", icon: ShareIcon, description: "Step-by-step engineering problem-solving." },
-    { title: "Premium Content", icon: CurrencyDollarIcon, description: "Access exclusive content and courses." },
+    // { title: "Tutorials & Guides", icon: ShareIcon, description: "Step-by-step engineering problem-solving." },
+    // { title: "Premium Content", icon: CurrencyDollarIcon, description: "Access exclusive content and courses." },
 ];
 
 export default function AboutUs() {
@@ -50,15 +50,6 @@ export default function AboutUs() {
 
             <div className="my-12" />
 
-            <h2 className="text-3xl font-semibold text-center">What We Offer</h2>
-            <div className="flex flex-wrap gap-6 mt-6 justify-center">
-                {features.map((feature, index) => (
-                    <FeatureCard key={index} {...feature} />
-                ))}
-            </div>
-
-            <div className="my-12" />
-
             <h2 className="text-3xl font-semibold">Our Community</h2>
             <p className="">
                 EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners.
@@ -71,12 +62,22 @@ export default function AboutUs() {
 
             <div className="my-12" />
 
+            <h2 className="text-3xl font-semibold text-center">What We Offer</h2>
+            <div className="flex flex-wrap gap-6 mt-6 justify-center">
+                {features.map((feature, index) => (
+                    <FeatureCard key={index} {...feature} />
+                ))}
+            </div>
+
+
+            <div className="my-12" />
+
             <div className="text-center">
                 <h2 className="text-3xl font-semibold">Join Our Engineering Community</h2>
                 <p className="">
                     Ready to enhance your engineering knowledge and connect with like-minded enthusiasts?
                 </p>
-                <div className="mt-4">
+                <div className="mt-8">
                     <Link className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300" href={'/auth/register'}>
                         Sign Up Now
                     </Link>
