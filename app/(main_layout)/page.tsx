@@ -175,7 +175,7 @@ export default function Home() {
                 <SidebarSection title="Recommended topics">
                   <div className="flex flex-wrap gap-2">
                     {topicsData.slice(0, topicsData.length / 2).reverse().map((topic, index) => (
-                      <Chip key={index} className='hover:cursor-pointer' color={selectedTopic === topic.key ? 'primary' : 'default'} variant="flat" onClick={() => setTopic(topic.key)}>{topic.label}</Chip>
+                      <Chip key={index} className='hover:cursor-pointer' color={selectedTopic === topic.key ? 'primary' : 'default'} variant="flat" onClick={() => setTopic(topic.key === selectedTopic ? '' : topic.key)}>{topic.label}</Chip>
                     ))}
                   </div>
                 </SidebarSection>
