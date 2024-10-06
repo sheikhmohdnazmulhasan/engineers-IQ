@@ -17,11 +17,11 @@ import { INotificationEmail } from '@/interface/email.notification.interface'
 import sendNotificationEmail from '@/utils/send_notification_email'
 import { topicsData } from '@/const/article/topics'
 import useArticle from '@/hooks/use_articles'
-import Loading from '@/components/loading'
 import { categoriesData } from '@/const/article/categories'
 import { IArticleResponse } from '@/interface/articles.response.interface'
 import Pagination from '@/components/pagination'
 import useDebounce from '@/hooks/debounce'
+import Loading from '@/components/loading'
 
 export default function Home() {
   const { currentUser } = useUser();
@@ -108,6 +108,12 @@ export default function Home() {
     }
   }
 
+  function handleClearFilter() {
+    setSearchTerm('');
+    setCategory('');
+    setTopic('');
+  }
+
   useEffect(() => {
     setCurrentPage(1);
     // setCategory('')
@@ -145,6 +151,13 @@ export default function Home() {
                 ))}
               </div>
 
+              {!isLoading && Array.isArray(data) && !data.length && (
+                <div className=" h-screen flex justify-center flex-col items-center -mt-32">
+                  <h2>No article found based on your filter!</h2>
+                  <Button className='mt-2' color='primary' variant='bordered' onClick={handleClearFilter}>Clear Filter</Button>
+                </div>
+              )}
+
               {/* data card mapping */}
               {Array.isArray(data) && data?.map((article: IArticleResponse, indx: number) => <ArticlePreview key={indx} data={article} />)}
 
@@ -158,10 +171,9 @@ export default function Home() {
               <div className="sticky top-20">
 
                 {/* system pics */}
-                {/* data.sort(() => 0.5 - Math.random()).slice(0, 3)? */}
 
                 <SidebarSection title="System Picks">
-                  {Array.isArray(data) && data.slice(0, 3).reverse().map((article, indx) => (
+                  {Array.isArray(allArticles) && allArticles.sort(() => 0.5 - Math.random()).slice(0, 3)?.map((article, indx) => (
                     <Link key={indx} href={`/articles/${article.author.username}/${article._id}`}>
                       <Card className="mb-2">
                         <CardBody>
