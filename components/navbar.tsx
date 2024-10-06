@@ -167,6 +167,11 @@ export const Navbar = () => {
               </Link>
             </NavbarMenuItem>
           ))}
+          {!currentUser && <NavbarMenuItem >
+            <Link color="primary" href='/auth/login' size="lg">
+              Sign In
+            </Link>
+          </NavbarMenuItem>}
         </div>
       </NavbarMenu>
     </NextUINavbar>

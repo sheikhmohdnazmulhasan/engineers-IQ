@@ -11,6 +11,8 @@ import { Input, Textarea } from '@nextui-org/input';
 import { Button, Checkbox, Select, SelectItem, } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { LockIcon } from 'lucide-react';
+import Link from 'next/link';
 
 import { categoriesData } from '@/const/article/categories';
 import { topicsData } from '@/const/article/topics';
@@ -18,9 +20,6 @@ import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
 import { useCreateArticle } from '@/hooks/operations/hook_oparetion_create_article';
-import { useRouter } from 'next/navigation';
-import { LockIcon } from 'lucide-react';
-import Link from 'next/link';
 
 interface EditorInstance {
     getContent: () => string;
@@ -36,7 +35,7 @@ export default function New() {
     const { isLoading, currentUser } = useUser();
     const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
     const shortDes = watch('textArea');
-    const router = useRouter();
+
 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
