@@ -26,7 +26,7 @@ function Login() {
         setLoading(true);
 
         try {
-            const res = await fetch(`http://localhost:3000/api/auth/login`, {
+            const res = await fetch(`https://engineers-iq.vercel.app/api/auth/login`, {
                 method: 'POST',
                 body: JSON.stringify({
                     email: data.email,
