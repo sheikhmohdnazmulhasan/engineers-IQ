@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { NextResponse } from "next/server";
 
 import connectMongodb from "@/libs/connect_mongodb";
@@ -35,30 +34,12 @@ export async function POST(request: Request) {
             }, { status: 500 });
         };
 
-        const accessToken = jwt.sign({
-            email: user.email,
-            username: user.username,
-            role: user.role
-        }, process.env.NEXT_PUBLIC_JWT_ACCESS_TOKEN_SECRET as string, {
-            expiresIn: '1d'
-        });
-
-        const refreshToken = jwt.sign({
-            email: user.email,
-            username: user.username,
-            role: user.role
-        }, process.env.NEXT_PUBLIC_JWT_REFRESH_TOKEN_SECRET as string, {
-            expiresIn: '30d'
-        });
-
         user.lastLogin = new Date();
         user.save();
 
         return NextResponse.json({
             success: true,
             message: 'Account Logged in Success',
-            accessToken,
-            refreshToken,
         }, { status: 200 });
 
     } catch (error) {

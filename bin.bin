@@ -1,9 +1,13 @@
-import NextAuth, { AuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { NextApiHandler } from "next";
-import { cookies } from "next/headers";
+/api/[...nextauth]/route.ts
 
-export const authOptions: AuthOptions = {
+
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from "next-auth";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "credentials",
@@ -26,9 +30,7 @@ export const authOptions: AuthOptions = {
 
                     const user = await res.json();
 
-                    if (res.ok && user) {
-                        cookies().set('accessToken', user.accessToken)
-                        cookies().set('refreshToken', user.refreshToken)
+                    if (res.ok) {
                         return user;
                     }
 
@@ -42,12 +44,12 @@ export const authOptions: AuthOptions = {
     session: {
         strategy: "jwt",
     },
-    secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     pages: {
-        signIn: "/", // Redirect to your custom login page
+        signIn: "/",
     },
 };
 
-const handler: NextApiHandler = NextAuth(authOptions);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

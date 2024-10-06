@@ -40,7 +40,14 @@ export async function GET(request: Request) {
             }).populate({
                 path: 'followers',
                 select: '_id username name isEmailVerified email isPremiumMember profileImg'
-            })
+            });
+
+            if (!result) {
+                return NextResponse.json({
+                    success: false,
+                    message: 'Something wrong'
+                }, { status: 400 })
+            }
 
             return NextResponse.json({
                 success: true,

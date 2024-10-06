@@ -43,7 +43,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
-    const { data, isLoading: articleLoading } = useArticle({});
+    const { data, isLoading: articleLoading } = useArticle({ author: currentUser?._id });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
@@ -487,7 +487,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 </div>
                             </div>
 
-                            {Array.isArray(data) && data.map((article, indx) => <ArticlePreview fromProfile={true} key={indx} data={article} />)}
+                            {Array.isArray(data) && data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} />)}
 
                         </div>
                     </main>

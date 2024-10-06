@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
-import { IUser } from "@/interface/users.interface";
 
 export async function POST(request: Request) {
     try {
@@ -10,7 +9,7 @@ export async function POST(request: Request) {
         await connectMongodb();
 
         // Parse request body
-        const data: IUser = await request.json();
+        const data = await request.json();
 
         // Check if email or username already exists in one query
         const userExist = await User.findOne({
@@ -32,7 +31,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'User Created Successfully', data: result }, { status: 201 });
 
     } catch (error) {
-        console.error('Error creating user:', error);
         return NextResponse.json({ message: 'Failed to create user' }, { status: 500 });
     }
 }

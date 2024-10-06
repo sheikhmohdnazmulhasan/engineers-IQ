@@ -3,14 +3,14 @@
 import { Button, Card, CardBody, CardHeader, Input, Link } from "@nextui-org/react"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { signIn } from 'next-auth/react';
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { loginValidationSchema } from "@/validations/login.validation";
 import Loading from "@/components/loading";
+import { encrypt } from "@/utils/text_encryptor";
 
-export default function Login() {
+function Login() {
     const [customError, setCustomError] = useState<null | string>(null)
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
@@ -25,18 +25,25 @@ export default function Login() {
         setCustomError(null);
         setLoading(true);
 
-        const result = await signIn('credentials', {
-            redirect: false,
-            email: data.email,
-            password: data.password,
-        });
+        try {
+            const res = await fetch(`http://localhost:3000/api/auth/login`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password,
+                }),
+                headers: { "Content-Type": "application/json" }
+            });
 
-        if (result?.error) {
-            setCustomError('Invalid Email or Password!')
-            setLoading(false);
+            if (!res.ok) {
+                setCustomError('Invalid Email or Password!')
+                setLoading(false);
+                return
+            }
 
-        } else if (result?.ok) {
-            localStorage.setItem('signed_email', data.email)
+            // user Lagged in
+            const signed_token = encrypt(data.email);
+            localStorage.setItem('signed_token', signed_token);
             setCustomError(null);
             setLoading(false);
 
@@ -45,7 +52,11 @@ export default function Login() {
             } else {
                 router.push('/');
             }
-        }
+
+        } catch (error) {
+            setCustomError('Something Bad Happened!')
+            setLoading(false);
+        };
     };
 
     return (
@@ -94,5 +105,14 @@ export default function Login() {
                 </Card>
             </div>
         </>
+    );
+}
+
+
+export default function LoginWrapper() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <Login />
+        </Suspense>
     );
 }

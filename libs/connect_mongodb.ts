@@ -9,7 +9,7 @@ const connectMongodb = async () => {
     }
 
     try {
-        await mongoose.connect(process.env.NEXT_PUBLIC_MONGODB_CONNECTION_STRING as string);
+        await mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string);
         isConnected = true;
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 

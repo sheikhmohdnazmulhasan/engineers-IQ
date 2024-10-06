@@ -9,6 +9,9 @@ export const registerUser = async (userData: FieldValues) => {
 
     try {
         const { data } = await axiosInstance.post('/auth/register', userData);
+
+        console.log(data);
+
         return data;
 
     } catch (error: any) {

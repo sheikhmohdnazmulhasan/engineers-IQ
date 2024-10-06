@@ -3,10 +3,11 @@
 import { Button, Card } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import sendAccountVerificationEmail from "@/utils/send_account_verification_email";
 import Loading from "@/components/loading";
+
 const NextStep = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get('email');
@@ -55,4 +56,10 @@ const NextStep = () => {
     );
 };
 
-export default NextStep;
+export default function NextResponseWrapper() {
+    return (
+        <Suspense fallback={<Loading />}>
+            <NextStep />
+        </Suspense>
+    );
+}
