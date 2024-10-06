@@ -46,9 +46,6 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { data, isLoading: articleLoading } = useArticle({ author: profile?._id });
     const [render, setRender] = useState<'home' | 'analytics' | 'user' | 'payout'>('home');
 
-    console.log(render);
-
-
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
     });
@@ -529,7 +526,6 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     </div>
                                 )
                             }
-
 
                         </div>
                     </main>
