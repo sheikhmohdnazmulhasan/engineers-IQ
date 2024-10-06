@@ -29,7 +29,7 @@ export default function Home() {
   const [loading, setLoading] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
+  const [selectedCategory, setCategory] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const limit = 3
   const { data: allArticles } = useArticle({});
@@ -38,7 +38,8 @@ export default function Home() {
   const query = {
     page: currentPage,
     limit,
-    searchTerm: debouncedSearchTerm
+    searchTerm: debouncedSearchTerm,
+    category: selectedCategory
   }
 
   // data for mapping
@@ -138,10 +139,10 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-2/3">
               <div className="mb-6 flex space-x-2 overflow-x-auto">
-                <Chip color="primary" variant="flat">Latest</Chip>
+                <Chip className='hover:cursor-pointer ' color={!selectedCategory ? 'primary' : 'default'} variant="flat" onClick={() => setCategory('')}>Latest</Chip>
 
                 {categoriesData.slice(0, 5).map((category, indx) => (
-                  <Chip key={indx} variant='flat'>{category.label}</Chip>
+                  <Chip key={indx} className='hover:cursor-pointer' color={selectedCategory === category.key ? 'primary' : 'default'} variant="flat" onClick={() => setCategory(category.key)}>{category.label}</Chip>
                 ))}
               </div>
 
