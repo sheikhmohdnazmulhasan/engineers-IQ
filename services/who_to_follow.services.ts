@@ -8,8 +8,6 @@ export async function getWhoToFollow(user: string) {
         },
     };
 
-    const res = await fetch(`https://engineers-iq.vercel.app/api/follow?user=${user}`, fetchOption);
-
-    console.log(res.json());
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/api/follow?user=${user}`, fetchOption);
     return res.json();
 }

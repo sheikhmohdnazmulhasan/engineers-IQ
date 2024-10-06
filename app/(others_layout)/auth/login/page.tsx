@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { loginValidationSchema } from "@/validations/login.validation";
 import Loading from "@/components/loading";
@@ -26,7 +27,7 @@ function Login() {
         setLoading(true);
 
         try {
-            const res = await fetch(`https://engineers-iq.vercel.app/api/auth/login`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/api/auth/login`, {
                 method: 'POST',
                 body: JSON.stringify({
                     email: data.email,
@@ -62,36 +63,89 @@ function Login() {
     return (
         <>
             {loading && <Loading />}
-            <div className="min-h-screen flex justify-center items-center fixed inset-0 px-5">
+            <motion.div
+                animate={{ opacity: 1 }}
+                className="min-h-screen flex justify-center items-center inset-0 px-5"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+            >
                 <Card className="w-full max-w-xl mx-auto">
                     <CardHeader className="flex flex-col gap-1 px-6 py-5">
-                        <h1 className="text-2xl font-bold">Login</h1>
-                        <p className="text-sm text-default-500">Enter your credentials to access your account</p>
+                        <motion.h1
+                            animate={{ y: 0, opacity: 1 }}
+                            className="text-2xl font-bold"
+                            initial={{ y: -20, opacity: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            Login
+                        </motion.h1>
+                        <motion.p
+                            animate={{ y: 0, opacity: 1 }}
+                            className="text-sm text-default-500"
+                            initial={{ y: -10, opacity: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            Enter your credentials to access your account
+                        </motion.p>
                     </CardHeader>
                     <CardBody className="px-6 py-5">
                         <form className="space-y-5" onSubmit={handleSubmit(handleLogin)}>
-                            <Input
-                                required
-                                label="Email"
-                                size='sm'
-                                type="string"
-                                {...register('email')}
-                                errorMessage={errors.email?.message as string} // Display the error message
-                                isInvalid={!!errors.email} // Show invalid state if there's an error
-                            />
-                            <Input
-                                required
-                                label="Password"
-                                size='sm'
-                                type="password"
-                                {...register('password')}
-                                errorMessage={errors.password?.message as string} // Display the error message
-                                isInvalid={!!errors.password} // Show invalid state if there's an error
-                            />
-                            <Button className='w-full rounded-lg py-6' type="submit">Sign In</Button>
+                            <motion.div
+                                animate={{ x: 0, opacity: 1 }}
+                                initial={{ x: -20, opacity: 0 }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                <Input
+                                    required
+                                    label="Email"
+                                    size='sm'
+                                    type="string"
+                                    {...register('email')}
+                                    errorMessage={errors.email?.message as string}
+                                    isInvalid={!!errors.email}
+                                />
+                            </motion.div>
+                            <motion.div
+                                animate={{ x: 0, opacity: 1 }}
+                                initial={{ x: -20, opacity: 0 }}
+                                transition={{ delay: 0.5 }}
+                            >
+                                <Input
+                                    required
+                                    label="Password"
+                                    size='sm'
+                                    type="password"
+                                    {...register('password')}
+                                    errorMessage={errors.password?.message as string}
+                                    isInvalid={!!errors.password}
+                                />
+                            </motion.div>
+                            <motion.div
+                                animate={{ y: 0, opacity: 1 }}
+                                initial={{ y: 20, opacity: 0 }}
+                                transition={{ delay: 0.6 }}
+                            >
+                                <Button className='w-full rounded-lg py-6' type="submit">Sign In</Button>
+                            </motion.div>
                         </form>
-                        <span className="text-red-600 mt-2 text-sm">{customError}</span>
-                        <div className="flex justify-center mt-6">
+                        <AnimatePresence>
+                            {customError && (
+                                <motion.span
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-red-600 mt-2 text-sm"
+                                    exit={{ opacity: 0, y: -5 }}
+                                    initial={{ opacity: 0, y: 5 }}
+                                >
+                                    {customError}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                        <motion.div
+                            animate={{ opacity: 1 }}
+                            className="flex justify-center mt-6"
+                            initial={{ opacity: 0 }}
+                            transition={{ delay: 0.7 }}
+                        >
                             <div className="text-center">
                                 {customError ?
                                     <p className="text-sm">Forgot Password?</p> :
@@ -100,14 +154,13 @@ function Login() {
                                     </Link></p>
                                 }
                             </div>
-                        </div>
+                        </motion.div>
                     </CardBody>
                 </Card>
-            </div>
+            </motion.div>
         </>
     );
 }
-
 
 export default function LoginWrapper() {
     return (

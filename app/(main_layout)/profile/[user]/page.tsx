@@ -333,7 +333,7 @@ export default function Profile({ params }: { params: { user: string } }) {
             </Modal>
 
             {!error && (
-                <div className="container mx-auto max-w-7xl h-screen">
+                <div className="container mx-auto max-w-7xl min-h-screen">
                     {isWonProfile && !currentUser?.isEmailVerified &&
                         <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
                             Action Required: Verify your email to start writing article! <span className='ml-2 underline hover:cursor-pointer' onClick={handleResendEmail}>Resent Verification Email</span>
