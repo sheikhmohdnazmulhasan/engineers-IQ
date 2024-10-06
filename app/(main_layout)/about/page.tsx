@@ -4,9 +4,7 @@ import {
     LightBulbIcon,
     UsersIcon,
     BoltIcon,
-    StarIcon,
-    ShareIcon,
-    CurrencyDollarIcon
+    StarIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
