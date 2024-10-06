@@ -488,8 +488,6 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 </div>
                             </div>
 
-                            { }
-
                             {Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} />) : (
                                 <div className=" h-screen flex justify-center flex-col items-center -mt-32">
                                     <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
