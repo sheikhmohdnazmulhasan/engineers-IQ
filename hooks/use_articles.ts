@@ -15,6 +15,7 @@ const useArticle = (query: {
     author?: string;
     searchTerm?: string;
     isPremiumContent?: boolean;
+    topic?: string;
     _id?: string;
     page?: number;
     limit?: number;
@@ -33,6 +34,7 @@ const useArticle = (query: {
         if (query.limit) params.append("limit", String(query.limit));
 
         if (query.author) params.append("author", query.author);
+        if (query.topic) params.append("topic", query.topic);
         if (query.searchTerm) params.append("searchTerm", query.searchTerm);
         if (query.isPremiumContent !== undefined) params.append("isPremiumContent", String(query.isPremiumContent));
         if (query._id) params.append("_id", query._id);

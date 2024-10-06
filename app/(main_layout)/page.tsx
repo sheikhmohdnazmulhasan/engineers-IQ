@@ -30,6 +30,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setCategory] = useState<string>('');
+  const [selectedTopic, setTopic] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const limit = 3
   const { data: allArticles } = useArticle({});
@@ -39,15 +40,12 @@ export default function Home() {
     page: currentPage,
     limit,
     searchTerm: debouncedSearchTerm,
-    category: selectedCategory
+    category: selectedCategory,
+    topic: selectedTopic
   }
 
   // data for mapping
   const { data, isLoading } = useArticle(query);
-
-  // function handleCategorySearch(e: HTMLFormElement) {
-  //   console.log();
-  // }
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -112,6 +110,7 @@ export default function Home() {
 
   useEffect(() => {
     setCurrentPage(1);
+    // setCategory('')
     setSearchTerm(debouncedSearchTerm);
 
   }, [debouncedSearchTerm]);
@@ -176,7 +175,7 @@ export default function Home() {
                 <SidebarSection title="Recommended topics">
                   <div className="flex flex-wrap gap-2">
                     {topicsData.slice(0, topicsData.length / 2).reverse().map((topic, index) => (
-                      <Link key={index} href={`/articles/tag/${topic.key}`}> <Chip variant="flat">{topic.label}</Chip></Link>
+                      <Chip key={index} className='hover:cursor-pointer' color={selectedTopic === topic.key ? 'primary' : 'default'} variant="flat" onClick={() => setTopic(topic.key)}>{topic.label}</Chip>
                     ))}
                   </div>
                 </SidebarSection>
