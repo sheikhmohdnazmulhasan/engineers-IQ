@@ -7,7 +7,7 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { FaPen } from "react-icons/fa6";
 import { IoMdSave } from "react-icons/io";
 import { useForm } from 'react-hook-form';
@@ -43,20 +43,21 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
-    const { data, isLoading: articleLoading } = useArticle({ author: currentUser?._id });
+    const { data, isLoading: articleLoading } = useArticle({ author: profile?._id });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
     });
 
-    const router = useRouter();
+    // const router = useRouter();
 
     async function handleFollowNewPerson(target: IUserResponse) {
         setIsActionLoading(true);
 
         if (!currentUser) {
             setIsActionLoading(false);
-            router.push(`/auth/login?redirect=/profile/${params.user}`);
+            // router.push(`/auth/login?redirect=/profile/${params.user}`);
+            toast.error('You are not Logged in!');
             return
         }
 
@@ -332,7 +333,7 @@ export default function Profile({ params }: { params: { user: string } }) {
             </Modal>
 
             {!error && (
-                <div className="container mx-auto max-w-7xl">
+                <div className="container mx-auto max-w-7xl h-screen">
                     {isWonProfile && !currentUser?.isEmailVerified &&
                         <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
                             Action Required: Verify your email to start writing article! <span className='ml-2 underline hover:cursor-pointer' onClick={handleResendEmail}>Resent Verification Email</span>
