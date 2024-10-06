@@ -147,6 +147,30 @@ export async function GET(request: Request) {
             details: (error as Error).message,
         }, { status: 500 });
     }
+};
+
+async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    try {
+        await connectMongodb();
+        const result = await Article.findByIdAndDelete(id);
+
+        if (result) {
+            return NextResponse.json({
+                success: true,
+                message: 'articled deleted',
+            }, { status: httpStatus.OK });
+        }
+
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: 'Something went wrong',
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+
 }
 
 
