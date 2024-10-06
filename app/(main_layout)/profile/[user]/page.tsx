@@ -44,6 +44,10 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
     const { data, isLoading: articleLoading } = useArticle({ author: profile?._id });
+    const [render, setRender] = useState<'home' | 'analytics' | 'user' | 'payout'>('home');
+
+    console.log(render);
+
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
@@ -475,11 +479,24 @@ export default function Profile({ params }: { params: { user: string } }) {
                         <div className="lg:order-1 lg:col-span-2 order-2">
                             <div className="flex flex-col items-start mb-8">
                                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">{profile?.name}</h1>
-                                <div className="flex mt-4 space-x-4">
-                                    <Link className="font-medium underline cursor-pointer" color="foreground">Home</Link>
+                                <div className="flex mt-4 space-x-4 flex-wrap">
+                                    <p className={`${render === 'home' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('home')}>Home</p>
                                     {isWonProfile ? <>
+
+
                                         <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Draft</p>
-                                        <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Analytics</p>
+
+                                        <p className={`${render === 'analytics' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('analytics')}>Analytics</p>
+
+                                        {profile?.role === 'admin' && (
+                                            <>
+                                                <p className={`${render === 'user' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('user')}>Users</p>
+
+                                                <p className={`${render === 'payout' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('payout')}>Payout</p>
+
+                                                {/* <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Payment History</p> */}
+                                            </>
+                                        )}
                                     </> :
                                         <>
                                             <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Lists</p>
@@ -488,11 +505,30 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 </div>
                             </div>
 
-                            {Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} />) : (
-                                <div className=" h-screen flex justify-center flex-col items-center -mt-32">
-                                    <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
-                                </div>
-                            )}
+
+                            {/* conditional rendering */}
+
+                            {
+                                render === 'home' ? (
+                                    Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} />) : (
+                                        <div className=" h-screen flex justify-center flex-col items-center -mt-32">
+                                            <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
+                                        </div>
+                                    )
+                                ) : render === 'analytics' ? (
+                                    <div className="">
+                                        analytics
+                                    </div>
+                                ) : render === 'user' ? (
+                                    <div className="">
+                                        user
+                                    </div>
+                                ) : (
+                                    <div className="">
+                                        payout
+                                    </div>
+                                )
+                            }
 
 
                         </div>

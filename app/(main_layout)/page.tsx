@@ -235,7 +235,7 @@ export default function Home() {
                 <SidebarSection title="Recommended topics">
                   <motion.div className="flex flex-wrap gap-2" variants={staggerChildren}>
                     <AnimatePresence>
-                      {topicsData.slice(0, topicsData.length / 2).reverse().map((topic, index) => (
+                      {topicsData.slice(0, topicsData.length / 2).reverse().map((topic) => (
                         <motion.div key={topic.key} variants={fadeInUp}>
                           <Chip
                             className='hover:cursor-pointer'
