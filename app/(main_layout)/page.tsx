@@ -32,8 +32,12 @@ export default function Home() {
   const [selectedCategory, setCategory] = useState<string>('');
   const [selectedTopic, setTopic] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const limit = 3
-  const { data: allArticles } = useArticle({});
+  const limit = 6
+  const { data: allArticles } = useArticle({
+    searchTerm: debouncedSearchTerm,
+    category: selectedCategory,
+    topic: selectedTopic
+  });
   const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / limit : 0);
 
   const query = {
@@ -161,7 +165,7 @@ export default function Home() {
               {/* data card mapping */}
               {Array.isArray(data) && data?.map((article: IArticleResponse, indx: number) => <ArticlePreview key={indx} data={article} />)}
 
-              {Array.isArray(allArticles) && allArticles.length > 3 && < Pagination
+              {Array.isArray(allArticles) && allArticles.length > 6 && < Pagination
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
               />}
