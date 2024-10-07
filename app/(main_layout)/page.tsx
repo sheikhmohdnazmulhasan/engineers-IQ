@@ -44,7 +44,7 @@ export default function Home() {
   const [selectedTopic, setTopic] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const limit = 6
-  const { data: allArticles } = useArticle({
+  const { data: allArticles, error: error1 } = useArticle({
     searchTerm: debouncedSearchTerm,
     category: selectedCategory,
     topic: selectedTopic
@@ -59,7 +59,7 @@ export default function Home() {
     topic: selectedTopic
   }
 
-  const { data, isLoading } = useArticle(query);
+  const { data, isLoading, error: error2 } = useArticle(query);
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -193,6 +193,16 @@ export default function Home() {
                 >
                   <h2>No article found based on your filter!</h2>
                   <Button className='mt-2' color='primary' variant='bordered' onClick={handleClearFilter}>Clear Filter</Button>
+                </motion.div>
+              )}
+
+              {!isLoading && (error1 || error2) && (
+                <motion.div
+                  className="h-screen flex justify-center flex-col items-center -mt-32"
+                  variants={fadeInUp}
+                >
+                  <h2>Something Bad Happened!</h2>
+                  <Button className='mt-2' color='primary' variant='bordered' onClick={() => window.location.reload()}>Retry</Button>
                 </motion.div>
               )}
 
