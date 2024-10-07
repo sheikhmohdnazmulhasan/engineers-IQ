@@ -92,6 +92,9 @@ export async function GET(request: Request) {
                 .populate('author claps comments.user comments.claps')
                 .sort({ createdAt: -1 });
 
+            article.views++
+            article.save();
+
             if (!article) {
                 return NextResponse.json({ error: 'Article not found' }, { status: 404 });
             }
