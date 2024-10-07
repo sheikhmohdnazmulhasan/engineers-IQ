@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import connectMongodb from '@/libs/connect_mongodb';
 import Article from '@/models/article.model';
+import User from '@/models/users.model';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -13,9 +14,22 @@ export async function GET(request: Request) {
 
     try {
         await connectMongodb();
+        const query: { author?: string } = {};
+
+        // check author is admin or not
+        const user = await User.findById(authorId).select('role').lean();
+
+        if (!user) {
+            return NextResponse.json({ message: 'No user found for the given _id' }, { status: 404 });
+        }
+
+        // @ts-ignore
+        if (user.role !== 'admin') {
+            query.author = authorId
+        }
 
         // Fetch all articles by the author
-        const articles = await Article.find({ author: authorId }).lean();
+        const articles = await Article.find(query).lean();
 
         // If no articles found
         if (!articles || articles.length === 0) {
