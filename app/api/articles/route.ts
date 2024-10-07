@@ -149,7 +149,7 @@ export async function GET(request: Request) {
     }
 };
 
-async function DELETE(request: Request) {
+export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -170,7 +170,6 @@ async function DELETE(request: Request) {
             message: 'Something went wrong',
         }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
-
 }
 
 

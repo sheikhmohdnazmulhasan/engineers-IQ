@@ -43,7 +43,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
-    const { data, isLoading: articleLoading } = useArticle({ author: profile?._id });
+    const { data, isLoading: articleLoading, revalidate: articleRevalidate } = useArticle({ author: profile?._id });
     const [render, setRender] = useState<'home' | 'analytics' | 'user' | 'payout'>('home');
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -507,7 +507,7 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                             {
                                 render === 'home' ? (
-                                    Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} />) : (
+                                    Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview revalidate={articleRevalidate} key={indx} data={article} fromProfile={true} />) : (
                                         <div className=" h-screen flex justify-center flex-col items-center -mt-32">
                                             <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
                                         </div>
