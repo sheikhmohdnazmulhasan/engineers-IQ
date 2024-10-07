@@ -116,9 +116,12 @@ export const ArticlePreview = ({
                             <div className="flex-grow pr-0 md:pr-4">
                                 <h2 className="text-xl font-bold mb-2">{data?.title}</h2>
                                 <p className="text-default-500 mb-4">{data?.textArea}</p>
-                                <div className="flex flex-wrap items-center gap-2 mb-4">
-                                    <span className="text-small text-default-400">{formatDateReadable(data.createdAt)}</span>
-                                    <span className="text-small text-default-400">{calculateReadTime(data.description)} min read</span>
+                                <div className="flex flex-wrap text-default-400 items-center gap-2 mb-4">
+                                    <span className="text-small">{formatDateReadable(data.createdAt)}</span>
+                                    ·
+                                    <span className="text-small ">{calculateReadTime(data.description)} min read</span>
+                                    ·
+                                    <span className="text-small ">{data.views} views</span>
                                     {data.topics.map((tag, index) => (
                                         <Chip key={index} size="sm" variant="flat">
                                             {tag}

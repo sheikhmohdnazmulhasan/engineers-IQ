@@ -54,7 +54,7 @@ export default function AboutUs() {
                         At EngineersIQ, we believe in the transformative power of software engineering to shape the future. Our mission is to create an inclusive, knowledge-rich platform that empowers software engineers of all experience levels to thrive in an ever-evolving digital landscape. We are committed to bridging the gap between emerging technologies and real-world application, offering our community the tools, resources, and collaborative spaces they need to excel.
                     </p>
                     <p>
-                        Through expert-led content, up-to-date industry insights, and peer-to-peer learning, we aim to foster a culture of continuous growth, innovation, and collaboration. Whether you're just starting your coding journey or are a seasoned professional looking to stay on top of the latest trends, EngineersIQ is here to provide the guidance, support, and connections you need to succeed.
+                        Through expert-led content, up-to-date industry insights, and peer-to-peer learning, we aim to foster a culture of continuous growth, innovation, and collaboration. Whether you&apos;re just starting your coding journey or are a seasoned professional looking to stay on top of the latest trends, EngineersIQ is here to provide the guidance, support, and connections you need to succeed.
                     </p>
                     <p>
                         We envision a future where every software engineer has the knowledge, confidence, and resources to solve complex problems, build groundbreaking software, and contribute meaningfully to the tech industry. By focusing on practical, hands-on learning and community-driven growth, we seek to cultivate the next generation of software leaders and innovators.
@@ -65,12 +65,12 @@ export default function AboutUs() {
             <motion.div className="mb-12" variants={fadeInRight}>
                 <h2 className="text-3xl font-semibold mb-4">Our Community</h2>
                 <p className="mb-4">
-                    EngineersIQ is more than just a platform; it's a thriving community of engineers, professionals, and curious learners.
+                    EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners.
                     Our diverse user base contributes to a rich ecosystem of knowledge, where everyone has something to learn and something to teach.
                 </p>
                 <p>
-                    Whether you're troubleshooting a complex engineering problem, exploring new tools, or diving into
-                    the world of coding, you'll find a supportive community ready to help and collaborate.
+                    Whether you&apos;re troubleshooting a complex engineering problem, exploring new tools, or diving into
+                    the world of coding, you&apos;ll find a supportive community ready to help and collaborate.
                 </p>
             </motion.div>
 
