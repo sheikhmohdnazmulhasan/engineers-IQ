@@ -9,16 +9,55 @@ import { IArticleResponse } from "@/interface/articles.response.interface"
 import calculateReadTime from "@/utils/calculate_read_time"
 import formatDateReadable from "@/utils/format_date_readable"
 import useUser from "@/hooks/useUser"
+import axiosInstance from "@/libs/axiosInstance";
 
 import UserName from "./premium_acc_badge"
 
-export const ArticlePreview = ({ data, fromProfile = false }: { data: IArticleResponse; fromProfile?: boolean }) => {
+export const ArticlePreview = ({
+    data,
+    fromProfile = false,
+    revalidate
+}: {
+    data: IArticleResponse;
+    fromProfile?: boolean;
+    revalidate?: () => void;
+}) => {
     const { currentUser } = useUser();
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [deletionState, setDeletionState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger')
 
     async function handleDeleteArticle() {
+        setDeletionState('danger');
+        try {
+            setDeletionState('loading');
+            const res = await axiosInstance.delete(`/articles`, {
+                params: {
+                    id: data._id
+                }
+            });
 
+            if (res.status === 200) {
+                setDeletionState('success');
+                (revalidate || (() => ({})))();
+
+                setTimeout(() => {
+                    onClose();
+                }, 1000);
+
+            } else {
+                setDeletionState('error');
+
+                setTimeout(() => {
+                    onClose();
+                }, 1500);
+            }
+
+        } catch (error) {
+            setDeletionState('error');
+            setTimeout(() => {
+                onClose();
+            }, 1500);
+        }
     }
 
     return (
