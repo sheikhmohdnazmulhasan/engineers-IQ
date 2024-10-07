@@ -30,6 +30,7 @@ import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 import sendAccountVerificationEmail from '@/utils/send_account_verification_email';
 import useArticle from '@/hooks/use_articles';
 import Pagination from '@/components/pagination';
+import { Analytics } from '@/components/profile/analytics';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -486,12 +487,8 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                                     <p className={`${render === 'home' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('home')}>Home</p>
                                     {isWonProfile ? <>
-
-
                                         <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Draft</p>
-
                                         <p className={`${render === 'analytics' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('analytics')}>Analytics</p>
-
                                         {profile?.role === 'admin' && (
                                             <>
                                                 <p className={`${render === 'user' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('user')}>Users</p>
@@ -508,7 +505,6 @@ export default function Profile({ params }: { params: { user: string } }) {
                                         </>}
                                 </div>
                             </div>
-
 
                             {/* conditional rendering */}
 
@@ -530,7 +526,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                     )
                                 ) : render === 'analytics' ? (
                                     <div className="">
-                                        analytics
+                                        <Analytics />
                                     </div>
                                 ) : render === 'user' ? (
                                     <div className="">
