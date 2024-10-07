@@ -42,12 +42,14 @@ export const ArticlePreview = ({
 
                 setTimeout(() => {
                     onClose();
+                    setDeletionState('danger')
                 }, 1000);
 
             } else {
                 setDeletionState('error');
 
                 setTimeout(() => {
+                    setDeletionState('danger')
                     onClose();
                 }, 1500);
             }
@@ -55,6 +57,7 @@ export const ArticlePreview = ({
         } catch (error) {
             setDeletionState('error');
             setTimeout(() => {
+                setDeletionState('danger')
                 onClose();
             }, 1500);
         }

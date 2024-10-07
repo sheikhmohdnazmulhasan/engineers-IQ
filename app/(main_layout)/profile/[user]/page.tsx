@@ -50,7 +50,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const limit = 3
     const totalPages = Math.ceil(Array.isArray(allArticle) ? allArticle.length / limit : 0);
 
-    const { data, isLoading: articleLoading, revalidate: articleRevalidate } = useArticle({ author: profile?._id, page: currentPage, limit });
+    const { data, revalidate: articleRevalidate } = useArticle({ author: profile?._id, page: currentPage, limit });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
