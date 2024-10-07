@@ -29,6 +29,7 @@ import { encrypt } from '@/utils/text_encryptor';
 import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 import sendAccountVerificationEmail from '@/utils/send_account_verification_email';
 import useArticle from '@/hooks/use_articles';
+import Pagination from '@/components/pagination';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -43,8 +44,13 @@ export default function Profile({ params }: { params: { user: string } }) {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
-    const { data, isLoading: articleLoading, revalidate: articleRevalidate } = useArticle({ author: profile?._id });
     const [render, setRender] = useState<'home' | 'analytics' | 'user' | 'payout'>('home');
+    const { data: allArticle, isLoading: allArticleLoading } = useArticle({ author: profile?._id });
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const limit = 3
+    const totalPages = Math.ceil(Array.isArray(allArticle) ? allArticle.length / limit : 0);
+
+    const { data, isLoading: articleLoading, revalidate: articleRevalidate } = useArticle({ author: profile?._id, page: currentPage, limit });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
@@ -270,7 +276,7 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     return (
         <>
-            {isLoading && userLoading && articleLoading && <Loading />}
+            {allArticleLoading && userLoading && <Loading />}
             {!isLoading && !!error && (
                 <div className="text-center flex justify-center items-center h-screen w-full -mt-20">
                     <p>User Not Found</p>
@@ -372,7 +378,7 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                             <div className="flex gap-3 items-center">
                                 {nameChangedAction ?
-                                    <input className='border rounded-md py-1 px-2' defaultValue={profile?.name} type="text" onChange={(e) => setUpdatedName(e.target.value)} />
+                                    <input className='border border-gray-400 rounded-md py-1 px-2' defaultValue={profile?.name} type="text" onChange={(e) => setUpdatedName(e.target.value)} />
                                     : <UserName isPremium={profile?.isPremiumMember} name={profile?.name} />}
 
                                 {isWonProfile && !nameChangedAction && <FaPen className='cursor-pointer hover:transition-all hover:scale-105 hover:text-sky-600' size={13} onClick={() => setNameChangedAction(true)} />}
@@ -477,6 +483,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                             <div className="flex flex-col items-start mb-8">
                                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">{profile?.name}</h1>
                                 <div className="flex mt-4 space-x-4 flex-wrap">
+
                                     <p className={`${render === 'home' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('home')}>Home</p>
                                     {isWonProfile ? <>
 
@@ -507,10 +514,19 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                             {
                                 render === 'home' ? (
-                                    Array.isArray(data) && data.length ? data.map((article, indx) => <ArticlePreview revalidate={articleRevalidate} key={indx} data={article} fromProfile={true} />) : (
+
+                                    Array.isArray(data) && data.length ? <>
+                                        {data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} revalidate={articleRevalidate} />)}
+
+                                        {Array.isArray(allArticle) && allArticle.length > 3 && (
+                                            <Pagination totalPages={totalPages} onPageChange={setCurrentPage} />
+                                        )}
+
+                                    </> : (
                                         <div className=" h-screen flex justify-center flex-col items-center -mt-32">
                                             <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
                                         </div>
+
                                     )
                                 ) : render === 'analytics' ? (
                                     <div className="">
