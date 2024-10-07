@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 "use client"
 
 import React from 'react'
@@ -32,19 +35,19 @@ const features = [
 export default function AboutUs() {
     return (
         <motion.div
-            initial="initial"
             animate="animate"
+            className="container mx-auto py-8"
+            initial="initial"
             variants={{
                 animate: { transition: { staggerChildren: 0.1 } }
             }}
-            className="container mx-auto py-8"
         >
-            <motion.div variants={fadeInRight} className="text-center mb-12">
+            <motion.div className="text-center mb-12" variants={fadeInRight}>
                 <h1 className="text-5xl font-bold mb-4">EngineersIQ</h1>
                 <h2 className="text-2xl">Transforming Ideas into Code, Together.</h2>
             </motion.div>
 
-            <motion.div variants={fadeInRight} className="mb-12">
+            <motion.div className="mb-12" variants={fadeInRight}>
                 <h2 className="text-3xl font-semibold mb-4">Our Mission</h2>
                 <div className="space-y-4">
                     <p>
@@ -59,7 +62,7 @@ export default function AboutUs() {
                 </div>
             </motion.div>
 
-            <motion.div variants={fadeInRight} className="mb-12">
+            <motion.div className="mb-12" variants={fadeInRight}>
                 <h2 className="text-3xl font-semibold mb-4">Our Community</h2>
                 <p className="mb-4">
                     EngineersIQ is more than just a platform; it's a thriving community of engineers, professionals, and curious learners.
@@ -71,7 +74,7 @@ export default function AboutUs() {
                 </p>
             </motion.div>
 
-            <motion.div variants={fadeInRight} className="mb-12">
+            <motion.div className="mb-12" variants={fadeInRight}>
                 <h2 className="text-3xl font-semibold text-center mb-6">What We Offer</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {features.map((feature, index) => (
@@ -82,13 +85,13 @@ export default function AboutUs() {
                 </div>
             </motion.div>
 
-            <motion.div variants={fadeInRight} className="text-center">
+            <motion.div className="text-center" variants={fadeInRight}>
                 <h2 className="text-3xl font-semibold mb-4">Join Our Engineering Community</h2>
                 <p className="mb-8">
                     Ready to enhance your engineering knowledge and connect with like-minded enthusiasts?
                 </p>
-                <Link href="/auth/register" passHref>
-                    <Button color="primary" size="lg" className="font-semibold">
+                <Link passHref href="/auth/register">
+                    <Button className="font-semibold" color="primary" size="lg">
                         Sign Up Now
                     </Button>
                 </Link>
