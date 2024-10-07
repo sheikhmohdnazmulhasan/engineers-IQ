@@ -33,8 +33,9 @@ export async function GET(request: Request) {
         // Prepare summary for each article with title, comment count, and claps count
         const articlesSummary = articles.map(article => ({
             title: article.title,
-            totalComments: article.comments ? article.comments.length : 0,
-            totalClaps: article.claps ? article.claps.length : 0,
+            comments: article.comments ? article.comments.length : 0,
+            claps: article.claps ? article.claps.length : 0,
+            views: article.views || 0
         }));
 
         // Send response
