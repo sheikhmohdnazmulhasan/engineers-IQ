@@ -1,3 +1,4 @@
+
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Modal, ModalContent, useDisclosure, ModalBody, Spinner, Button } from "@nextui-org/react";
@@ -243,4 +244,10 @@ export default function Users() {
             </div>
         )
     }
+
+    return (
+        <div className="h-screen flex justify-center flex-col items-center -mt-32">
+            <h2 className="text-center">Something Bad Happened!</h2>
+        </div>
+    )
 }
