@@ -2,22 +2,34 @@ import { IUserResponse } from "@/interface/user.response.interface";
 import axios, { AxiosError } from "axios";
 import useSWR from "swr";
 
+interface IPagination {
+    totalUsers: number;
+    totalPages: number;
+    currentPage: number;
+    pageSize: number;
+}
+
+interface APIResponse {
+    data: IUserResponse[] | null;
+    pagination: IPagination;
+}
 
 interface UseUserResponse {
-    data: IUserResponse[] | null;
+    data: APIResponse | null;
     error: AxiosError | null;
     isLoading: boolean;
     revalidate: () => void;
 }
 
-const useAllUsers = (author: string): UseUserResponse => {
-    const fetcher = async (url: string): Promise<IUserResponse[]> => {
+const useAllUsers = (limit: number = 10, page: number = 1): UseUserResponse => {
+    // Adjusted fetcher to handle the expected response structure
+    const fetcher = async (url: string): Promise<APIResponse> => {
         const response = await axios.get(url);
-        return response.data.data;
+        return response.data;
     };
 
-    const { data, error, isValidating, mutate } = useSWR<IUserResponse[]>(
-        author ? `/api/analytics?_id=${author}` : null,
+    const { data, error, isValidating, mutate } = useSWR<APIResponse>(
+        `/api/analytics/admin/users?page=${page}&limit=${limit}`,
         fetcher
     );
 
