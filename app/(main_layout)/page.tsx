@@ -177,7 +177,7 @@ export default function Home() {
                         className='hover:cursor-pointer'
                         color={selectedCategory === category.key ? 'primary' : 'default'}
                         variant="flat"
-                        onClick={() => setCategory(category.key)}
+                        onClick={() => setCategory(category.key === selectedCategory ? '' : category.key)}
                       >
                         {category.label}
                       </Chip>

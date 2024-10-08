@@ -4,7 +4,7 @@
 'use client'
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Avatar, Button, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Chip, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 // import { useRouter } from 'next/navigation';
@@ -32,6 +32,7 @@ import useArticle from '@/hooks/use_articles';
 import Pagination from '@/components/pagination';
 import { Analytics } from '@/components/profile/analytics';
 import Users from '@/components/profile/admin/users';
+import { categoriesData } from '@/const/article/categories';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -51,7 +52,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const limit = 3
     const totalPages = Math.ceil(Array.isArray(allArticle) ? allArticle.length / limit : 0);
-
+    const [selectedCategory, setCategory] = useState<string>('');
     const { data, revalidate: articleRevalidate } = useArticle({ author: profile?._id, page: currentPage, limit });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -275,6 +276,8 @@ export default function Profile({ params }: { params: { user: string } }) {
             setIsWonProfile(true);
         };
     }, [userLoading]);
+
+    console.log(selectedCategory);
 
     return (
         <>
@@ -511,8 +514,29 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                             {
                                 render === 'home' ? (
-
                                     Array.isArray(data) && data.length ? <>
+                                        <div>
+                                            <Chip
+                                                className='hover:cursor-pointer'
+                                                color={!selectedCategory ? 'primary' : 'default'}
+                                                variant="flat"
+                                                onClick={() => setCategory('')}
+                                            >
+                                                Latest
+                                            </Chip>
+                                            {categoriesData.slice(0, 5).map((category, indx) => (
+                                                <Chip
+                                                    key={indx}
+                                                    className='hover:cursor-pointer'
+                                                    color={selectedCategory === category.key ? 'primary' : 'default'}
+                                                    variant="flat"
+                                                    onClick={() => setCategory(category.key === selectedCategory ? '' : category.key)}
+                                                >
+                                                    {category.label}
+                                                </Chip>
+                                            ))}
+                                        </div>
+
                                         {data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} revalidate={articleRevalidate} />)}
 
                                         {Array.isArray(allArticle) && allArticle.length > 3 && (
@@ -521,7 +545,7 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                                     </> : (
                                         <div className=" h-screen flex justify-center flex-col items-center -mt-32">
-                                            <h2 className='text-center'>{profile?.name} has not published any articles yet.</h2>
+                                            <h2 className='text-center'>There are no article to display!</h2>
                                         </div>
 
                                     )
