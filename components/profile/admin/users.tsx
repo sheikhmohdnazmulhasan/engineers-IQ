@@ -1,5 +1,6 @@
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import Pagination from "@/components/pagination";
+import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, Chip } from "@nextui-org/react";
 import Link from "next/link";
@@ -51,7 +52,9 @@ export default function Users() {
                         {data.data?.map((user, index) => (
                             user && (
                                 <TableRow key={user.id || index}>
-                                    <TableCell>{user.name || "N/A"}</TableCell>
+                                    <TableCell>
+                                        <UserName isPremium={user.isPremiumMember} name={user.name} />
+                                    </TableCell>
                                     <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
                                     <TableCell>{user.isBlocked ? <Chip size="sm" color="danger">Blcked</Chip> : <Chip size='sm' color="primary">Active</Chip>}</TableCell>
                                     <TableCell className="flex gap-3">
