@@ -10,6 +10,7 @@ export interface IfollowersAndFollowing {
 }
 
 export interface IUserResponse extends Document {
+    status: string;
     _id: string;
     name: string;
     email: string;

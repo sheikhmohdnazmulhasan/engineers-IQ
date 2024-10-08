@@ -27,7 +27,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         const skip: number = (page - 1) * limit;
 
         // Fetch users with pagination
-        const users = await User.find().skip(skip).limit(limit).lean();
+        const users = await User.find().skip(skip).limit(limit).sort({ createdAt: -1 }).lean();
         const totalUsers: number = await User.countDocuments(); // Total number of users
 
         if (users.length > 0) {

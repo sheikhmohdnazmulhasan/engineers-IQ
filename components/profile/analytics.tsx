@@ -17,7 +17,7 @@ export const Analytics: React.FC = () => {
     if (error || !analyticsData) {
         return (
             <div className=" h-screen flex justify-center flex-col items-center -mt-32">
-                <h2 className='text-center'>There is no analytics data to display yet!</h2>
+                <h2 className='text-center'>There is no analytics data to display!</h2>
             </div>
         )
     };
