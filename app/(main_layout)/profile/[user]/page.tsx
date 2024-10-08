@@ -4,7 +4,7 @@
 'use client'
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Avatar, Button, Chip, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tooltip, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Chip, Input, Link, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Tooltip, useDisclosure } from "@nextui-org/react";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from 'sonner';
 // import { useRouter } from 'next/navigation';
@@ -53,7 +53,7 @@ export default function Profile({ params }: { params: { user: string } }) {
     const limit = 3
     const totalPages = Math.ceil(Array.isArray(allArticle) ? allArticle.length / limit : 0);
     const [selectedCategory, setCategory] = useState<string>('');
-    const { data, revalidate: articleRevalidate } = useArticle({ author: profile?._id, page: currentPage, limit });
+    const { data, revalidate: articleRevalidate, isLoading: loading } = useArticle({ author: profile?._id, category: selectedCategory, page: currentPage, limit });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
@@ -276,8 +276,6 @@ export default function Profile({ params }: { params: { user: string } }) {
             setIsWonProfile(true);
         };
     }, [userLoading]);
-
-    console.log(selectedCategory);
 
     return (
         <>
@@ -514,8 +512,9 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                             {
                                 render === 'home' ? (
-                                    Array.isArray(data) && data.length ? <>
-                                        <div>
+
+                                    Array.isArray(data) && <>
+                                        <div className='mb-6 flex space-x-2 overflow-x-auto'>
                                             <Chip
                                                 className='hover:cursor-pointer'
                                                 color={!selectedCategory ? 'primary' : 'default'}
@@ -537,18 +536,26 @@ export default function Profile({ params }: { params: { user: string } }) {
                                             ))}
                                         </div>
 
+                                        {loading && (
+                                            <div className=" h-screen flex justify-center flex-col items-center -mt-32">
+                                                <Spinner size='lg' />
+                                            </div>
+                                        )}
+
+                                        {Array.isArray(data) && !data.length && (
+                                            <div className=" h-screen flex justify-center flex-col items-center -mt-32">
+                                                <h2 className='text-center'>There are no article to display!</h2>
+                                            </div>
+                                        )}
+
                                         {data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} revalidate={articleRevalidate} />)}
 
                                         {Array.isArray(allArticle) && allArticle.length > 3 && (
                                             <Pagination totalPages={totalPages} onPageChange={setCurrentPage} />
                                         )}
 
-                                    </> : (
-                                        <div className=" h-screen flex justify-center flex-col items-center -mt-32">
-                                            <h2 className='text-center'>There are no article to display!</h2>
-                                        </div>
+                                    </>
 
-                                    )
                                 ) : render === 'analytics' ? (
                                     <Analytics />
                                 ) : render === 'user' ? (
