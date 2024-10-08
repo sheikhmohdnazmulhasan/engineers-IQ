@@ -56,8 +56,41 @@ export default function Users() {
     };
 
     async function handleDeleteUserPermanently() {
-        console.log(targetedUser);
-    }
+        setOperationState2('danger')
+        try {
+            setOperationState2('loading')
+            const res = await axiosInstance.delete(`/analytics/admin/users?_id=${targetedUser}`);
+
+            if (res.status === 200) {
+                setOperationState2('success');
+                setTargetedUser(null);
+                revalidate();
+
+                setTimeout(() => {
+                    onClose2();
+                    setOperationState2('danger');
+                }, 1000);
+
+            } else {
+                setOperationState2('error');
+                setTargetedUser(null);
+
+                setTimeout(() => {
+                    onClose2();
+                    setOperationState2('danger');
+                }, 1000);
+
+            }
+        } catch (error) {
+            setOperationState2('error');
+            setTargetedUser(null);
+
+            setTimeout(() => {
+                onClose2();
+                setOperationState2('danger');
+            }, 1000);
+        }
+    };
 
     // Handle error state
     if (error) {
