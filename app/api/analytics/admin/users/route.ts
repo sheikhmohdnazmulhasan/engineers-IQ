@@ -1,7 +1,9 @@
-import connectMongodb from "@/libs/connect_mongodb";
-import User from "@/models/users.model";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
+
+import connectMongodb from "@/libs/connect_mongodb";
+import User from "@/models/users.model";
 
 // Define types for response data and pagination structure
 interface Pagination {
