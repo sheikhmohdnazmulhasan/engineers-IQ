@@ -148,7 +148,7 @@ export const ArticlePreview = ({
                     fromProfile && currentUser?._id === data.author._id && (
                         <CardFooter className="">
                             <div className="flex gap-4">
-                                <Chip className="">Edit </Chip>
+                                <Link href={`/articles/edit/${data.author.username}/${data._id}`}><Chip className="">Edit</Chip></Link>
                                 <Chip className="hover:cursor-pointer" color="danger" onClick={onOpen}>Delete</Chip>
                             </div>
                         </CardFooter>
