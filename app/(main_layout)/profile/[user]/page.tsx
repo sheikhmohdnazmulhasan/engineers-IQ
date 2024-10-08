@@ -31,6 +31,7 @@ import sendAccountVerificationEmail from '@/utils/send_account_verification_emai
 import useArticle from '@/hooks/use_articles';
 import Pagination from '@/components/pagination';
 import { Analytics } from '@/components/profile/analytics';
+import Users from '@/components/profile/admin/users';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -525,13 +526,9 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                                     )
                                 ) : render === 'analytics' ? (
-                                    <div className="">
-                                        <Analytics />
-                                    </div>
+                                    <Analytics />
                                 ) : render === 'user' ? (
-                                    <div className="">
-                                        user
-                                    </div>
+                                    <Users />
                                 ) : (
                                     <div className="">
                                         payout
