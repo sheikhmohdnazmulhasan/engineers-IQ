@@ -21,7 +21,7 @@ interface UseUserResponse {
     revalidate: () => void;
 }
 
-const useAllUsers = (limit: number = 10, page: number = 1): UseUserResponse => {
+const useAllUsers = (page: number = 1, limit: number = 10): UseUserResponse => {
     // Adjusted fetcher to handle the expected response structure
     const fetcher = async (url: string): Promise<APIResponse> => {
         const response = await axios.get(url);
