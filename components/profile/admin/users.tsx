@@ -2,6 +2,7 @@ import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import Pagination from "@/components/pagination";
 import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
+import axiosInstance from "@/libs/axiosInstance";
 import formatDateReadable from "@/utils/format_date_readable";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Modal, ModalContent, useDisclosure, ModalBody, Spinner, Button } from "@nextui-org/react";
 import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
@@ -10,10 +11,47 @@ import { useState } from "react";
 
 export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
-    const { data, error } = useAllUsers(currentPage);
+    const { data, error, revalidate } = useAllUsers(currentPage);
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const [operationState, setOperationState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger')
+    const [operationState, setOperationState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
+    const [targetedUser, setTargetedUser] = useState<string | null>(null);
 
+    async function handleUserManagement(action: 'role' | 'status') {
+        setOperationState('danger');
+        try {
+            setOperationState('loading');
+            const res = await axiosInstance.patch(`/analytics/admin/users?_id=${targetedUser}&action=${action}`);
+
+            if (res.status === 200) {
+                setOperationState('success');
+                revalidate();
+                setTargetedUser(null);
+
+                setTimeout(() => {
+                    onClose();
+                    setTargetedUser(null);
+                    setOperationState('danger');
+                }, 1000);
+
+            } else {
+                setOperationState('error');
+
+                setTimeout(() => {
+                    onClose();
+                    setTargetedUser(null);
+                    setOperationState('danger');
+                }, 1000);
+            }
+        } catch (error) {
+            setOperationState('error');
+
+            setTimeout(() => {
+                onClose();
+                setTargetedUser(null);
+                setOperationState('danger');
+            }, 100);
+        }
+    };
 
     // Handle error state
     if (error) {
@@ -67,8 +105,8 @@ export default function Users() {
                                         }
                                     </h6>
                                     <div className='w-full space-y-2'>
-                                        <Button className="px-10 w-full" color="primary" variant="flat">Switch Role</Button>
-                                        <Button className="px-10 w-full" color="danger" variant="flat">Block User</Button>
+                                        <Button onClick={() => handleUserManagement('role')} className="px-10 w-full" color="primary" variant="flat">Switch Role</Button>
+                                        <Button onClick={() => handleUserManagement('status')} className="px-10 w-full" color="danger" variant="flat">Switch Status</Button>
                                     </div>
                                 </div>
                             </ModalBody>
@@ -97,7 +135,10 @@ export default function Users() {
                                     <TableCell>{formatDateReadable(user.lastLogin as unknown as string) || "N/A"}</TableCell>
                                     <TableCell className="flex gap-3">
                                         <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
-                                        <div onClick={onOpen}>
+                                        <div onClick={() => {
+                                            onOpen();
+                                            setTargetedUser(user._id);
+                                        }}>
                                             <EditIcon />
                                         </div>
                                         <DeleteIcon />

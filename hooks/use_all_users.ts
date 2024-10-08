@@ -14,7 +14,7 @@ interface APIResponse {
     pagination: IPagination;
 }
 
-interface UseUserResponse {
+export interface UseUserResponse {
     data: APIResponse | null;
     error: AxiosError | null;
     isLoading: boolean;
