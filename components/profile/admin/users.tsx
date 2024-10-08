@@ -1,6 +1,7 @@
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import useAllUsers from "@/hooks/use_all_users";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, Chip } from "@nextui-org/react";
+import Link from "next/link";
 
 export default function Users() {
     const { data, error, isLoading } = useAllUsers();
@@ -50,7 +51,7 @@ export default function Users() {
                                 <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
                                 <TableCell>{user.isBlocked ? <Chip size="sm" color="danger">Blcked</Chip> : <Chip size='sm' color="primary">Active</Chip>}</TableCell>
                                 <TableCell className="flex gap-3">
-                                    <EyeIcon />
+                                    <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
                                     <EditIcon />
                                     <DeleteIcon />
                                 </TableCell>
