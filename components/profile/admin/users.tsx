@@ -1,13 +1,16 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Modal, ModalContent, useDisclosure, ModalBody, Spinner, Button } from "@nextui-org/react";
+import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
 import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import Pagination from "@/components/pagination";
 import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
 import axiosInstance from "@/libs/axiosInstance";
 import formatDateReadable from "@/utils/format_date_readable";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Modal, ModalContent, useDisclosure, ModalBody, Spinner, Button } from "@nextui-org/react";
-import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
 
 export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
@@ -144,8 +147,8 @@ export default function Users() {
                                         }
                                     </h6>
                                     <div className='w-full space-y-2'>
-                                        <Button onClick={() => handleUserManagement('role')} className="px-10 w-full" color="primary" variant="flat">Switch Role</Button>
-                                        <Button onClick={() => handleUserManagement('status')} className="px-10 w-full" color="danger" variant="flat">Switch Status</Button>
+                                        <Button className="px-10 w-full" color="primary" variant="flat" onClick={() => handleUserManagement('role')}>Switch Role</Button>
+                                        <Button className="px-10 w-full" color="danger" variant="flat" onClick={() => handleUserManagement('status')}>Switch Status</Button>
                                     </div>
                                 </div>
                             </ModalBody>
@@ -184,7 +187,7 @@ export default function Users() {
                                         }
                                     </h6>
                                     <div className='w-full space-y-2'>
-                                        <Button onClick={handleDeleteUserPermanently} className="px-10 w-full" color="danger" variant="flat">Delete User</Button>
+                                        <Button className="px-10 w-full" color="danger" variant="flat" onClick={handleDeleteUserPermanently}>Delete User</Button>
                                     </div>
                                 </div>
                             </ModalBody>
@@ -209,7 +212,7 @@ export default function Users() {
                                     </TableCell>
                                     <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
 
-                                    <TableCell>{user.isBlocked ? <Chip size="sm" color="danger">Blcked</Chip> : <Chip size='sm' color="primary">Active</Chip>}</TableCell>
+                                    <TableCell>{user.isBlocked ? <Chip color="danger" size="sm">Blcked</Chip> : <Chip color="primary" size='sm'>Active</Chip>}</TableCell>
                                     <TableCell>{formatDateReadable(user.lastLogin as unknown as string) || "N/A"}</TableCell>
                                     <TableCell className="flex gap-3">
                                         <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
