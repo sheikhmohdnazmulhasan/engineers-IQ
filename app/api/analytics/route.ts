@@ -23,7 +23,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ message: 'No user found for the given _id' }, { status: 404 });
         }
 
-        // @ts-ignore
+        // @ts-expect-error: This is necessary due to an incompatible type cast
         if (user.role !== 'admin') {
             query.author = authorId
         }

@@ -5,11 +5,9 @@ import { Card, CardBody, CardHeader } from "@nextui-org/card"
 import { Divider } from "@nextui-org/divider"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { useTheme } from 'next-themes'
-
 import useAnalytics from '@/hooks/use_analytics'
 import useUser from '@/hooks/useUser'
-
-import Loading from '../loading'
+import { Spinner } from '@nextui-org/react'
 
 export const Analytics: React.FC = () => {
     const { currentUser } = useUser()
@@ -25,7 +23,11 @@ export const Analytics: React.FC = () => {
     };
 
     if (isLoading) {
-        return <Loading />
+        return (
+            <div className=" h-screen flex justify-center flex-col items-center -mt-32">
+                <Spinner size='lg' />
+            </div>
+        )
     }
 
     const chartData = analyticsData.articlesSummary.map((article, index) => ({
