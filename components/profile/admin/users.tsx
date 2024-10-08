@@ -2,6 +2,7 @@ import { DeleteIcon, EditIcon, EyeIcon } from "@/components/icons";
 import Pagination from "@/components/pagination";
 import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
+import formatDateReadable from "@/utils/format_date_readable";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Modal, ModalContent, useDisclosure, ModalBody, Spinner, Button } from "@nextui-org/react";
 import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -80,6 +81,7 @@ export default function Users() {
                         <TableColumn>NAME</TableColumn>
                         <TableColumn>ROLE</TableColumn>
                         <TableColumn>STATUS</TableColumn>
+                        <TableColumn>Last Login</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
                     <TableBody>
@@ -90,7 +92,9 @@ export default function Users() {
                                         <UserName isPremium={user.isPremiumMember} name={user.name} />
                                     </TableCell>
                                     <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
+
                                     <TableCell>{user.isBlocked ? <Chip size="sm" color="danger">Blcked</Chip> : <Chip size='sm' color="primary">Active</Chip>}</TableCell>
+                                    <TableCell>{formatDateReadable(user.lastLogin as unknown as string) || "N/A"}</TableCell>
                                     <TableCell className="flex gap-3">
                                         <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
                                         <div onClick={onOpen}>
