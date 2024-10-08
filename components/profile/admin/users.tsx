@@ -13,7 +13,9 @@ export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
     const { data, error, revalidate } = useAllUsers(currentPage);
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const { isOpen: isOpen2, onOpen: onOpen2, onOpenChange: onOpenChange2, onClose: onClose2 } = useDisclosure();
     const [operationState, setOperationState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
+    const [operationState2, setOperationState2] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
     const [targetedUser, setTargetedUser] = useState<string | null>(null);
 
     async function handleUserManagement(action: 'role' | 'status') {
@@ -52,6 +54,10 @@ export default function Users() {
             }, 100);
         }
     };
+
+    async function handleDeleteUserPermanently() {
+        console.log(targetedUser);
+    }
 
     // Handle error state
     if (error) {
@@ -114,12 +120,51 @@ export default function Users() {
                     </ModalContent>
                 </Modal>
 
+                {/* deletion */}
+                <Modal
+                    backdrop='blur'
+                    isOpen={isOpen2}
+                    placement="auto"
+                    size='sm'
+                    onOpenChange={onOpenChange2}
+                >
+                    <ModalContent >
+                        <>
+
+                            <ModalBody>
+                                <div className="flex flex-col py-4 items-center justify-center space-y-4">
+                                    {
+                                        operationState2 === 'danger' ? (
+                                            <AlertTriangle color="red" size={60} />
+
+                                        ) : operationState2 === 'loading' ? (
+                                            <Spinner size="lg" />
+                                        ) : operationState2 === 'success' ? (
+                                            <CheckCircle color="green" size={55} />
+                                        ) : (
+                                            <XCircle color="red" size={50} />
+                                        )
+                                    }
+                                    <h6 className="text-center text-sm font-medium opacity-70">
+                                        {
+                                            operationState2 === 'danger' ? 'If you delete a user once, all data related to this user will be permanently deleted and can never be recovered!' : operationState2 === 'loading' ? 'Operation will be completed after a while. Please wait.' : operationState2 === 'success' ? 'Operation successful.' : 'Something Bad Happened. Try again!'
+                                        }
+                                    </h6>
+                                    <div className='w-full space-y-2'>
+                                        <Button onClick={handleDeleteUserPermanently} className="px-10 w-full" color="danger" variant="flat">Delete User</Button>
+                                    </div>
+                                </div>
+                            </ModalBody>
+                        </>
+                    </ModalContent>
+                </Modal>
+
                 <Table removeWrapper aria-label="Users table">
                     <TableHeader>
                         <TableColumn>NAME</TableColumn>
                         <TableColumn>ROLE</TableColumn>
                         <TableColumn>STATUS</TableColumn>
-                        <TableColumn>Last Login</TableColumn>
+                        <TableColumn>LAST LOGIN</TableColumn>
                         <TableColumn>ACTIONS</TableColumn>
                     </TableHeader>
                     <TableBody>
@@ -141,7 +186,12 @@ export default function Users() {
                                         }}>
                                             <EditIcon />
                                         </div>
-                                        <DeleteIcon />
+                                        <div onClick={() => {
+                                            onOpen2();
+                                            setTargetedUser(user._id)
+                                        }}>
+                                            <DeleteIcon />
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             )

@@ -115,4 +115,33 @@ export async function PATCH(req: Request) {
             error
         }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
+};
+
+export async function DELETE(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('_id');
+
+    try {
+        await connectMongodb();
+        const result = await User.findByIdAndDelete(userId);
+
+        if (!result) {
+            return NextResponse.json({
+                success: false,
+                message: 'Failed to delete user'
+            }, { status: httpStatus.BAD_REQUEST });
+        };
+
+        return NextResponse.json({
+            success: true,
+            message: 'User deleted successfully',
+        }, { status: httpStatus.OK });
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: 'Something went wrong',
+            error
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR })
+    }
+
 }
