@@ -22,6 +22,7 @@ export interface IUserResponse extends Document {
     isBlocked: boolean;
     followers: IfollowersAndFollowing[];
     following: IfollowersAndFollowing[];
+    lastLogin?: Date;
     createdAt?: Date;
     updatedAt?: Date;
 }
