@@ -1,3 +1,4 @@
+import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
@@ -62,5 +63,56 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         };
 
         return NextResponse.json(response, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+};
+
+export async function PATCH(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('_id');
+    const action = searchParams.get('action'); // role or block
+
+    try {
+        await connectMongodb();
+        const user = await User.findById(userId).select('role isBlocked name');
+
+        if (!user) {
+            return NextResponse.json({
+                success: false,
+                message: 'User Not found',
+            }, { status: httpStatus.NOT_FOUND });
+        };
+
+        if (action === 'role') {
+            user.role = user.role === 'admin' ? 'user' : 'admin';
+            await user.save();
+
+            return NextResponse.json({
+                success: true,
+                message: `${user.name}'s role updated`,
+            }, { status: httpStatus.OK });
+
+        } else if (action === 'status') {
+            user.isBlocked = !user.isBlocked;
+            await user.save();
+
+            return NextResponse.json({
+                success: true,
+                message: `${user.name}'s status updated`,
+            }, { status: httpStatus.OK });
+
+        } else {
+            return NextResponse.json({
+                success: false,
+                message: `Invalid action`,
+            }, { status: httpStatus.BAD_REQUEST });
+        }
+
+
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: 'Internal server error',
+            error
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
 }
