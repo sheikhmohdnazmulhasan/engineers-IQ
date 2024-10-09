@@ -36,7 +36,7 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
     const [imagesLoaded, setImageLoaded] = useState(true);
     const { register, handleSubmit, watch } = useForm();
     const [loading, setLoading] = useState(false);
-    // const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
+    const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
     const shortDes = watch('textArea');
     const [prevData, setPrevData] = useState<IArticleResponse | null>(data ? data as IArticleResponse : null)
 

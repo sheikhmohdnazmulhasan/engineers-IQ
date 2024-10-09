@@ -152,6 +152,38 @@ export async function GET(request: Request) {
     }
 };
 
+// updating
+export async function PATCH(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('_id');
+    const data = await request.json();
+
+    try {
+        await connectMongodb();
+        const result = await Article.findByIdAndUpdate(postId, data);
+
+        if (result) {
+            return NextResponse.json({
+                success: true,
+                message: 'Article updated',
+                data: result
+            }, { status: httpStatus.OK });
+        }
+
+        return NextResponse.json({
+            success: false,
+            message: 'Failed to update the article'
+        }, { status: httpStatus.BAD_REQUEST });
+
+    } catch (error: any) {
+        return NextResponse.json({
+            success: false,
+            message: 'An error occurred while updating the article',
+            error: error.message
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+};
+
 export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
