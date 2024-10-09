@@ -160,7 +160,7 @@ export async function PATCH(request: Request) {
 
     try {
         await connectMongodb();
-        const result = await Article.findByIdAndUpdate(postId, data);
+        const result = await Article.findByIdAndUpdate(postId, data, { new: true });
 
         if (result) {
             return NextResponse.json({
