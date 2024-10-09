@@ -5,9 +5,10 @@ import { Card, CardBody, CardHeader } from "@nextui-org/card"
 import { Divider } from "@nextui-org/divider"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { useTheme } from 'next-themes'
+import { Spinner } from '@nextui-org/react'
+
 import useAnalytics from '@/hooks/use_analytics'
 import useUser from '@/hooks/useUser'
-import { Spinner } from '@nextui-org/react'
 
 export const Analytics: React.FC = () => {
     const { currentUser } = useUser()

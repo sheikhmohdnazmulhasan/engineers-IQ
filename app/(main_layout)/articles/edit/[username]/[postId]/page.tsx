@@ -21,6 +21,7 @@ import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
 import useArticle from '@/hooks/use_articles';
 import { IArticleResponse } from '@/interface/articles.response.interface';
+import { useUpdateArticle } from '@/hooks/operations/hook_oparetion_update_article';
 
 interface EditorInstance {
     getContent: () => string;
@@ -36,7 +37,8 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
     const { register, handleSubmit, watch } = useForm();
     const [loading, setLoading] = useState(false);
     const shortDes = watch('textArea');
-    const [prevData, setPrevData] = useState<IArticleResponse | null>(data ? data as IArticleResponse : null)
+    const [prevData, setPrevData] = useState<IArticleResponse | null>(data ? data as IArticleResponse : null);
+    const { mutate, isSuccess, isError } = useUpdateArticle(currentUser?.username as string, params.postId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileChange = (event: { target: { files: any; }; }) => {
@@ -71,7 +73,12 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
         if (editorRef.current) {
             const description = editorRef.current.getContent();
             const topics = String(data.topics).split(',');
-            let images = prevData?.images;
+            const payload = {
+                ...data,
+                author: currentUser?._id,
+                description,
+                topics,
+            }
 
             setLoading(true);
 
@@ -81,12 +88,13 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
                 return;
             }
 
-            if (files) {
+            if (files.length) {
                 try {
                     const imgRes = await uploadImageToImgBb(files);
 
                     if (imgRes.success) {
-                        images = imgRes.urls as string[]
+                        // @ts-expect-error: I have no time to resolved
+                        payload.images = imgRes.urls
                     }
 
                 } catch (error) {
@@ -96,16 +104,20 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
                 };
             };
 
-            const payload = {
-                ...data,
-                author: currentUser?._id,
-                description,
-                images,
-                topics,
-            };
+            try {
+                mutate(payload);
 
-
-
+                if (isSuccess) {
+                    setLoading(false);
+                }
+                if (isError) {
+                    toast.error('Something went wrong!');
+                    setLoading(false);
+                }
+            } catch (error) {
+                setLoading(false);
+                toast.error('Something Bad Happened!');
+            }
         }
     }
 
@@ -258,7 +270,7 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
 
 
                         <div className="md:flex justify-between">
-                            <Checkbox defaultSelected={true} isDisabled={!currentUser?.isPremiumMember} {...register('isPremiumContent')}>Publish as Exclusive {!currentUser?.isPremiumMember && <span>(Only For Verified Members)</span>} </Checkbox>
+                            <Checkbox defaultSelected={prevData.isPremiumContent} isDisabled={!currentUser?.isPremiumMember} {...register('isPremiumContent')}>Publish as Exclusive {!currentUser?.isPremiumMember && <span>(Only For Verified Members)</span>} </Checkbox>
                             <div className=" md:flex gap-4 space-y-4 md:space-y-0 mt-4 md:mt-0">
                                 <Button className='block w-full' color="primary" variant="bordered">Save Draft</Button>
                                 <Button className='block w-full' color="primary" isLoading={loading} type='submit'>Update</Button>
