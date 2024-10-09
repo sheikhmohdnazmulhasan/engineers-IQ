@@ -19,10 +19,14 @@ export async function createArticle(payload: FieldValues) {
 
 export async function updateArticle(payload: FieldValues, postId: string) {
     try {
-        const { data } = await axiosInstance.patch(`/article?_id=${postId}`, payload);
+        const { data } = await axiosInstance.patch(`/articles?_id=${postId}`, payload);
         return data;
 
+        console.log(payload);
+
     } catch (error: any) {
+
+        console.log('error form server action', error);
         if (error.response) {
             throw new Error(error.response.data.message);
         }

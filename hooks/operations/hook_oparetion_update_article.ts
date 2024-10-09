@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { updateArticle } from "@/services/article.services";
 
-export function useCreateArticle(username: string, postId: string) {
+export function useUpdateArticle(username: string, postId: string) {
     const router = useRouter();
 
     return useMutation({
