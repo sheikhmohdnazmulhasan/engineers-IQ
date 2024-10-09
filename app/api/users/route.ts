@@ -79,14 +79,15 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const user = searchParams.get('user');
-    const { name, profileImg } = await request.json();
+    const { name, profileImg, pay } = await request.json();
 
-    if (name || profileImg) {
+    if (name || profileImg || pay) {
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const updatedData: any = {};
             if (name) updatedData.name = name;
             if (profileImg) updatedData.profileImg = profileImg;
+            if (pay) updatedData.isPremiumMember = true;
 
             const result = await User.findByIdAndUpdate(user, updatedData, { new: true });
 
