@@ -21,6 +21,7 @@ import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
 import { useCreateArticle } from '@/hooks/operations/hook_oparetion_create_article';
 import useArticle from '@/hooks/use_articles';
+import { IArticleResponse } from '@/interface/articles.response.interface';
 
 interface EditorInstance {
     getContent: () => string;
@@ -32,14 +33,12 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
     const editorRef = useRef<EditorInstance | null>(null);
     const [files, setFiles] = useState<File[]>([])
     const [showImagePreview, setShowImagePreview] = useState<string[]>([]);
-    const [imagesLoaded, setImageLoaded] = useState(false);
+    const [imagesLoaded, setImageLoaded] = useState(true);
     const { register, handleSubmit, watch } = useForm();
     const [loading, setLoading] = useState(false);
-    const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
+    // const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
     const shortDes = watch('textArea');
-
-    console.log(data);
-
+    const [prevData, setPrevData] = useState<IArticleResponse | null>(data ? data as IArticleResponse : null)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFileChange = (event: { target: { files: any; }; }) => {
@@ -65,53 +64,50 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
 
     }, [files]);
 
+    useEffect(() => {
+        setPrevData(data as IArticleResponse);
+    }, [prevLoading]);
+
     const handleSave: SubmitHandler<FieldValues> = async (data) => {
 
         if (editorRef.current) {
             const description = editorRef.current.getContent();
             const topics = String(data.topics).split(',');
+            let images = prevData?.images;
 
-            if (files && files.length) {
-                setLoading(true);
+            setLoading(true);
 
-                if (shortDes?.length < 200 || shortDes?.length > 300) {
-                    toast.error('Short description should be between 200 and 300 characters.');
-                    setLoading(false);
-                    return;
-                }
+            if (shortDes?.length < 200 || shortDes?.length > 300) {
+                toast.error('Short description should be between 200 and 300 characters.');
+                setLoading(false);
+                return;
+            }
 
+            if (files) {
                 try {
                     const imgRes = await uploadImageToImgBb(files);
 
                     if (imgRes.success) {
-                        const payload = {
-                            ...data,
-                            author: currentUser?._id,
-                            description,
-                            images: imgRes.urls,
-                            topics,
-                        };
-
-                        handleCreateNewArticleMutation(payload);
-
-                        if (isSuccess) {
-                            setLoading(false)
-                        }
-
-                    } else {
-                        toast.error('Failed to upload images! Try again');
-                        setLoading(false)
+                        images = imgRes.urls as string[]
                     }
 
                 } catch (error) {
-                    toast.error('Something Bad Happened!');
+                    toast.error('Failed to update images!');
                     setLoading(false);
-                }
+                    return
+                };
+            };
 
-            } else {
-                toast.error('Select At last one Image');
-                setLoading(false);
-            }
+            const payload = {
+                ...data,
+                author: currentUser?._id,
+                description,
+                images,
+                topics,
+            };
+
+
+
         }
     }
 
@@ -119,20 +115,17 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
         editorRef.current = editor
     }
 
-    // if (!isLoading && !currentUser) {
-    //     return router.push('/auth/login?redirect=/new');
-    // }
-
     return (
         <>
             {isLoading && <Loading />}
+
             {!isLoading && !currentUser && (
                 <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
                     <div className="text-center">
                         <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
                         <Link href='/auth/login?redirect=/new'>
                             <Button color="primary" variant="bordered">
-                                Login to Write Contents
+                                Login to Edit Contents
                             </Button>
                         </Link>
                     </div>
@@ -142,14 +135,22 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
             {
                 currentUser && (
                     <form className="space-y-4" onSubmit={handleSubmit(handleSave)}>
-                        <h1 className='text-3xl'>Publish New Article</h1>
+                        <h3 className='text-primary-600'>Note: If all previous data is not loaded then please go back one step and come again</h3>
+                        <h1 className='text-3xl'>Edit {prevData?.title}</h1>
                         <p>EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners. Our diverse user base contributes to a rich ecosystem of knowledge, where everyone has something to learn and something to teach.</p>
                         <div className='pt-5 space-y-4'>
-                            <Input isRequired label='Title' size='sm' type='text' {...register('title')} />
+                            <Input
+                                isRequired
+                                defaultValue={prevData?.title}
+                                label='Title'
+                                size='sm'
+                                type='text'
+                                {...register('title')} />
                             <Textarea
                                 isRequired
                                 label=" Short Description (>200 <300)"
                                 {...register('textArea')}
+                                defaultValue={prevData?.textArea}
                                 isInvalid={shortDes && shortDes?.length < 200 || shortDes?.length > 300}
                             />
                             <div className=" md:flex gap-4 space-y-4 md:space-y-0">
@@ -159,11 +160,13 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
                                     label="Category"
                                     size='sm'
                                     {...register('category')}
+                                    defaultSelectedKeys={[prevData?.category as string]}
                                 >
                                     {(category) => <SelectItem key={category.key}>{category.label}</SelectItem>}
                                 </Select>
                                 <Select
                                     isRequired
+                                    defaultSelectedKeys={prevData?.topics}
                                     items={topicsData}
                                     label="Select Topics"
                                     selectionMode='multiple'
@@ -191,14 +194,18 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
                                     'removeformat | help',
                                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
                             }}
+                            initialValue={prevData?.description}
                             onInit={handleEditorInit}
                         />
+
                         <div className="  my-10 ">
                             {imagesLoaded ? (
                                 <div className=" mx-auto flex flex-wrap items-center gap-x-6  rounded-lg border-2 border-dashed border-gray-400 p-5 bg-white space-y-4">
 
-                                    {showImagePreview?.map((img, indx) => <img key={indx} className="w-full max-w-[150px] rounded-lg object-cover" src={img} />)}
+                                    {showImagePreview.length ?
+                                        showImagePreview?.map((img, indx) => <img key={indx} className="w-full max-w-[150px] rounded-lg object-cover" src={img} />) :
 
+                                        prevData?.images.map((img: string, indx: number) => <img key={indx} className="w-full max-w-[150px] rounded-lg object-cover" src={img} />)}
 
                                     <div className="flex-1 space-y-1.5 overflow-hidden">
                                         {/* <h5 className="text-xl font-medium tracking-tight truncate">{showName?.name}</h5> */}
@@ -222,11 +229,12 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
                             <input multiple className="hidden" id="file5" type="file" onChange={handleFileChange} />
                         </div>
 
+
                         <div className="md:flex justify-between">
-                            <Checkbox isDisabled={!currentUser?.isPremiumMember} {...register('isPremiumContent')}>Publish as Premium {!currentUser?.isPremiumMember && <span>(Only For Premium Member)</span>} </Checkbox>
+                            <Checkbox defaultSelected={true} isDisabled={!currentUser?.isPremiumMember} {...register('isPremiumContent')}>Publish as Exclusive {!currentUser?.isPremiumMember && <span>(Only For Verified Members)</span>} </Checkbox>
                             <div className=" md:flex gap-4 space-y-4 md:space-y-0 mt-4 md:mt-0">
                                 <Button className='block w-full' color="primary" variant="bordered">Save Draft</Button>
-                                <Button className='block w-full' color="primary" isLoading={loading} type='submit'>Publish Now</Button>
+                                <Button className='block w-full' color="primary" isLoading={loading} type='submit'>Update</Button>
                             </div>
                         </div>
                     </form>
