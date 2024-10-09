@@ -11,7 +11,7 @@ import { Input, Textarea } from '@nextui-org/input';
 import { Button, Checkbox, Select, SelectItem, } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { LockIcon } from 'lucide-react';
+import { LockIcon, X } from 'lucide-react';
 import Link from 'next/link';
 
 import { categoriesData } from '@/const/article/categories';
@@ -19,7 +19,6 @@ import { topicsData } from '@/const/article/topics';
 import uploadImageToImgBb from '@/utils/upload_image_to_imgbb';
 import useUser from '@/hooks/useUser';
 import Loading from '@/components/loading';
-import { useCreateArticle } from '@/hooks/operations/hook_oparetion_create_article';
 import useArticle from '@/hooks/use_articles';
 import { IArticleResponse } from '@/interface/articles.response.interface';
 
@@ -36,7 +35,6 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
     const [imagesLoaded, setImageLoaded] = useState(true);
     const { register, handleSubmit, watch } = useForm();
     const [loading, setLoading] = useState(false);
-    const { mutate: handleCreateNewArticleMutation, isSuccess } = useCreateArticle(currentUser?.username as string);
     const shortDes = watch('textArea');
     const [prevData, setPrevData] = useState<IArticleResponse | null>(data ? data as IArticleResponse : null)
 
@@ -133,7 +131,36 @@ export default function EditArticle({ params }: { params: { postId: string } }) 
             )}
 
             {
-                currentUser && (
+                error && (
+                    <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
+                        <div className="text-center">
+                            {/* <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" /> */}
+                            <X color='error' size={60} />
+                            <h1 className='mb-2'>Something Bad Happened!</h1>
+                            <Button color="primary" variant="bordered" onClick={() => window.location.reload()}>
+                                Try again
+                            </Button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                prevData?.author._id !== currentUser?._id && (
+                    <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
+                        <div className="text-center">
+                            <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
+                            <h1 className='mb-2'>Access Denied</h1>
+                            <Button color="primary" variant="bordered" onClick={() => window.location.reload()}>
+                                Try again
+                            </Button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                currentUser && !error && prevData?.author._id === currentUser?._id && (
                     <form className="space-y-4" onSubmit={handleSubmit(handleSave)}>
                         <h3 className='text-primary-600'>Note: If all previous data is not loaded then please go back one step and come again</h3>
                         <h1 className='text-3xl'>Edit {prevData?.title}</h1>
