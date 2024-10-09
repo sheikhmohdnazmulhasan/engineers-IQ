@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 import { FieldValues } from "react-hook-form";
 
@@ -8,10 +9,22 @@ export async function createArticle(payload: FieldValues) {
         const { data } = await axiosInstance.post('/articles', payload);
         return data
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } catch (error: any) {
         if (error.response) {
             throw new Error(error.response.data.message);
         }
     }
-}
+};
+
+export async function updateArticle(payload: FieldValues, postId: string) {
+    try {
+        const { data } = await axiosInstance.patch(`/article?_id=${postId}`, payload);
+        return data;
+
+    } catch (error: any) {
+        if (error.response) {
+            throw new Error(error.response.data.message);
+        }
+    }
+};
