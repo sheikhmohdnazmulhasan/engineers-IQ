@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@nextui-org/button";
+import { X } from "lucide-react";
 import { useEffect } from "react";
 
 export default function Error({
@@ -16,16 +18,14 @@ export default function Error({
   }, [error]);
 
   return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button
-        onClick={
-          // Attempt to recover by trying to re-render the segment
-          () => reset()
-        }
-      >
-        Try again
-      </button>
+    <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
+      <div className="text-center">
+        <X className="w-12 h-12 mb-4 mx-auto" color="danger" />
+        <h1>Something Bad Happened</h1>
+        <Button color="primary" variant="bordered" onClick={() => reset()}>
+          Retry
+        </Button>
+      </div>
     </div>
   );
 }
