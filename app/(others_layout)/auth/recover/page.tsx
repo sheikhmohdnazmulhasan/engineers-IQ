@@ -5,18 +5,23 @@ import { motion } from "framer-motion";
 import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 
 import { emailOrUsernameValidationSchema } from '@/validations/recover.validation';
 import axiosInstance from '@/libs/axiosInstance';
 import generateOTP from '@/utils/generateOTP';
+import { INotificationEmail } from '@/interface/email.notification.interface';
+import sendNotificationEmail from '@/utils/send_notification_email';
+import { encrypt } from '@/utils/text_encryptor';
 
 const Recover = () => {
     const [err, setErr] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [emailSendStatus, setEmailSendStatus] = useState<boolean>(false);
-    const OTP = generateOTP(8);
     const [otpError, setOtpError] = useState<boolean>(false);
-    const [isLoading2, setIsLoading2] = useState<boolean>(false);
+    const [otp, setOtp] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
+    const router = useRouter();
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(emailOrUsernameValidationSchema),
@@ -33,30 +38,28 @@ const Recover = () => {
             });
 
             if (res.status === 200) {
-                console.log(OTP);
+                const generatedOtp = generateOTP(8);
+                setOtp(generatedOtp);
+                setEmail(res.data.data.email)
 
-                setIsLoading(false);
-                setEmailSendStatus(true);
-                reset();
+                const EMAIL_PARAMS: INotificationEmail = {
+                    receiver_email: res.data.data.email,
+                    receiver_name: res.data.data.name,
+                    subject: 'Recover your account - EngineersIQ',
+                    description: `We received a request to recover access to your account. To proceed, please use the One-Time Password (OTP): ${generatedOtp}
 
-                // const EMAIL_PARAMS: INotificationEmail = {
-                //     receiver_email: res.data.data.email,
-                //     receiver_name: res.data.data.name,
-                //     subject: 'Recover your account - EngineersIQ',
-                //     description: `We received a request to recover access to your account. To proceed, please use the One-Time Password (OTP): ${OTP}
+                    Please note that this OTP is valid for a limited time and can only be used once. If you did not request this recovery, please ignore this email or contact our support team immediately.`
+                };
 
-                //     Please note that this OTP is valid for a limited time and can only be used once. If you did not request this recovery, please ignore this email or contact our support team immediately.`
-                // };
+                await sendNotificationEmail(EMAIL_PARAMS).then(() => {
+                    setIsLoading(false);
+                    setEmailSendStatus(true);
+                    reset();
 
-                // await sendNotificationEmail(EMAIL_PARAMS).then(() => {
-                //     setIsLoading(false);
-                //     setEmailSendStatus(true);
-                //     reset();
-
-                // }).catch(() => {
-                //     setIsLoading(false);
-                //     setErr('Failed to send email');
-                // })
+                }).catch(() => {
+                    setIsLoading(false);
+                    setErr('Failed to send email');
+                })
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,16 +78,16 @@ const Recover = () => {
     async function handleVerifyOTP(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setOtpError(false);
-
         const typedOtp = (event.target as HTMLFormElement).otp.value;
 
-        if (typedOtp !== OTP) {
+        if (typedOtp !== otp) {
             setOtpError(true);
             return
         };
 
-        // pass, create a token and set to user document
-
+        const validity = new Date(new Date().getTime() + 15 * 60000);
+        const encryptedToken = encrypt(`${email}+++${validity}`);
+        router.push(`/auth/recover/welcome-back?token=${encryptedToken}`);
     }
 
     if (!emailSendStatus) {
@@ -191,6 +194,11 @@ const Recover = () => {
                                     name='otp'
                                     size='sm'
                                     type="text"
+                                    onChange={() => {
+                                        if (otpError) {
+                                            setOtpError(false)
+                                        }
+                                    }}
                                 />
                             </motion.div>
                             <motion.div
