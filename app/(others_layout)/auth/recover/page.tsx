@@ -1,10 +1,24 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { emailOrUsernameValidationSchema } from '@/validations/recover.validation';
 
 const Recover = () => {
+    const [err, setErr] = useState<string | null>('ddddd');
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(emailOrUsernameValidationSchema),
+    });
+    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+
+    };
+
+
+    console.log(err);
 
     return (
         <motion.div
@@ -33,17 +47,25 @@ const Recover = () => {
                     </motion.p>
                 </CardHeader>
                 <CardBody className="px-6 py-5">
-                    <form className="space-y-5" >
+                    <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
                         <motion.div
                             animate={{ x: 0, opacity: 1 }}
                             initial={{ x: -20, opacity: 0 }}
                             transition={{ delay: 0.4 }}
                         >
                             <Input
-                                required
+                                {...register('query', {
+                                    onChange: () => {
+                                        if (err) {
+                                            setErr(null)
+                                        }
+                                    }
+                                })}
+                                errorMessage={(errors.query?.message || err) as string}
+                                isInvalid={!!errors.query || !!err}
                                 label="Email or Username"
                                 size='sm'
-                                type="string"
+                                type="text"
                             />
                         </motion.div>
                         <motion.div
