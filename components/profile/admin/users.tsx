@@ -214,7 +214,7 @@ export default function Users() {
                                     <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
 
                                     <TableCell>{user.isBlocked ? <Chip color="danger" size="sm">Blcked</Chip> : <Chip color="primary" size='sm'>Active</Chip>}</TableCell>
-                                    <TableCell>{formatDateReadable(user.lastLogin as unknown as string) || "N/A"}</TableCell>
+                                    <TableCell>{user.lastLogin ? formatDateReadable(user.lastLogin as unknown as string) : "N/A"}</TableCell>
                                     <TableCell className="flex gap-3">
                                         <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
                                         <div onClick={() => {

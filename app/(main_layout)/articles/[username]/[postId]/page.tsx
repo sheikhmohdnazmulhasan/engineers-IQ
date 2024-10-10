@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Bookmark, Heart, LockIcon, MessageCircle, Share } from 'lucide-react'
-import { Button, Avatar, Card, CardBody } from "@nextui-org/react"
+import { Button, Avatar, Card, CardBody, useDisclosure, Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react"
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import DOMPurify from 'dompurify'
@@ -17,7 +17,15 @@ import formatDateReadable from '@/utils/format_date_readable'
 import UserName from '@/components/premium_acc_badge'
 import useUser from '@/hooks/useUser'
 import axiosInstance from '@/libs/axiosInstance'
+// eslint-disable-next-line import/order
 import Loading from '@/components/loading'
+
+// static img ofr sharing
+import facebook from "@/public/share/facebook.png";
+import linkedin from "@/public/share/linkedin.png";
+import mail from "@/public/share/mail.png";
+import wp from "@/public/share/wp.png";
+import twitter from "@/public/share/twitter.png";
 
 import { CommentDrawer } from './CommentDrawer'
 
@@ -44,6 +52,7 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
     const isPremiumContent = article?.isPremiumContent
     const isUserLoggedIn = !!currentUser
     const shouldBlurContent = !isUserLoggedIn && isPremiumContent
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
     async function handleClapped() {
         if (!currentUser) {
@@ -83,6 +92,42 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
         }
 
         html2pdf().from(element).set(options).save()
+    };
+
+    function handleSocialShare(media: string) {
+        if (media === "facebook") {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                window.location.href
+            )}`;
+            window.open(url, "_blank", "width=600,height=400");
+
+        } else if (media === "mail") {
+            const subject = `Check out ${article?.title}`;
+            const body = `I thought you might be interested in this property: ${window.location.href}`;
+            const mailtoUrl = `mailto:?subject=${encodeURIComponent(
+                subject
+            )}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoUrl;
+
+        } else if (media === "linkedin") {
+            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                window.location.href
+            )}`;
+            window.open(url, "_blank");
+
+        } else if (media === "twitter") {
+            const text = `Check out ${article?.title}`;
+            const url = encodeURIComponent(window.location.href);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                text
+            )}&url=${url}`;
+            window.open(twitterUrl, "_blank", "width=600,height=400");
+
+        } else if (media === "whatsapp") {
+            const text = `Check out ${article?.title}` + " " + window.location.href;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, "_blank");
+        }
     }
 
     useEffect(() => {
@@ -125,115 +170,172 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
             )}
 
             {!error && !shouldBlurContent && (
-                <div ref={contentRef} className="mx-auto relative" id="content">
-                    <motion.div
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-8"
-                        initial={{ opacity: 0, y: 20 }}
-                        transition={{ duration: 0.5 }}
+                <>
+
+
+                    <Modal
+                        backdrop='blur'
+                        isOpen={isOpen}
+                        placement="auto"
+                        size='lg'
+                        onOpenChange={onOpenChange}
                     >
-                        <h1 className="text-2xl md:text-4xl font-bold mb-4">{article?.title}</h1>
-                        <div className="flex items-center space-x-4 mb-4">
-                            <Avatar name={article?.author.name} src={article?.author?.profileImg} />
-                            <div>
-                                <Link className="hover:underline" href={`/profile/${article?.author.username}`}>
-                                    <UserName isPremium={article?.author.isPremiumMember} name={article?.author?.name} />
-                                </Link>
-                                <p className="text-sm text-gray-500">Published in {formatDateReadable(article?.createdAt as string)}</p>
+                        <ModalContent >
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Share <span className='text-sm font-light'>{article?.title}</span> </ModalHeader>
+                                <ModalBody>
+                                    <div className="flex gap-4 justify-center items-center mt-8">
+                                        <Image
+                                            alt="Facebook icon"
+                                            className="w-10 transition-all hover:scale-110 hover:cursor-pointer"
+                                            quality={100}
+                                            src={facebook}
+                                            onClick={() => handleSocialShare("facebook")}
+                                        />
+                                        <Image
+                                            alt="Email icon"
+                                            className="w-10 transition-all hover:scale-110 hover:cursor-pointer"
+                                            quality={100}
+                                            src={mail}
+                                            onClick={() => handleSocialShare("mail")}
+                                        />
+                                        <Image
+                                            alt="Linkedin icon"
+                                            className="w-10 transition-all hover:scale-110 hover:cursor-pointer"
+                                            quality={100}
+                                            src={linkedin}
+                                            onClick={() => handleSocialShare("linkedin")}
+                                        />
+                                        <Image
+                                            alt="twitter icon"
+                                            className="w-10 transition-all hover:scale-110 hover:cursor-pointer"
+                                            quality={100}
+                                            src={twitter}
+                                            onClick={() => handleSocialShare("twitter")}
+                                        />
+                                        <Image
+                                            alt="wp icon"
+                                            className="w-10 transition-all hover:scale-110 hover:cursor-pointer"
+                                            quality={100}
+                                            src={wp}
+                                            onClick={() => handleSocialShare("whatsapp")}
+                                        />
+                                    </div>
+                                </ModalBody>
+                            </>
+                        </ModalContent>
+                    </Modal>
+
+                    <div ref={contentRef} className="mx-auto relative" id="content">
+                        <motion.div
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-8"
+                            initial={{ opacity: 0, y: 20 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <h1 className="text-2xl md:text-4xl font-bold mb-4">{article?.title}</h1>
+                            <div className="flex items-center space-x-4 mb-4">
+                                <Avatar name={article?.author.name} src={article?.author?.profileImg} />
+                                <div>
+                                    <Link className="hover:underline" href={`/profile/${article?.author.username}`}>
+                                        <UserName isPremium={article?.author.isPremiumMember} name={article?.author?.name} />
+                                    </Link>
+                                    <p className="text-sm text-gray-500">Published in {formatDateReadable(article?.createdAt as string)}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-gray-500">
-                            <Button
-                                className={`mt-2 p-0 ${hasClapped ? 'text-danger' : ''}`}
-                                isLoading={newCommentLoading}
-                                size="sm"
-                                startContent={<Heart className={`w-5 h-5 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
-                                variant="light"
-                                onPress={handleClapped}
-                            >
-                                {article?.claps.length}
-                            </Button>
+                            <div className="flex items-center space-x-4 text-gray-500">
+                                <Button
+                                    className={`mt-2 p-0 ${hasClapped ? 'text-danger' : ''}`}
+                                    isLoading={newCommentLoading}
+                                    size="sm"
+                                    startContent={<Heart className={`w-5 h-5 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
+                                    variant="light"
+                                    onPress={handleClapped}
+                                >
+                                    {article?.claps.length}
+                                </Button>
 
-                            <Button size="sm" startContent={<MessageCircle className="w-5 h-5" />} variant="light" onPress={() => setIsCommentDrawerOpen(true)}>
-                                {article?.comments.length}
-                            </Button>
+                                <Button size="sm" startContent={<MessageCircle className="w-5 h-5" />} variant="light" onPress={() => setIsCommentDrawerOpen(true)}>
+                                    {article?.comments.length}
+                                </Button>
 
-                            <Button size="sm" startContent={<Share className="w-5 h-5" />} variant="light" onPress={() => console.log('hello')}>
-                                {article?.shares}
-                            </Button>
+                                <Button size="sm" variant="light" onPress={() => onOpen()}>
+                                    <Share className="w-5 h-5" />
+                                </Button>
 
-                            <Button size="sm" startContent={<Bookmark className="w-5 h-5" />} variant="light" onPress={handleDownload} />
-                        </div>
-                    </motion.div>
+                                <Button size="sm" startContent={<Bookmark className="w-5 h-5" />} variant="light" onPress={handleDownload} />
+                            </div>
+                        </motion.div>
 
-                    <motion.div
-                        animate={{ opacity: 1, scale: 1 }}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <Image
-                            alt={article?.title as string}
-                            className="w-full h-60 md:h-[500px] object-cover mb-8 rounded-lg"
-                            height={300}
-                            src={article?.images[0] as string}
-                            width={700}
+                        <motion.div
+                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <Image
+                                alt={article?.title as string}
+                                className="w-full h-60 md:h-[500px] object-cover mb-8 rounded-lg"
+                                height={300}
+                                src={article?.images[0] as string}
+                                width={700}
+                            />
+                        </motion.div>
+
+                        <motion.div
+                            animate={{ opacity: 1 }}
+                            className={`prose max-w-none`}
+                            initial={{ opacity: 0 }}
+                            transition={{ delay: 0.2, duration: 0.5 }}
+                        >
+                            <div className="article-content">
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article?.description as string) }} />
+                            </div>
+                        </motion.div>
+
+                        <Card
+                            isBlurred
+                            className={`fixed bottom-1 left-1 right-1 md:left-16 md:right-16 bg-background/60 dark:bg-default-100/50 z-[100] transition-opacity duration-300 ${lastScrollY > 350 ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                }`}
+                            shadow="sm"
+                        >
+                            <CardBody>
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center space-x-4">
+                                        <Button
+                                            className={`mt-2 p-0 ${hasClapped ? 'text-danger' : ''}`}
+                                            isLoading={newCommentLoading}
+                                            size="sm"
+                                            startContent={<Heart className={`w-6 h-6 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
+                                            variant="light"
+                                            onPress={handleClapped}
+                                        >
+                                            {article?.claps.length}
+                                        </Button>
+
+                                        <Button size="sm" startContent={<MessageCircle className="w-6 h-6" />} variant="light" onPress={() => setIsCommentDrawerOpen(!isCommentDrawerOpen)}>
+                                            {article?.comments.length}
+                                        </Button>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <Button size="sm" startContent={<Bookmark className="w-6 h-6" />} variant="light" onPress={handleDownload} />
+                                        <Button isIconOnly size="sm" variant="light" onPress={() => onOpen()}>
+                                            <Share className="w-6 h-6" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardBody>
+                        </Card>
+
+                        <CommentDrawer
+                            articleId={params.postId}
+                            author={article?.author._id as string}
+                            comments={article?.comments as IComment[]}
+                            isOpen={isCommentDrawerOpen}
+                            revalidate={revalidate}
+                            onClose={() => setIsCommentDrawerOpen(false)}
                         />
-                    </motion.div>
-
-                    <motion.div
-                        animate={{ opacity: 1 }}
-                        className={`prose max-w-none`}
-                        initial={{ opacity: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                    >
-                        <div className="article-content">
-                            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article?.description as string) }} />
-                        </div>
-                    </motion.div>
-
-                    <Card
-                        isBlurred
-                        className={`fixed bottom-1 left-1 right-1 md:left-16 md:right-16 bg-background/60 dark:bg-default-100/50 z-[100] transition-opacity duration-300 ${lastScrollY > 350 ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                            }`}
-                        shadow="sm"
-                    >
-                        <CardBody>
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center space-x-4">
-                                    <Button
-                                        className={`mt-2 p-0 ${hasClapped ? 'text-danger' : ''}`}
-                                        isLoading={newCommentLoading}
-                                        size="sm"
-                                        startContent={<Heart className={`w-6 h-6 ${hasClapped ? 'fill-current text-danger' : ''}`} />}
-                                        variant="light"
-                                        onPress={handleClapped}
-                                    >
-                                        {article?.claps.length}
-                                    </Button>
-
-                                    <Button size="sm" startContent={<MessageCircle className="w-6 h-6" />} variant="light" onPress={() => setIsCommentDrawerOpen(!isCommentDrawerOpen)}>
-                                        {article?.comments.length}
-                                    </Button>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <Button size="sm" startContent={<Bookmark className="w-6 h-6" />} variant="light" onPress={handleDownload} />
-                                    <Button isIconOnly size="sm" variant="light">
-                                        <Share className="w-6 h-6" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-
-                    <CommentDrawer
-                        articleId={params.postId}
-                        author={article?.author._id as string}
-                        comments={article?.comments as IComment[]}
-                        isOpen={isCommentDrawerOpen}
-                        revalidate={revalidate}
-                        onClose={() => setIsCommentDrawerOpen(false)}
-                    />
-                </div>
+                    </div>
+                </>
             )}
         </>
     )
