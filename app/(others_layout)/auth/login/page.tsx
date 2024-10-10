@@ -148,7 +148,9 @@ function Login() {
                         >
                             <div className="text-center">
                                 {customError ?
-                                    <p className="text-sm">Forgot Password?</p> :
+                                    <Link className='' href="/auth/recover">
+                                        Forgot Password?
+                                    </Link> :
                                     <p>Don&apos;t have account ?  <Link className='' href="/auth/register">
                                         Register Now
                                     </Link></p>

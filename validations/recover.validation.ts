@@ -9,3 +9,16 @@ export const emailOrUsernameValidationSchema = z.object({
         message: 'Invalid username or email. Username must be 5-15 characters long, and only contain letters, numbers, and underscores.'
     })
 });
+
+
+export const passwordSetValidationSchema = z.object({
+    password1: z.string()
+        .nonempty('New Password is required')
+        .min(6, "Password must be at least 6 characters long"),
+
+    password2: z.string()
+        .nonempty('Please confirm your password')
+}).refine(data => data.password1 === data.password2, {
+    path: ['password2'],
+    message: "Passwords do not match",
+})
