@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import User from '@/models/users.model';
+import connectMongodb from '@/libs/connect_mongodb';
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -11,6 +12,8 @@ export async function GET(req: Request) {
     }
 
     try {
+        await connectMongodb();
+
         // Check if query is an email (simple email validation)
         const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(query);
 
