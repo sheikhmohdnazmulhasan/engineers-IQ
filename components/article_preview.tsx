@@ -160,7 +160,7 @@ export const ArticlePreview = ({
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                             <div className="text-center">
                                 <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
-                                <Link href={!currentUser && !fromProfile ? `/auth/login` : currentUser ? '/pricing' : `/auth/login?redirect=/profile/${data.author.username}`}> <Button color="primary" variant="bordered">
+                                <Link href={!currentUser && !fromProfile ? `/auth/login` : currentUser ? '/pay' : `/auth/login?redirect=/profile/${data.author.username}`}> <Button color="primary" variant="bordered">
                                     {currentUser ? 'Browse Premium Plans' : 'Login And Read'}
                                 </Button></Link>
                             </div>

@@ -206,22 +206,29 @@ export default function Home() {
                 </motion.div>
               )}
 
-              <AnimatePresence>
-                {Array.isArray(data) && data?.map((article: IArticleResponse) => (
-                  <motion.div key={article._id} variants={fadeInUp}>
-                    <ArticlePreview data={article} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {
+                !isLoading && (!error1 && !error2) && (
+                  <>
+                    <AnimatePresence>
+                      {Array.isArray(data) && data?.map((article: IArticleResponse) => (
+                        <motion.div key={article._id} variants={fadeInUp}>
+                          <ArticlePreview data={article} />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
 
-              {Array.isArray(allArticles) && allArticles.length > 6 && (
-                <motion.div variants={fadeInUp}>
-                  <Pagination
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
-                </motion.div>
-              )}
+                    {Array.isArray(allArticles) && allArticles.length > 6 && (
+                      <motion.div variants={fadeInUp}>
+                        <Pagination
+                          totalPages={totalPages}
+                          onPageChange={setCurrentPage}
+                        />
+                      </motion.div>
+                    )}
+                  </>
+                )
+              }
+
             </motion.div>
 
             <motion.div className="w-full lg:w-1/3" variants={fadeInUp}>
