@@ -10,6 +10,7 @@ import DOMPurify from 'dompurify'
 import { toast } from 'sonner'
 import html2pdf from 'html2pdf.js'
 import { useRef } from 'react'
+import { FaClipboard, FaClipboardCheck } from "react-icons/fa";
 
 import useArticle from '@/hooks/use_articles'
 import { IArticleResponse, IClap, IComment } from '@/interface/articles.response.interface'
@@ -28,6 +29,8 @@ import wp from "@/public/share/wp.png";
 import twitter from "@/public/share/twitter.png";
 
 import { CommentDrawer } from './CommentDrawer'
+
+
 
 export interface Comment {
     author: string
@@ -52,7 +55,8 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
     const isPremiumContent = article?.isPremiumContent
     const isUserLoggedIn = !!currentUser
     const shouldBlurContent = !isUserLoggedIn && isPremiumContent
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [coped, setCoped] = useState(false);
 
     async function handleClapped() {
         if (!currentUser) {
@@ -94,16 +98,27 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
         html2pdf().from(element).set(options).save()
     };
 
+    // copy link
+    function handleCopyLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        setCoped(true);
+
+        setTimeout(() => {
+            setCoped(false);
+        }, 1000);
+    }
+
     function handleSocialShare(media: string) {
         if (media === "facebook") {
             const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
                 window.location.href
             )}`;
-            window.open(url, "_blank", "width=600,height=400");
+            window.open(url, "_blank", "width=700,height=500");
 
         } else if (media === "mail") {
             const subject = `Check out ${article?.title}`;
-            const body = `I thought you might be interested in this property: ${window.location.href}`;
+            const body = `I thought you might be interested in this article: ${window.location.href}`;
             const mailtoUrl = `mailto:?subject=${encodeURIComponent(
                 subject
             )}&body=${encodeURIComponent(body)}`;
@@ -220,6 +235,20 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
                                             src={wp}
                                             onClick={() => handleSocialShare("whatsapp")}
                                         />
+                                    </div>
+                                    <div className="mt-7 mb-2 flex justify-center items-center ">
+                                        <Button
+                                            color='primary'
+                                            variant='bordered'
+                                            onClick={handleCopyLink}
+                                        >
+                                            Copy Link{" "}
+                                            {!coped ? (
+                                                <FaClipboard size={20} />
+                                            ) : (
+                                                <FaClipboardCheck size={20} />
+                                            )}{" "}
+                                        </Button>
                                     </div>
                                 </ModalBody>
                             </>
