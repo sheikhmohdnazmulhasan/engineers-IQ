@@ -19,7 +19,7 @@ import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { Logo, WriteIcon } from "@/components/icons";
+import { WriteIcon } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 import signOut from "@/utils/sign_out_user";
 

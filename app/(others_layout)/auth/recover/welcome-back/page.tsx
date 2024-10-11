@@ -7,12 +7,12 @@ import { motion } from "framer-motion";
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 
 import Loading from "@/components/loading";
 import { decrypt } from "@/utils/text_encryptor";
 import { passwordSetValidationSchema } from "@/validations/recover.validation";
 import axiosInstance from "@/libs/axiosInstance";
-import Link from "next/link";
 
 const Welcome = () => {
     const searchParams = useSearchParams();
