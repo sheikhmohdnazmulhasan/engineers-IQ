@@ -51,3 +51,11 @@ export interface IArticleResponse {
     createdAt: string;
     updatedAt: string;
 }
+
+
+export interface IPagination {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+}
