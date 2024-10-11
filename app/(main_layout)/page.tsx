@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Button, Card, CardBody, Avatar, Chip, Input } from "@nextui-org/react"
+import { Button, Avatar, Chip, Input, CardBody, Card } from "@nextui-org/react"
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { SearchIcon } from 'lucide-react'
@@ -43,13 +43,7 @@ export default function Home() {
   const [selectedCategory, setCategory] = useState<string>('');
   const [selectedTopic, setTopic] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const limit = 6
-  const { data: allArticles, error: error1 } = useArticle({
-    searchTerm: debouncedSearchTerm,
-    category: selectedCategory,
-    topic: selectedTopic
-  });
-  const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / limit : 0);
+  const limit = 10
 
   const query = {
     page: currentPage,
@@ -59,7 +53,7 @@ export default function Home() {
     topic: selectedTopic
   }
 
-  const { data, isLoading, error: error2 } = useArticle(query);
+  const { data, isLoading, error: error2, pagination } = useArticle(query);
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
@@ -168,7 +162,7 @@ export default function Home() {
                       variant="flat"
                       onClick={() => setCategory('')}
                     >
-                      Latest
+                      For You
                     </Chip>
                   </motion.div>
                   {categoriesData.slice(0, 5).map((category, indx) => (
@@ -196,7 +190,7 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {!isLoading && (error1 || error2) && (
+              {!isLoading && error2 && (
                 <motion.div
                   className="h-screen flex justify-center flex-col items-center -mt-32"
                   variants={fadeInUp}
@@ -207,7 +201,7 @@ export default function Home() {
               )}
 
               {
-                !isLoading && (!error1 && !error2) && (
+                !isLoading && !error2 && (
                   <>
                     <AnimatePresence>
                       {Array.isArray(data) && data?.map((article: IArticleResponse) => (
@@ -217,10 +211,10 @@ export default function Home() {
                       ))}
                     </AnimatePresence>
 
-                    {Array.isArray(allArticles) && allArticles.length > 6 && (
+                    {pagination.totalItems > 10 && (
                       <motion.div variants={fadeInUp}>
                         <Pagination
-                          totalPages={totalPages}
+                          totalPages={pagination.totalPages}
                           onPageChange={setCurrentPage}
                         />
                       </motion.div>
@@ -233,15 +227,16 @@ export default function Home() {
 
             <motion.div className="w-full lg:w-1/3" variants={fadeInUp}>
               <div className="sticky top-20">
+
                 <SidebarSection title="System Picks">
                   <AnimatePresence>
-                    {Array.isArray(allArticles) && allArticles.sort(() => 0.5 - Math.random()).slice(0, 3)?.map((article) => (
+                    {Array.isArray(data) && data.sort(() => 0.5 - Math.random()).slice(0, 3)?.map((article) => (
                       <motion.div key={article._id} variants={fadeInUp}>
                         <Link href={`/articles/${article.author.username}/${article._id}`}>
                           <Card className="mb-2">
                             <CardBody>
                               <h4 className="font-semibold">{article.title}</h4>
-                              <p className="text-small text-default-500">{article.textArea.slice(0, 40)}</p>
+                              <p className="text-small text-default-500">{article.textArea.slice(0, 40)} ...</p>
                             </CardBody>
                           </Card>
                         </Link>
@@ -249,6 +244,7 @@ export default function Home() {
                     ))}
                   </AnimatePresence>
                 </SidebarSection>
+
                 <SidebarSection title="Recommended topics">
                   <motion.div className="flex flex-wrap gap-2" variants={staggerChildren}>
                     <AnimatePresence>
