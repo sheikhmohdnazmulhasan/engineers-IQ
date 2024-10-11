@@ -33,6 +33,7 @@ import Pagination from '@/components/pagination';
 import { Analytics } from '@/components/profile/analytics';
 import Users from '@/components/profile/admin/users';
 import { categoriesData } from '@/const/article/categories';
+import Payout from '@/components/profile/admin/payout';
 
 
 export default function Profile({ params }: { params: { user: string } }) {
@@ -561,9 +562,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                 ) : render === 'user' ? (
                                     <Users />
                                 ) : (
-                                    <div className="">
-                                        payout
-                                    </div>
+                                    <Payout />
                                 )
                             }
 

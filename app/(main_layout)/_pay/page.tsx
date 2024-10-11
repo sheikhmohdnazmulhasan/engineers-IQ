@@ -42,9 +42,16 @@ function PaymentForm() {
 
             await axios.patch(`/api/users?user=${currentUser?._id}`, {
                 pay: 'ok'
-            }).then(() => {
-                Swal.fire('New You Are the Premium Member')
-                router.push('/');
+            }).then(async () => {
+                // await axiosInstance.post(`/pay/record`,);
+
+                axios.post('/api/pay/record', {
+                    name: currentUser?.name
+
+                }).then(() => {
+                    Swal.fire('New You Are the Premium Member')
+                    router.push('/');
+                })
             })
 
         } else {
