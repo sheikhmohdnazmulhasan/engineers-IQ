@@ -351,6 +351,12 @@ export default function Profile({ params }: { params: { user: string } }) {
                         </div>
                     }
 
+                    {isWonProfile && currentUser?.isBlocked &&
+                        <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
+                            Your account has been blocked for breaking our rules!
+                        </div>
+                    }
+
                     <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                         {/* Left Column: Profile Info for mobile, Right for large screens */}
@@ -496,7 +502,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                             <>
                                                 <p className={`${render === 'user' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('user')}>Users</p>
 
-                                                <p className={`${render === 'payout' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('payout')}>Payout</p>
+                                                {/* <p className={`${render === 'payout' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('payout')}>Payout</p> */}
 
                                                 {/* <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Payment History</p> */}
                                             </>
@@ -559,10 +565,8 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                                 ) : render === 'analytics' ? (
                                     <Analytics />
-                                ) : render === 'user' ? (
+                                ) : render === 'user' && (
                                     <Users />
-                                ) : (
-                                    <Payout />
                                 )
                             }
 

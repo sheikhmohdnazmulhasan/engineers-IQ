@@ -62,8 +62,6 @@ export default function New() {
 
     }, [files]);
 
-
-
     const handleSave: SubmitHandler<FieldValues> = async (data) => {
 
         if (editorRef.current) {
@@ -131,7 +129,34 @@ export default function New() {
                         <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
                         <Link href='/auth/login?redirect=/new'>
                             <Button color="primary" variant="bordered">
-                                Login to Write Contents
+                                Login to Write Articles
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {!isLoading && !currentUser?.isEmailVerified && (
+                <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
+                    <div className="text-center">
+                        <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
+                        <Link href={`/profile/${currentUser?.username}`}>
+                            <Button color="primary" variant="bordered">
+                                Verify Email to Write Articles
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {!isLoading && currentUser?.isBlocked && (
+                <div className="inset-0 flex items-center h-screen -mt-28 justify-center">
+                    <div className="text-center">
+                        <LockIcon className="w-12 h-12 text-[#1877F2] mb-2 mx-auto" />
+                        <h1 className='mb-4'>Your Account is Blocked!</h1>
+                        <Link href={`/`}>
+                            <Button color="primary" variant="bordered">
+                                Go to Home
                             </Button>
                         </Link>
                     </div>
@@ -139,7 +164,7 @@ export default function New() {
             )}
 
             {
-                currentUser && (
+                currentUser && currentUser?.isEmailVerified && !currentUser.isBlocked && (
                     <form className="space-y-4" onSubmit={handleSubmit(handleSave)}>
                         <h1 className='text-3xl'>Publish New Article</h1>
                         <p>EngineersIQ is more than just a platform; it&apos;s a thriving community of engineers, professionals, and curious learners. Our diverse user base contributes to a rich ecosystem of knowledge, where everyone has something to learn and something to teach.</p>
