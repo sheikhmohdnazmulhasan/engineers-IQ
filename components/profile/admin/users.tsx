@@ -12,6 +12,7 @@ import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
 import axiosInstance from "@/libs/axiosInstance";
 import formatDateReadable from "@/utils/format_date_readable";
+import useUser from "@/hooks/useUser";
 
 export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
@@ -21,8 +22,21 @@ export default function Users() {
     const [operationState, setOperationState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
     const [operationState2, setOperationState2] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
     const [targetedUser, setTargetedUser] = useState<string | null>(null);
+    const { currentUser } = useUser();
 
     async function handleUserManagement(action: 'role' | 'status') {
+        if (targetedUser === currentUser?._id) {
+            setOperationState('error');
+
+            setTimeout(() => {
+                onClose();
+                setTargetedUser(null);
+                setOperationState('danger');
+            }, 1000);
+
+            return
+        }
+
         setOperationState('danger');
         try {
             setOperationState('loading');
@@ -60,6 +74,18 @@ export default function Users() {
     };
 
     async function handleDeleteUserPermanently() {
+        if (targetedUser === currentUser?._id) {
+            setOperationState2('error');
+
+            setTimeout(() => {
+                onClose2();
+                setTargetedUser(null);
+                setOperationState2('danger');
+            }, 1000);
+
+            return
+        }
+
         setOperationState2('danger')
         try {
             setOperationState2('loading')
