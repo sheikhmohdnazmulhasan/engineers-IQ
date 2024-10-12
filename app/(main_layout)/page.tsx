@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Button, Avatar, Chip, Input, CardBody, Card } from "@nextui-org/react"
+import React, { useEffect, useRef, useState } from 'react'
+import { Button, Avatar, Chip, Input, CardBody, Card, Kbd } from "@nextui-org/react"
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { SearchIcon } from 'lucide-react'
@@ -42,6 +42,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setCategory] = useState<string>('');
   const [selectedTopic, setTopic] = useState<string>('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const limit = 10
 
@@ -125,6 +127,22 @@ export default function Home() {
     setSearchTerm(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <motion.div
       animate="animate"
@@ -134,20 +152,29 @@ export default function Home() {
       variants={fadeInUp}
     >
       {isLoading && <Loading />}
-      <Input
-        aria-label="Search"
-        classNames={{
-          inputWrapper: "bg-default-100",
-          input: "text-sm",
-        }}
-        labelPlacement="outside"
-        placeholder="Search..."
-        startContent={
-          <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-        }
-        type="search"
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+
+      <div className={`transition-all duration-200 ease-in-out ${isFocused ? 'scale-105' : 'scale-100'}`}>
+        <Input
+          ref={searchInputRef}
+          aria-label="Search"
+          className='focus:ring-0'
+          endContent={
+            <>
+              <Kbd>Ctrl</Kbd>+<Kbd>K</Kbd>
+            </>
+          }
+          labelPlacement="outside"
+          placeholder="Search..."
+          startContent={
+            <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+          }
+          type="search"
+          onBlur={() => setIsFocused(false)}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+        />
+      </div>
+
 
       <motion.div className="min-h-screen bg-background mt-10" variants={fadeInUp}>
         <div className="container mx-auto">

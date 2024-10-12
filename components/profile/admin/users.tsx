@@ -13,6 +13,7 @@ import useAllUsers from "@/hooks/use_all_users";
 import axiosInstance from "@/libs/axiosInstance";
 import formatDateReadable from "@/utils/format_date_readable";
 import useUser from "@/hooks/useUser";
+import { encrypt } from "@/utils/text_encryptor";
 
 export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
@@ -33,14 +34,15 @@ export default function Users() {
                 setTargetedUser(null);
                 setOperationState('danger');
             }, 1000);
-
             return
-        }
+        };
+
+        const token = encrypt(currentUser?._id as unknown as string);
 
         setOperationState('danger');
         try {
             setOperationState('loading');
-            const res = await axiosInstance.patch(`/analytics/admin/users?_id=${targetedUser}&action=${action}`);
+            const res = await axiosInstance.patch(`/analytics/admin/users?_id=${targetedUser}&action=${action}&token=${token}`);
 
             if (res.status === 200) {
                 setOperationState('success');

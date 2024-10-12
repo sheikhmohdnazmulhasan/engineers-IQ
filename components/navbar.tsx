@@ -14,7 +14,7 @@ import { Link } from "@nextui-org/link";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button, Chip } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
 
 import { siteConfig } from "@/config/site";
@@ -132,7 +132,8 @@ export const Navbar = () => {
         </NavbarItem>
 
         {currentUser && <Link href="/new" >
-          <WriteIcon />
+          {/* <WriteIcon /> */}
+          <Chip color="primary" variant="flat">+ Create</Chip>
         </Link>}
 
         {isLoading ? <Spinner size="sm" /> : currentUser ? (
@@ -150,7 +151,7 @@ export const Navbar = () => {
       {/* mobile */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         {currentUser && <Link href="/new" >
-          <WriteIcon />
+          <Chip color="primary" variant="flat">+ Create</Chip>
         </Link>}
         <ThemeSwitch />
         {isLoading ? <Spinner size="sm" /> : currentUser ? profileDropdownMobile : null}
