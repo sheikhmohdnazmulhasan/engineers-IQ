@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 import connectMongodb from "@/libs/connect_mongodb";
 import User from "@/models/users.model";
+import { decrypt } from "@/utils/text_encryptor";
 
 // Define types for response data and pagination structure
 interface Pagination {
@@ -70,14 +73,35 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
 export async function PATCH(req: Request) {
     const { searchParams } = new URL(req.url);
+    const token = searchParams.get('token');
     const userId = searchParams.get('_id');
-    const action = searchParams.get('action'); // role or block
+    const action = searchParams.get('action');
+
+    let session: mongoose.ClientSession | null = null;
 
     try {
         await connectMongodb();
-        const user = await User.findById(userId).select('role isBlocked name');
+        const decryptedToken = decrypt(token as unknown as string);
+
+        session = await mongoose.startSession();
+        session.startTransaction();
+
+        const isAdmin = await User.findById(decryptedToken).select('role').lean().session(session);
+
+        // @ts-ignore: role is always exist
+        if (!isAdmin || isAdmin.role !== 'admin') {
+            session.abortTransaction();
+            return NextResponse.json({
+                success: false,
+                message: 'Unauthorized action',
+            }, { status: httpStatus.UNAUTHORIZED });
+        }
+
+        const user = await User.findById(userId).select('role isBlocked name').session(session);
 
         if (!user) {
+            session.abortTransaction();
+
             return NextResponse.json({
                 success: false,
                 message: 'User Not found',
@@ -88,6 +112,9 @@ export async function PATCH(req: Request) {
             user.role = user.role === 'admin' ? 'user' : 'admin';
             await user.save();
 
+            await session.commitTransaction();
+            session.endSession();
+
             return NextResponse.json({
                 success: true,
                 message: `${user.name}'s role updated`,
@@ -97,20 +124,28 @@ export async function PATCH(req: Request) {
             user.isBlocked = !user.isBlocked;
             await user.save();
 
+            await session.commitTransaction();
+            session.endSession();
+
             return NextResponse.json({
                 success: true,
                 message: `${user.name}'s status updated`,
             }, { status: httpStatus.OK });
 
         } else {
+            await session.abortTransaction();
             return NextResponse.json({
                 success: false,
                 message: `Invalid action`,
             }, { status: httpStatus.BAD_REQUEST });
-        }
-
+        };
 
     } catch (error) {
+        if (session) {
+            await session.abortTransaction();
+            session.endSession();
+        };
+
         return NextResponse.json({
             success: false,
             message: 'Internal server error',
