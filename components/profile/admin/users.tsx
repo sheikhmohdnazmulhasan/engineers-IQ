@@ -88,10 +88,12 @@ export default function Users() {
             return
         }
 
+        const token = encrypt(currentUser?._id as unknown as string);
+
         setOperationState2('danger')
         try {
             setOperationState2('loading')
-            const res = await axiosInstance.delete(`/analytics/admin/users?_id=${targetedUser}`);
+            const res = await axiosInstance.delete(`/analytics/admin/users?_id=${targetedUser}&token=${token}`);
 
             if (res.status === 200) {
                 setOperationState2('success');
