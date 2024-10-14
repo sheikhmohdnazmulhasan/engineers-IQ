@@ -69,8 +69,8 @@ export default function Profile({ params }: { params: { user: string } }) {
         }
 
         const payload = {
-            follower: currentUser?._id,
-            following: target._id
+            follower: encrypt(currentUser?._id),
+            following: encrypt(target._id)
         }
 
         try {
