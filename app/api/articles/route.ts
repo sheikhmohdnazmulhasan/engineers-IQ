@@ -215,7 +215,6 @@ export async function DELETE(request: Request) {
             message: 'articled deleted',
         }, { status: httpStatus.OK });
 
-
     } catch (error: any) {
         return NextResponse.json({
             success: false,

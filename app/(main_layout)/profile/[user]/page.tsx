@@ -132,8 +132,8 @@ export default function Profile({ params }: { params: { user: string } }) {
         setIsActionLoading(true);
 
         const payload = {
-            follower: currentUser?._id as string,
-            following: target
+            follower: encrypt(currentUser?._id as string),
+            following: encrypt(target)
         };
 
         try {

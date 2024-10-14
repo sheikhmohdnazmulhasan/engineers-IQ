@@ -23,6 +23,7 @@ import { IArticleResponse } from '@/interface/articles.response.interface'
 import Pagination from '@/components/pagination'
 import useDebounce from '@/hooks/debounce'
 import Loading from '@/components/loading'
+import { encrypt } from '@/utils/text_encryptor'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -60,8 +61,8 @@ export default function Home() {
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
     const payload = {
-      follower: currentUser?._id,
-      following: target._id
+      follower: encrypt(currentUser?._id as string),
+      following: encrypt(target._id as string)
     }
 
     try {
