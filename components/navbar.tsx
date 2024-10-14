@@ -4,7 +4,6 @@ import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
@@ -16,17 +15,21 @@ import NextLink from "next/link";
 import clsx from "clsx";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User, Button, Chip } from "@nextui-org/react";
 import { Spinner } from "@nextui-org/spinner";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { WriteIcon } from "@/components/icons";
 import useUser from "@/hooks/useUser";
 import signOut from "@/utils/sign_out_user";
+import logoLight from '@/public/logo.png';
+import logoDark from '@/public/logoDark.png';
 
 import UserName from "./premium_acc_badge";
 
 export const Navbar = () => {
   const { currentUser, isLoading } = useUser();
+  const { theme } = useTheme()
 
   // const searchInput = (
   //   <Input
@@ -101,6 +104,7 @@ export const Navbar = () => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             {/* <Logo /> */}
+            <Image alt="logo" height={30} quality={100} src={theme === 'dark' ? logoLight : logoDark} width={30} />
             <p className="font-bold text-inherit">EngineersIQ</p>
           </NextLink>
         </NavbarBrand>
@@ -155,7 +159,7 @@ export const Navbar = () => {
         </Link>}
         <ThemeSwitch />
         {isLoading ? <Spinner size="sm" /> : currentUser ? profileDropdownMobile : null}
-        <NavbarMenuToggle />
+        {/* <NavbarMenuToggle /> */}
       </NavbarContent>
 
       <NavbarMenu>
