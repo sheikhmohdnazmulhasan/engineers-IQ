@@ -10,6 +10,7 @@ import calculateReadTime from "@/utils/calculate_read_time"
 import formatDateReadable from "@/utils/format_date_readable"
 import useUser from "@/hooks/useUser"
 import axiosInstance from "@/libs/axiosInstance";
+import { encrypt } from "@/utils/text_encryptor";
 
 import UserName from "./premium_acc_badge"
 
@@ -28,11 +29,13 @@ export const ArticlePreview = ({
 
     async function handleDeleteArticle() {
         setDeletionState('danger');
+        const token = encrypt(data._id);
+
         try {
             setDeletionState('loading');
             const res = await axiosInstance.delete(`/articles`, {
                 params: {
-                    id: data._id
+                    token
                 }
             });
 
