@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-console */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { NextResponse } from "next/server";
-import { FilterQuery, Types } from "mongoose";
+import mongoose, { FilterQuery, Types } from "mongoose";
 
 import Article from "@/models/article.model";
 import User from "@/models/users.model"
 import connectMongodb from "@/libs/connect_mongodb";
 import { TArticle } from "@/types/article.type";
+import { decrypt } from "@/utils/text_encryptor";
 
 interface Cache<T> {
     data: T | null;
@@ -152,25 +154,72 @@ export async function GET(request: Request) {
     }
 };
 
-export async function DELETE(request: Request) {
+// updating
+export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const postId = searchParams.get('_id');
+    const token = searchParams.get('token');
+    const data = await request.json();
 
     try {
         await connectMongodb();
-        const result = await Article.findByIdAndDelete(id);
+        const decryptedToken = decrypt(token as unknown as string);
 
-        if (result) {
+        const session = await mongoose.startSession();
+
+        return await session.withTransaction(async () => {
+            const article = await Article.findById(postId).session(session).select('author').lean()
+
+            if (!article) throw new Error('Invalid article id');
+
+            // @ts-ignore: author is always exist
+            if (article.author.toString() !== decryptedToken.toString()) {
+
+                console.log('dddddddddddddddddd');
+                throw new Error('Operation not allowed');
+            };
+
+            const result = await Article.findByIdAndUpdate(postId, data, { new: true }).session(session);
+            if (!result) throw new Error('Failed to update the article')
+
             return NextResponse.json({
                 success: true,
-                message: 'articled deleted',
+                message: 'Article updated',
+                data: result
             }, { status: httpStatus.OK });
-        }
 
-    } catch (error) {
+        });
+
+    } catch (error: any) {
         return NextResponse.json({
             success: false,
-            message: 'Something went wrong',
+            message: 'An error occurred while updating the article',
+            error: error.message || 'internal server error'
+        }, { status: httpStatus.INTERNAL_SERVER_ERROR });
+    }
+};
+
+export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const token = searchParams.get('token');
+
+    try {
+        await connectMongodb();
+        const decryptedToken = decrypt(token as unknown as string);
+
+        const result = await Article.findByIdAndDelete(decryptedToken);
+        if (!result) throw new Error('Failed to delete article')
+
+        return NextResponse.json({
+            success: true,
+            message: 'articled deleted',
+        }, { status: httpStatus.OK });
+
+    } catch (error: any) {
+        return NextResponse.json({
+            success: false,
+            message: 'An error occurred while updating the article',
+            error: error.message || 'internal server error'
         }, { status: httpStatus.INTERNAL_SERVER_ERROR });
     }
 }

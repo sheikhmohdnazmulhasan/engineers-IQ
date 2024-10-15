@@ -65,7 +65,6 @@ export async function GET(request: Request) {
             }
         });
     } catch (error) {
-        console.error('Error fetching author analytics:', error);
         return NextResponse.json({ message: 'Internal Server Error', error }, { status: 500 });
     }
 }

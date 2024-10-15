@@ -1,6 +1,7 @@
-import { IUserResponse } from "@/interface/user.response.interface";
 import axios, { AxiosError } from "axios";
 import useSWR from "swr";
+
+import { IUserResponse } from "@/interface/user.response.interface";
 
 interface IPagination {
     totalUsers: number;

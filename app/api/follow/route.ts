@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 
 import User from "@/models/users.model";
 import connectMongodb from "@/libs/connect_mongodb";
+import { decrypt } from "@/utils/text_encryptor";
 
 interface IUser {
     _id: mongoose.Types.ObjectId;
@@ -50,7 +51,9 @@ export async function GET(request: Request) {
 
 // follow
 export async function PATCH(request: Request) {
-    const { follower, following } = await request.json();
+    const data = await request.json();
+    const follower = decrypt(data?.follower);
+    const following = decrypt(data?.following);
 
     let session: mongoose.ClientSession | null = null;
 
@@ -107,7 +110,9 @@ export async function PATCH(request: Request) {
 
 // unfollow
 export async function PUT(request: Request) {
-    const { follower, following } = await request.json();
+    const data = await request.json();
+    const follower = decrypt(data?.follower);
+    const following = decrypt(data?.following);
 
     let session: mongoose.ClientSession | null = null;
 

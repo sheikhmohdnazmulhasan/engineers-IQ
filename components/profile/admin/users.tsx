@@ -12,6 +12,8 @@ import UserName from "@/components/premium_acc_badge";
 import useAllUsers from "@/hooks/use_all_users";
 import axiosInstance from "@/libs/axiosInstance";
 import formatDateReadable from "@/utils/format_date_readable";
+import useUser from "@/hooks/useUser";
+import { encrypt } from "@/utils/text_encryptor";
 
 export default function Users() {
     const [currentPage, setCurrentPage] = useState<number>(2);
@@ -21,12 +23,26 @@ export default function Users() {
     const [operationState, setOperationState] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
     const [operationState2, setOperationState2] = useState<'danger' | 'loading' | 'success' | 'error'>('danger');
     const [targetedUser, setTargetedUser] = useState<string | null>(null);
+    const { currentUser } = useUser();
 
     async function handleUserManagement(action: 'role' | 'status') {
+        if (targetedUser === currentUser?._id) {
+            setOperationState('error');
+
+            setTimeout(() => {
+                onClose();
+                setTargetedUser(null);
+                setOperationState('danger');
+            }, 1000);
+            return
+        };
+
+        const token = encrypt(currentUser?._id as unknown as string);
+
         setOperationState('danger');
         try {
             setOperationState('loading');
-            const res = await axiosInstance.patch(`/analytics/admin/users?_id=${targetedUser}&action=${action}`);
+            const res = await axiosInstance.patch(`/analytics/admin/users?_id=${targetedUser}&action=${action}&token=${token}`);
 
             if (res.status === 200) {
                 setOperationState('success');
@@ -60,10 +76,24 @@ export default function Users() {
     };
 
     async function handleDeleteUserPermanently() {
+        if (targetedUser === currentUser?._id) {
+            setOperationState2('error');
+
+            setTimeout(() => {
+                onClose2();
+                setTargetedUser(null);
+                setOperationState2('danger');
+            }, 1000);
+
+            return
+        }
+
+        const token = encrypt(currentUser?._id as unknown as string);
+
         setOperationState2('danger')
         try {
             setOperationState2('loading')
-            const res = await axiosInstance.delete(`/analytics/admin/users?_id=${targetedUser}`);
+            const res = await axiosInstance.delete(`/analytics/admin/users?_id=${targetedUser}&token=${token}`);
 
             if (res.status === 200) {
                 setOperationState2('success');
@@ -214,7 +244,7 @@ export default function Users() {
                                     <TableCell>{user.role.charAt(0).toUpperCase() + user.role.slice(1) || "N/A"}</TableCell>
 
                                     <TableCell>{user.isBlocked ? <Chip color="danger" size="sm">Blcked</Chip> : <Chip color="primary" size='sm'>Active</Chip>}</TableCell>
-                                    <TableCell>{formatDateReadable(user.lastLogin as unknown as string) || "N/A"}</TableCell>
+                                    <TableCell>{user.lastLogin ? formatDateReadable(user.lastLogin as unknown as string) : "N/A"}</TableCell>
                                     <TableCell className="flex gap-3">
                                         <Link href={`/profile/${user.username}`} target="_blank">  <EyeIcon /></Link>
                                         <div onClick={() => {

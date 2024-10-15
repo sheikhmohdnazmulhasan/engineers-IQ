@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Button, Card, CardBody, Avatar, Chip, Input } from "@nextui-org/react"
+import React, { useEffect, useRef, useState } from 'react'
+import { Button, Avatar, Chip, Input, CardBody, Card, Kbd } from "@nextui-org/react"
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { SearchIcon } from 'lucide-react'
@@ -23,6 +23,7 @@ import { IArticleResponse } from '@/interface/articles.response.interface'
 import Pagination from '@/components/pagination'
 import useDebounce from '@/hooks/debounce'
 import Loading from '@/components/loading'
+import { encrypt } from '@/utils/text_encryptor'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -42,14 +43,10 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setCategory] = useState<string>('');
   const [selectedTopic, setTopic] = useState<string>('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isFocused, setIsFocused] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const limit = 6
-  const { data: allArticles, error: error1 } = useArticle({
-    searchTerm: debouncedSearchTerm,
-    category: selectedCategory,
-    topic: selectedTopic
-  });
-  const totalPages = Math.ceil(Array.isArray(allArticles) ? allArticles.length / limit : 0);
+  const limit = 10
 
   const query = {
     page: currentPage,
@@ -59,13 +56,13 @@ export default function Home() {
     topic: selectedTopic
   }
 
-  const { data, isLoading, error: error2 } = useArticle(query);
+  const { data, isLoading, error: error2, pagination } = useArticle(query);
 
   async function handleFollowNewPerson(target: IWhoToFollowResponse, indx: number) {
     setLoading(indx)
     const payload = {
-      follower: currentUser?._id,
-      following: target._id
+      follower: encrypt(currentUser?._id as string),
+      following: encrypt(target._id as string)
     }
 
     try {
@@ -131,6 +128,22 @@ export default function Home() {
     setSearchTerm(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <motion.div
       animate="animate"
@@ -140,20 +153,29 @@ export default function Home() {
       variants={fadeInUp}
     >
       {isLoading && <Loading />}
-      <Input
-        aria-label="Search"
-        classNames={{
-          inputWrapper: "bg-default-100",
-          input: "text-sm",
-        }}
-        labelPlacement="outside"
-        placeholder="Search..."
-        startContent={
-          <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-        }
-        type="search"
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+
+      <div className={`transition-all duration-200 ease-in-out ${isFocused ? 'scale-105' : 'scale-100'}`}>
+        <Input
+          ref={searchInputRef}
+          aria-label="Search"
+          className='focus:ring-0'
+          endContent={
+            <>
+              <Kbd>Ctrl</Kbd>+<Kbd>K</Kbd>
+            </>
+          }
+          labelPlacement="outside"
+          placeholder="Search..."
+          startContent={
+            <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+          }
+          type="search"
+          onBlur={() => setIsFocused(false)}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+        />
+      </div>
+
 
       <motion.div className="min-h-screen bg-background mt-10" variants={fadeInUp}>
         <div className="container mx-auto">
@@ -168,7 +190,7 @@ export default function Home() {
                       variant="flat"
                       onClick={() => setCategory('')}
                     >
-                      Latest
+                      For You
                     </Chip>
                   </motion.div>
                   {categoriesData.slice(0, 5).map((category, indx) => (
@@ -196,7 +218,7 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {!isLoading && (error1 || error2) && (
+              {!isLoading && error2 && (
                 <motion.div
                   className="h-screen flex justify-center flex-col items-center -mt-32"
                   variants={fadeInUp}
@@ -206,35 +228,43 @@ export default function Home() {
                 </motion.div>
               )}
 
-              <AnimatePresence>
-                {Array.isArray(data) && data?.map((article: IArticleResponse) => (
-                  <motion.div key={article._id} variants={fadeInUp}>
-                    <ArticlePreview data={article} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {
+                !isLoading && !error2 && (
+                  <>
+                    <AnimatePresence>
+                      {Array.isArray(data) && data?.map((article: IArticleResponse) => (
+                        <motion.div key={article._id} variants={fadeInUp}>
+                          <ArticlePreview data={article} />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
 
-              {Array.isArray(allArticles) && allArticles.length > 6 && (
-                <motion.div variants={fadeInUp}>
-                  <Pagination
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                  />
-                </motion.div>
-              )}
+                    {pagination.totalItems > 10 && (
+                      <motion.div variants={fadeInUp}>
+                        <Pagination
+                          totalPages={pagination.totalPages}
+                          onPageChange={setCurrentPage}
+                        />
+                      </motion.div>
+                    )}
+                  </>
+                )
+              }
+
             </motion.div>
 
             <motion.div className="w-full lg:w-1/3" variants={fadeInUp}>
               <div className="sticky top-20">
+
                 <SidebarSection title="System Picks">
                   <AnimatePresence>
-                    {Array.isArray(allArticles) && allArticles.sort(() => 0.5 - Math.random()).slice(0, 3)?.map((article) => (
+                    {Array.isArray(data) && data.sort(() => 0.5 - Math.random()).slice(0, 3)?.map((article) => (
                       <motion.div key={article._id} variants={fadeInUp}>
                         <Link href={`/articles/${article.author.username}/${article._id}`}>
                           <Card className="mb-2">
                             <CardBody>
                               <h4 className="font-semibold">{article.title}</h4>
-                              <p className="text-small text-default-500">{article.textArea.slice(0, 40)}</p>
+                              <p className="text-small text-default-500">{article.textArea.slice(0, 40)} ...</p>
                             </CardBody>
                           </Card>
                         </Link>
@@ -242,6 +272,7 @@ export default function Home() {
                     ))}
                   </AnimatePresence>
                 </SidebarSection>
+
                 <SidebarSection title="Recommended topics">
                   <motion.div className="flex flex-wrap gap-2" variants={staggerChildren}>
                     <AnimatePresence>

@@ -34,7 +34,6 @@ import { Analytics } from '@/components/profile/analytics';
 import Users from '@/components/profile/admin/users';
 import { categoriesData } from '@/const/article/categories';
 
-
 export default function Profile({ params }: { params: { user: string } }) {
     const [isWonProfile, setIsWonProfile] = useState<boolean>(false);
     const { profile, error, isLoading, revalidate } = useProfile(params.user);
@@ -48,12 +47,10 @@ export default function Profile({ params }: { params: { user: string } }) {
     const [isPassChangeLoading, setIsPassChangeLoading] = useState<boolean>(false);
     const [currentPasswordError, setCurrentPasswordError] = useState<string | null>(null);
     const [render, setRender] = useState<'home' | 'analytics' | 'user' | 'payout'>('home');
-    const { data: allArticle, isLoading: allArticleLoading } = useArticle({ author: profile?._id });
     const [currentPage, setCurrentPage] = useState<number>(1);
     const limit = 3
-    const totalPages = Math.ceil(Array.isArray(allArticle) ? allArticle.length / limit : 0);
     const [selectedCategory, setCategory] = useState<string>('');
-    const { data, revalidate: articleRevalidate, isLoading: loading } = useArticle({ author: profile?._id, category: selectedCategory, page: currentPage, limit });
+    const { data, revalidate: articleRevalidate, isLoading: loading, pagination } = useArticle({ author: profile?._id, category: selectedCategory, page: currentPage, limit });
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(userPasswordChangeValidationSchema)
@@ -72,8 +69,8 @@ export default function Profile({ params }: { params: { user: string } }) {
         }
 
         const payload = {
-            follower: currentUser?._id,
-            following: target._id
+            follower: encrypt(currentUser?._id),
+            following: encrypt(target._id)
         }
 
         try {
@@ -135,8 +132,8 @@ export default function Profile({ params }: { params: { user: string } }) {
         setIsActionLoading(true);
 
         const payload = {
-            follower: currentUser?._id as string,
-            following: target
+            follower: encrypt(currentUser?._id as string),
+            following: encrypt(target)
         };
 
         try {
@@ -279,7 +276,8 @@ export default function Profile({ params }: { params: { user: string } }) {
 
     return (
         <>
-            {allArticleLoading && userLoading && <Loading />}
+            {userLoading && <Loading />}
+
             {!isLoading && !!error && (
                 <div className="text-center flex justify-center items-center h-screen w-full -mt-20">
                     <p>User Not Found</p>
@@ -347,6 +345,12 @@ export default function Profile({ params }: { params: { user: string } }) {
                     {isWonProfile && !currentUser?.isEmailVerified &&
                         <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
                             Action Required: Verify your email to start writing article! <span className='ml-2 underline hover:cursor-pointer' onClick={handleResendEmail}>Resent Verification Email</span>
+                        </div>
+                    }
+
+                    {isWonProfile && currentUser?.isBlocked &&
+                        <div className="h-16 hidden md:flex w-full bg-gradient-to-r mb-10 rounded-lg from-[#ff00009d] to-[#ff8c00a0] items-center justify-center text-white font-bold text-sm">
+                            Your account has been blocked for breaking our rules!
                         </div>
                     }
 
@@ -495,7 +499,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                                             <>
                                                 <p className={`${render === 'user' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('user')}>Users</p>
 
-                                                <p className={`${render === 'payout' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('payout')}>Payout</p>
+                                                {/* <p className={`${render === 'payout' ? 'font-medium underline' : null} cursor-pointer`} color="foreground" onClick={() => setRender('payout')}>Payout</p> */}
 
                                                 {/* <p className='cursor-pointer' color="foreground" onClick={() => toast.info('Feature Not Ready Yet!')}>Payment History</p> */}
                                             </>
@@ -550,20 +554,16 @@ export default function Profile({ params }: { params: { user: string } }) {
 
                                         {data.map((article, indx) => <ArticlePreview key={indx} data={article} fromProfile={true} revalidate={articleRevalidate} />)}
 
-                                        {Array.isArray(allArticle) && allArticle.length > 3 && (
-                                            <Pagination totalPages={totalPages} onPageChange={setCurrentPage} />
+                                        {pagination.totalItems > 3 && (
+                                            <Pagination totalPages={pagination.totalPages} onPageChange={setCurrentPage} />
                                         )}
 
                                     </>
 
                                 ) : render === 'analytics' ? (
                                     <Analytics />
-                                ) : render === 'user' ? (
+                                ) : render === 'user' && (
                                     <Users />
-                                ) : (
-                                    <div className="">
-                                        payout
-                                    </div>
                                 )
                             }
 

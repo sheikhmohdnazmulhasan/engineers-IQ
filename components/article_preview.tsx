@@ -10,6 +10,7 @@ import calculateReadTime from "@/utils/calculate_read_time"
 import formatDateReadable from "@/utils/format_date_readable"
 import useUser from "@/hooks/useUser"
 import axiosInstance from "@/libs/axiosInstance";
+import { encrypt } from "@/utils/text_encryptor";
 
 import UserName from "./premium_acc_badge"
 
@@ -28,11 +29,13 @@ export const ArticlePreview = ({
 
     async function handleDeleteArticle() {
         setDeletionState('danger');
+        const token = encrypt(data._id);
+
         try {
             setDeletionState('loading');
             const res = await axiosInstance.delete(`/articles`, {
                 params: {
-                    id: data._id
+                    token
                 }
             });
 
@@ -106,7 +109,7 @@ export const ArticlePreview = ({
             </Modal>
 
             < Card className="mb-6 px-2 relative overflow-hidden" >
-                <CardBody className={data.isPremiumContent && !currentUser?.isPremiumMember ? "blur-sm" : ""}>
+                <CardBody className={data.isPremiumContent && !currentUser ? "blur-sm" : ""}>
                     <Link className="flex items-center mb-2 hover:underline" href={`/profile/${data.author.username}`}>
                         <Avatar className="mr-2" size="sm" src={data?.author?.profileImg} />
                         <UserName isPremium={data.author.isPremiumMember} name={data?.author?.name} />
@@ -148,7 +151,7 @@ export const ArticlePreview = ({
                     fromProfile && currentUser?._id === data.author._id && (
                         <CardFooter className="">
                             <div className="flex gap-4">
-                                <Chip className="">Edit </Chip>
+                                <Link href={`/articles/edit/${data.author.username}/${data._id}`}><Chip className="">Edit</Chip></Link>
                                 <Chip className="hover:cursor-pointer" color="danger" onClick={onOpen}>Delete</Chip>
                             </div>
                         </CardFooter>
@@ -156,12 +159,12 @@ export const ArticlePreview = ({
                 }
 
                 {
-                    data.isPremiumContent && !currentUser?.isPremiumMember && (
+                    data.isPremiumContent && !currentUser && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                             <div className="text-center">
                                 <LockIcon className="w-12 h-12 text-[#1877F2] mb-4 mx-auto" />
-                                <Link href={!currentUser && !fromProfile ? `/auth/login` : currentUser ? '/pricing' : `/auth/login?redirect=/profile/${data.author.username}`}> <Button color="primary" variant="bordered">
-                                    {currentUser ? 'Browse Premium Plans' : 'Login And Read'}
+                                <Link href={!fromProfile ? `/auth/login` : `/auth/login?redirect=/profile/${data.author.username}`}> <Button color="primary" variant="bordered">
+                                    Login And Read
                                 </Button></Link>
                             </div>
                         </div>

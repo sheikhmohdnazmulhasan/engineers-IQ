@@ -11,6 +11,13 @@ export async function POST(request: Request) {
         // Parse request body
         const data = await request.json();
 
+        if (data.role || data.isPremiumMember || data.isEmailVerified) {
+            return NextResponse.json({
+                message: 'Fuck you! Looks like you are trying to create an account with misinformation. Its not posable.'
+            },
+                { status: 400 });
+        };
+
         // Check if email or username already exists in one query
         const userExist = await User.findOne({
             $or: [{ email: data.email }, { username: data.username }]
