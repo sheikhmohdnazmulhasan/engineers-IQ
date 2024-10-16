@@ -2,7 +2,7 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Engineers IQ",
-  description: "Make beautiful websites regardless of your design experience.",
+  description: "Specifically for programmers! Whether you're tackling coding challenges, exploring new development tools and frameworks, or seeking practical tips on software engineering, you’ll find it all here!",
   navItems: [
     {
       label: "Home",
