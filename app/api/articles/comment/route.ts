@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 
 import Article from "@/models/article.model";
 import connectMongodb from "@/libs/connect_mongodb";
+import { decrypt } from "@/utils/text_encryptor";
 
 // add comment
 export async function PUT(request: Request) {
@@ -25,7 +26,7 @@ export async function PUT(request: Request) {
         }
 
         // Convert user to ObjectId if it is not already
-        const userObjectId = new mongoose.Types.ObjectId(payload.user);
+        const userObjectId = new mongoose.Types.ObjectId(decrypt(payload.user));
 
         const article = await Article.findById(articleId).select('comments');
 
@@ -38,7 +39,7 @@ export async function PUT(request: Request) {
         // Add the new comment to the article's comments array
         article.comments.push({
             user: userObjectId,
-            content: payload.content,
+            content: decrypt(payload.content),
             createdAt: new Date(),
         });
 
