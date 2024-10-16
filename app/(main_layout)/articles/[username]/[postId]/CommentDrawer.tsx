@@ -190,7 +190,9 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
                                             initial={{ opacity: 0, y: 20 }}
                                             transition={{ delay: index * 0.1 }}
                                         >
-                                            <Avatar name={comment.user.name} src={comment.user.profileImg} />
+                                            <div>
+                                                <Avatar name={comment.user.name} src={comment.user.profileImg} />
+                                            </div>
                                             <div className="flex-grow text-sm">
                                                 <UserName isPremium={comment.user.isPremiumMember} name={comment.user.name} />
                                                 {/* <p className="font-semibold">{comment.user.name}</p> */}
