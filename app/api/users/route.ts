@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import User from "@/models/users.model";
 import connectMongodb from "@/libs/connect_mongodb";
+import { decrypt } from "@/utils/text_encryptor";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -88,7 +89,7 @@ export async function PATCH(request: Request) {
             if (name) updatedData.name = name;
             if (profileImg) updatedData.profileImg = profileImg;
 
-            const result = await User.findByIdAndUpdate(user, updatedData, { new: true });
+            const result = await User.findByIdAndUpdate(decrypt(user as string), updatedData, { new: true });
 
             if (!result) {
                 return NextResponse.json({

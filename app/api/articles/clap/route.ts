@@ -5,6 +5,7 @@ import mongoose from "mongoose"; // Import mongoose for ObjectId conversion
 
 import connectMongodb from "@/libs/connect_mongodb";
 import Article from "@/models/article.model";
+import { decrypt } from "@/utils/text_encryptor";
 
 // clap
 export async function PATCH(request: Request) {
@@ -19,7 +20,7 @@ export async function PATCH(request: Request) {
         }
 
         // Convert user to ObjectId for comparison
-        const userObjectId = new mongoose.Types.ObjectId(user);
+        const userObjectId = new mongoose.Types.ObjectId(decrypt(user));
 
         const article = await Article.findById(articleId).select('claps');
 

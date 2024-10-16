@@ -27,6 +27,7 @@ import linkedin from "@/public/share/linkedin.png";
 import mail from "@/public/share/mail.png";
 import wp from "@/public/share/wp.png";
 import twitter from "@/public/share/twitter.png";
+import { encrypt } from '@/utils/text_encryptor'
 
 import { CommentDrawer } from './CommentDrawer'
 
@@ -69,7 +70,7 @@ export default function BlogDetails({ params }: { params: { postId: string } }) 
             setNewCommentLoading(true)
             await axiosInstance.patch('/articles/clap', {
                 articleId: article?._id,
-                user: currentUser?._id
+                user: encrypt(currentUser?._id)
             })
             revalidate()
             setNewCommentLoading(false)
