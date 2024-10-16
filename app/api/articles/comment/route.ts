@@ -77,7 +77,7 @@ export async function PATCH(request: Request) {
         }
 
         // Convert commentId to ObjectId
-        const commentObjectId = new mongoose.Types.ObjectId(commentId);
+        const commentObjectId = new mongoose.Types.ObjectId(decrypt(commentId));
 
         // Find the article by its ID
         const article = await Article.findById(articleId).select('comments');
@@ -98,14 +98,14 @@ export async function PATCH(request: Request) {
         }
 
         // Validate that the comment belongs to the user
-        if (String(comment.user) !== String(user)) {
+        if (String(comment.user) !== String(decrypt(user))) {
             return NextResponse.json({
                 message: 'You are not authorized to edit this comment',
             }, { status: 403 });
         }
 
         // Update the content of the targeted comment
-        comment.content = updatedContent;
+        comment.content = decrypt(updatedContent);
         comment.updatedAt = new Date(); // track when the comment was updated
 
         // Save the updated article
@@ -141,7 +141,7 @@ export async function DELETE(request: Request) {
             }, { status: 400 });
         }
 
-        const commentObjectId = new mongoose.Types.ObjectId(commentId);
+        const commentObjectId = new mongoose.Types.ObjectId(decrypt(commentId));
 
         // Find the article by its ID
         const article = await Article.findById(articleId).select('comments');
@@ -162,7 +162,7 @@ export async function DELETE(request: Request) {
         }
 
         // Validate comment ownership
-        if (String(comment.user) !== String(user)) {
+        if (String(comment.user) !== String(decrypt(user))) {
             return NextResponse.json({
                 message: 'You are not authorized to delete this comment',
             }, { status: 403 });

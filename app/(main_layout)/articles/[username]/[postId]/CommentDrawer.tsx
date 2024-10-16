@@ -91,9 +91,9 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setCommentUpdatedLoading(true);
             await axiosInstance.patch(`/articles/comment?ref=${articleId}`, {
-                commentId,
-                updatedContent: commentUpdatedContent,
-                user: currentUser?._id
+                commentId: encrypt(commentId),
+                updatedContent: encrypt(commentUpdatedContent),
+                user: encrypt(currentUser?._id as string)
             });
             revalidate();
             setCommentUpdatedLoading(false);
@@ -114,8 +114,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             setCommentDeleteLoading(commentId);
             await axiosInstance.delete(`/articles/comment?ref=${articleId}`, {
                 data: {
-                    commentId,
-                    user
+                    commentId: encrypt(commentId),
+                    user: encrypt(user)
                 }
             });
 
