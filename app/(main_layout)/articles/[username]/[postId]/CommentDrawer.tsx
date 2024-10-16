@@ -69,8 +69,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setClapLoading(commentId);
             await axiosInstance.patch(`/articles/comment/clap?ref=${articleId}`, {
-                commentId,
-                userId: currentUser._id
+                commentId: encrypt(commentId),
+                userId: encrypt(currentUser._id)
             });
             revalidate();
             setClapLoading(null);

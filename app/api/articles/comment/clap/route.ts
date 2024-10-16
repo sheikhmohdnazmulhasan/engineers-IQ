@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 import connectMongodb from "@/libs/connect_mongodb";
 import Article from "@/models/article.model";
+import { decrypt } from "@/utils/text_encryptor";
 
 export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -21,7 +22,7 @@ export async function PATCH(request: Request) {
             }, { status: 400 });
         }
 
-        const commentObjectId = new mongoose.Types.ObjectId(commentId);
+        const commentObjectId = new mongoose.Types.ObjectId(decrypt(commentId));
 
         // Find the article by its ID and target comment
         const article = await Article.findById(articleId).select('comments');
@@ -46,14 +47,14 @@ export async function PATCH(request: Request) {
         }
 
         // Check if the user has already clapped (undoing clap)
-        const hasClapped = comment.claps.some((clap: mongoose.Types.ObjectId) => String(clap) === String(userId));
+        const hasClapped = comment.claps.some((clap: mongoose.Types.ObjectId) => String(clap) === String(decrypt(userId)));
 
         if (hasClapped) {
             // Remove user's clap (undo clap)
-            comment.claps = comment.claps.filter((clap: mongoose.Types.ObjectId) => String(clap) !== String(userId));
+            comment.claps = comment.claps.filter((clap: mongoose.Types.ObjectId) => String(clap) !== String(decrypt(userId)));
         } else {
             // Add user's clap
-            comment.claps.push(new mongoose.Types.ObjectId(userId));
+            comment.claps.push(new mongoose.Types.ObjectId(decrypt(userId)));
         }
 
         await article.save();
