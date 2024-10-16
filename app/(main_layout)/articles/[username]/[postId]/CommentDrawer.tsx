@@ -9,6 +9,7 @@ import UserName from '@/components/premium_acc_badge'
 import formatDateReadable from '@/utils/format_date_readable'
 import useUser from '@/hooks/useUser'
 import axiosInstance from '@/libs/axiosInstance'
+import { encrypt } from '@/utils/text_encryptor'
 
 interface CommentDrawerProps {
     isOpen: boolean
@@ -42,8 +43,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setNewCommentLoading(true);
             await axiosInstance.put(`articles/comment?ref=${articleId}`, {
-                user: currentUser?._id,
-                content: newComment,
+                user: encrypt(currentUser?._id),
+                content: encrypt(newComment),
             });
 
             revalidate();
