@@ -167,7 +167,7 @@ export default function Profile({ params }: { params: { user: string } }) {
         const loading = toast.loading('Working...');
 
         try {
-            const res = await axiosInstance.patch(`/users?user=${currentUser?._id}`, { name: updatedName });
+            const res = await axiosInstance.patch(`/users?user=${encrypt(currentUser?._id as string)}`, { name: updatedName });
 
             if (res.status == 200) {
                 revalidate();
@@ -229,7 +229,7 @@ export default function Profile({ params }: { params: { user: string } }) {
                 const imgBbResponse = await uploadImageToImgBb(Array.from(event.target.files));
 
                 if (imgBbResponse.success) {
-                    const serverRes = await axiosInstance.patch(`users?user=${currentUser?._id}`, {
+                    const serverRes = await axiosInstance.patch(`users?user=${encrypt(currentUser?._id as string)}`, {
                         profileImg: imgBbResponse.urls![0]
                     });
 

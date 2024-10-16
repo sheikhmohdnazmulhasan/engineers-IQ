@@ -9,6 +9,7 @@ import UserName from '@/components/premium_acc_badge'
 import formatDateReadable from '@/utils/format_date_readable'
 import useUser from '@/hooks/useUser'
 import axiosInstance from '@/libs/axiosInstance'
+import { encrypt } from '@/utils/text_encryptor'
 
 interface CommentDrawerProps {
     isOpen: boolean
@@ -42,8 +43,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setNewCommentLoading(true);
             await axiosInstance.put(`articles/comment?ref=${articleId}`, {
-                user: currentUser?._id,
-                content: newComment,
+                user: encrypt(currentUser?._id),
+                content: encrypt(newComment),
             });
 
             revalidate();
@@ -68,8 +69,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setClapLoading(commentId);
             await axiosInstance.patch(`/articles/comment/clap?ref=${articleId}`, {
-                commentId,
-                userId: currentUser._id
+                commentId: encrypt(commentId),
+                userId: encrypt(currentUser._id)
             });
             revalidate();
             setClapLoading(null);
@@ -90,9 +91,9 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
         try {
             setCommentUpdatedLoading(true);
             await axiosInstance.patch(`/articles/comment?ref=${articleId}`, {
-                commentId,
-                updatedContent: commentUpdatedContent,
-                user: currentUser?._id
+                commentId: encrypt(commentId),
+                updatedContent: encrypt(commentUpdatedContent),
+                user: encrypt(currentUser?._id as string)
             });
             revalidate();
             setCommentUpdatedLoading(false);
@@ -113,8 +114,8 @@ export const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, c
             setCommentDeleteLoading(commentId);
             await axiosInstance.delete(`/articles/comment?ref=${articleId}`, {
                 data: {
-                    commentId,
-                    user
+                    commentId: encrypt(commentId),
+                    user: encrypt(user)
                 }
             });
 
