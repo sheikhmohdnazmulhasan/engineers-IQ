@@ -39,18 +39,18 @@ export default function Home() {
   const { currentUser } = useUser();
   const { whoToFollow, revalidate } = useWhoToFollow(currentUser?._id as string);
   const [loading, setLoading] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  // const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setCategory] = useState<string>('');
   const [selectedTopic, setTopic] = useState<string>('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const limit = 10
+  // const limit = 10
 
   const query = {
-    page: currentPage,
-    limit,
+    // page: currentPage,
+    // limit,
     searchTerm: debouncedSearchTerm,
     category: selectedCategory,
     topic: selectedTopic
@@ -124,7 +124,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    setCurrentPage(1);
+    // setCurrentPage(1);
     setSearchTerm(debouncedSearchTerm);
   }, [debouncedSearchTerm]);
 
@@ -239,6 +239,7 @@ export default function Home() {
                       ))}
                     </AnimatePresence>
 
+                    {/* 
                     {pagination.totalItems > 10 && (
                       <motion.div variants={fadeInUp}>
                         <Pagination
@@ -247,6 +248,9 @@ export default function Home() {
                         />
                       </motion.div>
                     )}
+                    
+                    */}
+
                   </>
                 )
               }
