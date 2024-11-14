@@ -158,6 +158,12 @@ export const Navbar = () => {
           <Chip color="primary" variant="flat">+ Create</Chip>
         </Link>}
         <ThemeSwitch />
+        {!currentUser && (
+          <Link className="text-default-foreground" href="/auth/login">
+            <Chip color="default" variant="flat">Sign In</Chip>
+
+          </Link>
+        )}
         {isLoading ? <Spinner size="sm" /> : currentUser ? profileDropdownMobile : null}
         {/* <NavbarMenuToggle /> */}
       </NavbarContent>
